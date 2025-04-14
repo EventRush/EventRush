@@ -1,0 +1,63 @@
+Installation de laravel
+Installation package npm 
+
+
+configuration de sanctum 
+    décommenter sanctum dans kernel.php 
+    modifier le fichier config/auth.php
+            'api' => [
+                'driver' => 'sanctum',
+                'provider' => 'users',
+            ],
+
+creation du model et de la table(migration) utilisateur
+
+        Utilisateur :
+            name            |   string
+            email           |   string
+            password        |   string
+            created_at      
+            updated_at
+
+            {
+                "nom": "Luc",
+                "email": "luctowanoutowanou@gmail.com",
+                "password": "chadrack0000",
+                "password_confirmation": "chadrack0000"
+
+            }
+
+creation du controller AuthController pour la gestion de l'authentification
+implementation des fonctions register, login, logout
+
+modification de la partie mail dans .env
+
+model event
+            titre                 |   text
+            description           |   text
+            date_debut            |   text
+            date_fin              |   text     
+            lieu                  |   text
+            statut                |   text
+            affiche               |   fichier
+
+       eventphoto
+            photos[0]            |   fichier
+            photos[1]            |   fichier
+
+            {
+                "organisateur": "1",
+                "titre": "Ig party",
+                "description": "Grand chill annuel de filière ig ",
+                "date_debut": "2025-06-01 18:00:00",
+                "date_fin": "2025-06-02 02:00:00",
+                "lieu": "Salle des fête de Cajehoun",
+                "statut": "publié",
+                "affiche": "Luc",
+                "photos": "Luc",
+                "photos": "Luc"
+
+            }
+
+creation de la ressource EventResource pour un controle libre des elements de Event
+
