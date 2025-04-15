@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\QrCodeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,3 +17,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get('/code', [QrCodeController::class, 'vue'])->name('codeqr.vue');
+Route::post('/codeGenerate', [QrCodeController::class, 'generate'])->name('codeqr');
+

@@ -62,7 +62,7 @@ class VerifyEmailController extends Controller
         'otp_expires_at' => null
     ]);
 
-    return response()->json(['message' => 'Email confirmé avec succès.']);
+    return response()->json(['message' => 'Email confirmé avec succès. vous pouvez desormais vous connecter via la page de login.']);
 }
 public function resendOtp(Request $request)
 {

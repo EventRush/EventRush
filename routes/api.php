@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\PasswordResetController;
+use App\Http\Controllers\Api\QrCodeController;
 use App\Http\Controllers\Api\SouscriptionController;
 use App\Http\Controllers\Api\UtilisateurController;
 use App\Http\Controllers\API\VerifyEmailController;

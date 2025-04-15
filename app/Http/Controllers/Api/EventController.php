@@ -61,19 +61,20 @@ class EventController extends Controller
     {
         // $this->authorize('update', $event); // uniquement l'organisateur 
         $validated = $request->validate([
-            'titre' => 'sometimes|required|string|max:255',
-            'description' => 'sometimes|required|string',
-            'date_debut' => 'sometimes|required|date',
-            'date_fin' => 'sometimes|required|date|after_or_equal:date_debut',
-            'lieu' => 'sometimes|string|max:255',
-            'statut' => 'sometimes|in:brouillon,publié,annulé',            
-            'photos.*' => 'image|mimes:jpg,jpeg,png|max:6144',
-            'affiche' => 'image|mimes:jpg,jpeg,png|max:6144',
+            'titre' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
+            'date_debut' => 'nullable|date',
+            'date_fin' => 'nullable|date|after_or_equal:date_debut',
+            'lieu' => 'nullable|string|max:255',
+            'statut' => 'nullable|in:brouillon,publié,annulé',            
+            'photos.*' => 'nullable|image|mimes:jpg,jpeg,png|max:6144',
+            'affiche' => 'nullable|image|mimes:jpg,jpeg,png|max:6144',
         ]);
         if ($request->hasFile('affiche')) {
             $affichePath = $request->file('affiche')->store('events/affiches', 'public');
             // $event->update(['affiche' => $affichePath]);
-            $validated['affiche'] = $affichePath;
+            // $validated['affiche'] = $affichePath;
+            $event->affiche = $affichePath;
         }
         
         if ($request->hasFile('photos')) {
@@ -83,8 +84,17 @@ class EventController extends Controller
                 $event->photos()->create(['image_path' => $photoPath]);
             }
         }
-            dd($validated);
-        $event->update($validated);
+
+        if ($request->has('titre')) $event->titre = $request->titre;
+        if ($request->has('description')) $event->description = $request->description;
+        if ($request->has('date_debut')) $event->date_debut = $request->date_debut;
+        if ($request->has('date_fin')) $event->date_fin = $request->date_fin;
+        if ($request->has('lieu')) $event->lieu = $request->lieu;
+        if ($request->has('statut')) $event->statut = $request->statut;
+        $event->save();
+        // $event->affiche = $request->affiche;
+        // dd($validated);
+        // $event->update($validated);
         // return new EventResource($event->load('photos','organisateur'));
         return new EventResource($event->load('photos'));
 
@@ -93,6 +103,7 @@ class EventController extends Controller
     public function destroy(Event $event)
     {
         $event->delete();
+        $event->photos()->delete();
         return response()->json(['message' => 'Événement supprimé avec succès.']);
     }
 
@@ -107,23 +118,23 @@ class EventController extends Controller
         }
 
         // Recherche d'événements
-        $events = Event::where('title', 'like', "%$query%")
-            ->orWhere('address', 'like', "%$query%")
+        $events = Event::where('titre', 'like', "%$query%")
             ->orWhere('description', 'like', "%$query%")
-            ->with('organizer') // pour retourner l'organisateur avec l'événement
+            ->orWhere('lieu', 'like', "%$query%")
+            // ->with('organisateur') // pour retourner l'organisateur avec l'événement
             ->get();
 
         // Recherche d'organisateurs (supposons que role = 'organisateur')
         $organizers = Utilisateur::where('role', 'organisateur')
             ->where(function($q) use ($query) {
-                $q->where('name', 'like', "%$query%")
+                $q->where('nom', 'like', "%$query%")
                   ->orWhere('email', 'like', "%$query%");
             })
             ->get();
 
         return response()->json([
             'events' => $events,
-            'organizers' => $organizers,
+            'organisateurs' => $organizers,
         ]);
     }
 
