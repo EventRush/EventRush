@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\BilleterieController;
 use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\PasswordResetController;
 use App\Http\Controllers\Api\QrCodeController;
@@ -27,13 +28,15 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 // Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::get('/search', [EventController::class, 'search'])->name('search');
+Route::get('/user/index', [AuthController::class, 'index'])->name('user.index');
 
+// Route::post('/billet/achat', [BilleterieController::class, 'achat'])->name('billet.achat');
 
-
-
+Route::get('/paiement/callback', [BilleterieController::class, 'callback'])->name('paiement.callback');
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class,'logout']);
-
+        //billet/payer
+    Route::post('/billet/payer', [BilleterieController::class, 'payer']);
 
     Route::get('/welcome', function () { return view('welcome');
     });
@@ -43,7 +46,7 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/me', [UtilisateurController::class,'me']);
-    Route::put('/me/update', [UtilisateurController::class,'update']);   
+    Route::post('/me/update', [UtilisateurController::class,'update']);   
 });
 
 
@@ -56,6 +59,8 @@ Route::post('/resendotp', [VerifyEmailController::class, 'resendotp']);
 //    *****  event  *****
 // Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('events', EventController::class);
+    Route::post('/events/{event}', [EventController::class, 'update']);
+
 // });
 
 //    *****  profil  *****

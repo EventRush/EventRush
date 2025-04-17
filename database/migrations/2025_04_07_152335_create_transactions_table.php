@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('souscription_id')->nullable()->constrained()->onDelete('cascade');  // Pour lier la transaction à une souscription
             $table->string('reference')->unique();  // Référence unique de la transaction MoMo
             $table->enum('methode', ['carte', 'PayPal', 'mobile_money'])->default('mobile_money');
-            $table->enum('status', ['en_attente', 'réussi', 'échoué'])->default('en_attente');  // Statut du paiement
+            $table->enum('status', ['en_attente', 'reussi', 'echoue'])->default('en_attente');  // Statut du paiement
             $table->decimal('montant', 10, 2);
             $table->timestamps();
         });

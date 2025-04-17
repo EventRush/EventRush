@@ -14,8 +14,10 @@ return new class extends Migration
         Schema::create('tickets', function (Blueprint $table) {
             $table->id();
             $table->foreignId('event_id')->constrained()->onDelete('cascade');
-            $table->string('nom');
+            // $table->string('nom');
+            $table->enum('type', ['standart', 'vip1', 'vip2'])->default('standart');
             $table->decimal('prix', 8,2);
+            $table->string('image')->nullable();
             $table->integer('quantité_disponible');
             $table->timestamps();
         });

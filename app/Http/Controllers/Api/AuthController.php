@@ -187,4 +187,18 @@ class AuthController extends Controller
     return response()->json(['message' => 'Déconnexion réussie']);
 }
 
+    public function index()
+        {
+            //
+            $utilisateurs = Utilisateur::orderBy('created_at', 'asc')->get();
+
+            return response()->json([
+                'message' => 'Voici les utilisateurs ',
+                'utilisateurs' => $utilisateurs
+            ],
+        200);
+        }
+
 }
+
+

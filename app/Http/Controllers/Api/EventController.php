@@ -60,7 +60,7 @@ class EventController extends Controller
     public function update(Request $request, Event $event)
     {
         // $this->authorize('update', $event); // uniquement l'organisateur 
-        $validated = $request->validate([
+        $request->validate([
             'titre' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'date_debut' => 'nullable|date',
@@ -91,6 +91,7 @@ class EventController extends Controller
         if ($request->has('date_fin')) $event->date_fin = $request->date_fin;
         if ($request->has('lieu')) $event->lieu = $request->lieu;
         if ($request->has('statut')) $event->statut = $request->statut;
+        dd($event);
         $event->save();
         // $event->affiche = $request->affiche;
         // dd($validated);

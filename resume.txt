@@ -61,3 +61,14 @@ model event
 
 creation de la ressource EventResource pour un controle libre des elements de Event
 
+14/04
+mise sur github de l'api
+modifications des fonctions de update(2)" 
+
+15/04
+intégration de simplesoftwareio/simple-qrcode
+creation du controlleur QrCodeController pour la generation de code qr en image.
+    creation de la vue blade 'code', les routes '/code'(get) et '/codeGenerate'(post) dans web.php pour tester
+
+premier push a été fait apres à 11:2? min
+ajout de la colonne qr_code à ticket : add_qr_code_to_tickets_table --table=tickets
