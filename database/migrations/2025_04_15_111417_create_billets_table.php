@@ -21,6 +21,7 @@ return new class extends Migration
             $table->decimal('montant', 10, 2);
             $table->uuid('qr_code')->unique()->nullable();
             $table->string('reference')->unique();  // Référence unique de la transaction MoMo
+            // $table->unsignedBigInteger('billet_fedapay_id')->nullable();
             $table->timestamps();
             
         });

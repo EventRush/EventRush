@@ -46,7 +46,9 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/me', [UtilisateurController::class,'me']);
-    Route::post('/me/update', [UtilisateurController::class,'update']);   
+    Route::post('/me/update', [UtilisateurController::class,'update']); 
+    Route::get('/user/connected', [UtilisateurController::class,'connectedUser'])->name('user.connected');
+  
 });
 
 
@@ -54,6 +56,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::post('/verifyotp', [VerifyEmailController::class, 'verifyotp']);
 Route::post('/resendotp', [VerifyEmailController::class, 'resendotp']);
+Route::post('/password/sendotp', [PasswordResetController::class, 'sendResetOtp']);
+Route::post('/password/resetotp', [PasswordResetController::class, 'ResetOtp']);
+
 
 
 //    *****  event  *****

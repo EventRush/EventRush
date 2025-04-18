@@ -72,3 +72,15 @@ creation du controlleur QrCodeController pour la generation de code qr en image.
 
 premier push a été fait apres à 11:2? min
 ajout de la colonne qr_code à ticket : add_qr_code_to_tickets_table --table=tickets
+
+
+17/04 
+intégration de paiement (fedapay) niveau 1
+    fonctions payer
+
+second push vers ????
+intégration de ngrok sur le pc pour pouvoir etre accessible par fedapay pour mon callback 
+
+
+18/04 
+finalisation des fonctions update 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Billet;
+use App\Models\Event;
 use FedaPay\Customer;
 use FedaPay\FedaPay;
 use FedaPay\Transaction;
@@ -127,7 +128,7 @@ public function payer(Request $request)
         'reference' => Str::uuid(),
         'qr_code' => null,
     ]);
-
+    $evenement = Event::find( $request->event_id);
     // 3. Configuration FedaPay
     FedaPay::setApiKey(env('FEDAPAY_SECRET_KEY'));
     FedaPay::setEnvironment(env('FEDAPAY_ENV', 'sandbox')); // ou 'live'
@@ -135,10 +136,10 @@ public function payer(Request $request)
     
     // 4. Création de la transaction
     $transaction = Transaction::create([
-        'description' => 'Achat billet pour événement',
+        'description' => 'Achat billet pour ' . $evenement->nom,
         'amount' => $billet->montant,
         'currency' => ['iso' => 'XOF'],
-        'callback_url' => route('paiement.callback', ['reference' => $billet->reference]),
+        'callback_url' => 'https://8e2b-2c0f-2a80-38f-2610-e97d-9081-f6ba-14e5.ngrok-free.app/api/paiement/callback?reference=' . $billet->reference,
         'customer' => [
             'firstname' => $request->nom,
             'lastname' => $request->prenom,
@@ -152,6 +153,10 @@ public function payer(Request $request)
 
     // 5. Génération du lien de paiement
     $token = $transaction->generateToken();
+
+
+    $billet->billet_fedapay_id = $transaction->id;
+    $billet->save();
 
     // 6. Réponse API avec l’URL de paiement
     return response()->json([
@@ -187,7 +192,7 @@ public function callback(Request $request)
     $fedapayTransaction = Transaction::retrieve($billet->billet_fedapay_id);
 
     if ($fedapayTransaction->status !== 'approved') {
-        return response()->json(['message' => 'Paiement non validé.', 'status' => $fedapayTransaction->status], 402);
+        return response()->json(['message' => 'Paiement non valide.', 'status' => $fedapayTransaction->status], 402);
     }
 
     // Paiement validé, on confirme

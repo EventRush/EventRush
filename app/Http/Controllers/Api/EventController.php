@@ -91,11 +91,9 @@ class EventController extends Controller
         if ($request->has('date_fin')) $event->date_fin = $request->date_fin;
         if ($request->has('lieu')) $event->lieu = $request->lieu;
         if ($request->has('statut')) $event->statut = $request->statut;
-        dd($event);
+        // dd($event);
         $event->save();
-        // $event->affiche = $request->affiche;
-        // dd($validated);
-        // $event->update($validated);
+        
         // return new EventResource($event->load('photos','organisateur'));
         return new EventResource($event->load('photos'));
 

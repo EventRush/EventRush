@@ -63,9 +63,9 @@ class UtilisateurController extends Controller
          }
  
          $validated = $request->validate([
-             'nom' => 'sometimes|string|max:255',
-             'email' => 'sometimes|email|unique:utilisateurs,email,' . $user->id,
-             'avatar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+             'nom' => 'string|max:255',
+             'email' => 'email|unique:utilisateurs,email,' ,
+             'avatar' => 'image|mimes:jpg,jpeg,png|max:2048',
          ]);
  
          if ($request->hasFile('avatar')) {
@@ -76,7 +76,9 @@ class UtilisateurController extends Controller
              $path = $request->file('avatar')->store('avatars', 'public');
              $validated['avatar'] = $path;
          }
- 
+        //  dd($validated);
+        // return response()->json($validated);
+        
          $user->update($validated);
  
          return response()->json([
@@ -84,6 +86,13 @@ class UtilisateurController extends Controller
             'user' => $user->fresh()
         ]);
 }
+    public function connectedUser(){
+        $user = Auth::user();
+        return response()->json([
+            'message' => 'Utilisateur conecté',
+            'user' => $user,
+        ]);
+    }
 
  
 // public function update(Request $request, )

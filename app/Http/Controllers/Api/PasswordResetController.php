@@ -37,8 +37,10 @@ class PasswordResetController extends Controller
 public function ResetOtp(Request $request)
 {
     $request->validate([
-        'email' => 'required|email',
+        'email' => 'required|email|exists:utilisateurs,email',
         'otp' => 'required',
+        'password' => 'required|string|min:6|confirmed',
+
     ]);
 
     $utilisateur = Utilisateur::where('email', $request->email)
@@ -52,8 +54,19 @@ public function ResetOtp(Request $request)
     if (now()->greaterThan($utilisateur->otp_expires_at)) {
         return response()->json(['message' => 'Code OTP expiré.'], 400);
     }
+    $status = Password::reset(
+        $request->only('email', 'password', 'password_confirmation', 'otp'),
+        function ($utilisateur, $password) {
+            $utilisateur->forceFill([
+                'password' => Hash::make($password)
+            ])->save();
+        }
+    );
 
-    return response()->json(['message' => 'OTP validé. Vous pouvez réinitialiser votre mot de passe.']);
+    return $status === Password::PASSWORD_RESET
+        ? response()->json(['message' => 'Mot de passe réinitialisé avec succès.'])
+        : response()->json(['message' => 'Erreur lors de la réinitialisation.'],400);
+
 }
 
 

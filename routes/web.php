@@ -21,7 +21,7 @@ Route::get('/', function () {
 Route::get('/code', [QrCodeController::class, 'vue'])->name('codeqr.vue');
 Route::post('/codeGenerate', [QrCodeController::class, 'generate'])->name('codeqr');
 
-Route::get('/paiement/callback', function () {
-    return 'Paiement terminé. Vous pouvez fermer la fenêtre.';
-})->name('paiement.callback');
-Route::get('/paiement/callback', [BilleterieController::class, 'callback'])->name('paiement.callback');
+// Route::get('/paiement/callback', function () {
+//     return 'Paiement terminé. Vous pouvez fermer la fenêtre.';
+// })->name('paiement.callback');
+// Route::get('/paiement/callback', [BilleterieController::class, 'callback'])->name('paiement.callback');
