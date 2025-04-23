@@ -30,8 +30,8 @@ Route::get('/auth/me', [UtilisateurController::class, 'connectedUser'])->name('u
 
 //    *****  email et modifications/validations  *****
 
-Route::post('/auth/verifyotp', [VerifyEmailController::class, 'verifyotp']);
-Route::post('/auth/resendotp', [VerifyEmailController::class, 'resendotp']);
+Route::post('/auth/verifyotp', [VerifyEmailController::class, 'verifyOtp']);
+Route::post('/auth/resendotp', [VerifyEmailController::class, 'resendOtp']);
 
 
 Route::middleware('auth:sanctum')->group(function () {

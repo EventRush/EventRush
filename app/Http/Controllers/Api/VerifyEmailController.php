@@ -17,28 +17,10 @@ class VerifyEmailController extends Controller
 {
 
     /**
- * @OA\Post(
- *     path="/api/verify-otp",
- *     summary="Vérifie le code OTP pour activer le compte",
- *     tags={"Authentification"},
- *     @OA\RequestBody(
- *         required=true,
- *         @OA\JsonContent(
- *             required={"email", "otp"},
- *             @OA\Property(property="email", type="string", example="jean@example.com"),
- *             @OA\Property(property="otp", type="string", example="123456")
- *         )
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="Email confirmé avec succès"
- *     ),
- *     @OA\Response(
- *         response=400,
- *         description="Code OTP invalide ou expiré"
- *     )
- * )
- */
+     * Summary of verifyOtp
+     * @param \Illuminate\Http\Request $request
+     * @return mixed|\Illuminate\Http\JsonResponse
+     */
     public function verifyOtp(Request $request)
 {
     $request->validate([
