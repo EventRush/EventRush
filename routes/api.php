@@ -24,10 +24,38 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login'])->name('login');
-// Route::get('/login', [AuthController::class, 'login'])->name('login');
-Route::get('/search', [EventController::class, 'search'])->name('search');
+Route::post('/auth/register', [AuthController::class, 'register']);
+Route::post('/auth/login', [AuthController::class, 'login'])->name('login');
+Route::get('/auth/me', [UtilisateurController::class, 'connectedUser'])->name('user.connected');
+
+//    *****  email et modifications/validations  *****
+
+Route::post('/auth/verifyotp', [VerifyEmailController::class, 'verifyotp']);
+Route::post('/auth/resendotp', [VerifyEmailController::class, 'resendotp']);
+
+
+Route::middleware('auth:sanctum')->group(function () {
+    //    *****  email et modifications/validations  *****
+        Route::post('/auth/password/sendotp', [PasswordResetController::class, 'sendResetOtp']);
+        Route::post('/auth/password/resetotp', [PasswordResetController::class, 'ResetOtp']);
+        
+    Route::get('/me', [UtilisateurController::class,'me']);
+    Route::post('/me/update', [UtilisateurController::class,'update']);   
+}); 
+// ****  home page  ***** 
+Route::get('/home/events', [EventController::class, 'search_2']);
+Route::get('/home/featured', [EventController::class, 'featured']);
+Route::get('/home/upcoming', [EventController::class, 'upcoming']);
+Route::get('/home/categories', [EventController::class, 'search'])->name('search');
+Route::get('/home/stats', [EventController::class, 'stat']);// pas encore fait
+Route::get('/home/orgaEvent', [EventController::class, 'byOrganisateur']);
+
+
+
+// Route::get('/search', [EventController::class, 'search'])->name('search');
+
+
+
 Route::get('/user/index', [AuthController::class, 'index'])->name('user.index');
 
 // Route::post('/billet/achat', [BilleterieController::class, 'achat'])->name('billet.achat');
@@ -43,21 +71,9 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 //    *****  utilisateur  *****
-Route::middleware('auth:sanctum')->group(function () {
-
-    Route::get('/me', [UtilisateurController::class,'me']);
-    Route::post('/me/update', [UtilisateurController::class,'update']); 
-    Route::get('/user/connected', [UtilisateurController::class,'connectedUser'])->name('user.connected');
-  
-});
 
 
-//    *****  email et modifications/validations  *****
 
-Route::post('/verifyotp', [VerifyEmailController::class, 'verifyotp']);
-Route::post('/resendotp', [VerifyEmailController::class, 'resendotp']);
-Route::post('/password/sendotp', [PasswordResetController::class, 'sendResetOtp']);
-Route::post('/password/resetotp', [PasswordResetController::class, 'ResetOtp']);
 
 
 

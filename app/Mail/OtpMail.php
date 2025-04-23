@@ -27,7 +27,7 @@ class OtpMail extends Mailable
     public function build()
     {
         return $this->subject('Votre code OTP de confirmation')
-        ->html("Bonjour,<br><br>Votre code OTP est : <strong>{$this->otp}</strong><br><br>Ce code expirera dans 10 minutes.");
+        ->html("Bonjour,<br><br>Votre code OTP est : <strong>{$this->otp}</strong><br><br>Ce code expirera dans 10 minutes.");
 
         // ->text('emails.otp-txt')
         // ->with(['otp' => $this->otp]);

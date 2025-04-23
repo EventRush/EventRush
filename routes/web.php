@@ -15,8 +15,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 Route::get('/', function () {
-    return view('welcome');
+    return view('qrcode');
 });
 Route::get('/code', [QrCodeController::class, 'vue'])->name('codeqr.vue');
 Route::post('/codeGenerate', [QrCodeController::class, 'generate'])->name('codeqr');

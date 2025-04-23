@@ -136,5 +136,79 @@ class EventController extends Controller
             'organisateurs' => $organizers,
         ]);
     }
+     // Liste des événements filtrables
+    public function search_2(Request $request)
+    {
+        $query = Event::query();
+
+        // Filtre : événements à venir
+        if ($request->boolean('upcoming')) {
+            $query->where('date', '>=', now());
+        }
+
+        // Filtre : événements passés
+        if ($request->boolean('past')) {
+            $query->where('date', '<', now());
+        }
+
+        // Filtre : événements en vedette
+        if ($request->boolean('featured')) {
+            $query->where('is_featured', true);
+        }
+
+        // Filtre par catégorie
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->input('category'));
+        }
+
+        // Recherche par mot-clé (titre, description)
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->search . '%')
+                  ->orWhere('description', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        // Limite et pagination
+        $limit = $request->input('limit', 10);
+
+        return response()->json($query->latest()->paginate($limit));
+    }
+
+    public function featured()
+    {
+        $events = Event::where('is_featured', true)
+            ->where('date', '>=', now())
+            ->latest()
+            ->take(5)
+            ->get();
+
+        return response()->json($events);
+    }
+
+    // Récupérer les événements à venir (accueil)
+    public function upcoming()
+    {
+        $events = Event::where('date', '>=', now())
+            ->orderBy('date')
+            ->take(5)
+            ->get();
+
+        return response()->json($events);
+    }
+
+    // Récupérer les événements d’un organisateur (profil public)
+    public function byOrganisateur($id)
+    {
+        $events = Event::where('organisateur_id', $id)
+            ->where('date', '>=', now())
+            ->latest()
+            ->get();
+
+        return response()->json($events);
+    }
+
+    
+ 
 
 }

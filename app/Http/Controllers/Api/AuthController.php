@@ -24,8 +24,7 @@ class AuthController extends Controller
     $request->validate([
         'nom' => 'required',
         'email' => 'required|email|unique:utilisateurs',
-        'password' => 'required|min:6',
-        'confirm' => 'required|min:6',
+        'password' => 'required|min:6|confirmed',
     ]);
 
     $otp = rand(100000, 999999); // Générer un code OTP

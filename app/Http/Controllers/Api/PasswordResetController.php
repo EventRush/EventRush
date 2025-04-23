@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Mail\OtpMail;
 use App\Models\Utilisateur;
+use App\Notifications\PasswordResetConfirmation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -54,31 +55,19 @@ public function ResetOtp(Request $request)
     if (now()->greaterThan($utilisateur->otp_expires_at)) {
         return response()->json(['message' => 'Code OTP expiré.'], 400);
     }
-    $status = Password::reset(
-        $request->only('email', 'password', 'password_confirmation', 'otp'),
-        function ($utilisateur, $password) {
-            $utilisateur->forceFill([
-                'password' => Hash::make($password)
-            ])->save();
-        }
-    );
+    
+    $utilisateur->password = Hash::make($request->password);
+    $utilisateur->otp = null;
+    $utilisateur->otp_expires_at = null;
+    $utilisateur->save();
+    
+    //Envoi de la notification
+    $utilisateur->notify(new PasswordResetConfirmation());
 
-    return $status === Password::PASSWORD_RESET
-        ? response()->json(['message' => 'Mot de passe réinitialisé avec succès.'])
-        : response()->json(['message' => 'Erreur lors de la réinitialisation.'],400);
+    return response()->json(['message' => 'Mot de passe réinitialisé avec succès.'], );
 
 }
 
-
-    // public function sendResetLink(Request $request){
-    //     $request->validate(['email' => 'required|email|exists:utilisateurs,email']);
-    //     $status = Password::sendResetLink($request->only('email'));
-
-    //     return $status === Password::RESET_LINK_SENT
-    //     ? response()->json(['message' => 'Email de réinitialisation envoyé'])
-    //     : response()->json(['message' => 'Erreur lors de l\'envoi de l\'email.'], 400);
-
-    // }
     public function reset(Request $request)
 {
     $request->validate([
