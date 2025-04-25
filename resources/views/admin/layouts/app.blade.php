@@ -1,4 +1,4 @@
-{{-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -6,26 +6,26 @@
     <title>{{ $title ?? 'Dashboard Admin' }}</title>
     @vite('resources/css/app.css')
 </head>
-<body class="bg-gray-100 text-gray-900">
+<body class="bg-gray-400 text-gray-900">
 
     <div class="flex min-h-screen">
         {{-- Sidebar --}}
-        {{-- @include('admin.partials.sidebar') --}}
+        @include('admin.partials.sidebar')
 
         {{-- Main Content --}}
-        {{-- <div class="flex-1 flex flex-col"> --}}
+        <div class="flex-1 flex flex-col">
             {{-- Header --}}
-            {{-- @include('admin.partials.header') --}}
+            @include('admin.partials.header')
 
             {{-- Page Content --}}
-            {{-- <main class="p-6">
+            <main class="p-6">
                 @yield('content')
             </main>
         </div>
     </div>
 
 </body>
-</html> --}}
+</html>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -34,7 +34,7 @@
     <title>{{ $title ?? 'Admin Dashboard' }}</title>
     @vite('resources/css/app.css')
 </head>
-<body class="bg-gray-100">
+{{-- <body class="bg-gray-100">
 
     <div class="flex min-h-screen">
         <aside class="w-64 bg-red-200 p-6">
@@ -54,4 +54,4 @@ body{
     background-color: red;
 }
 </body>
-</html>
+</html> --}}
