@@ -2,10 +2,14 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BilleterieController;
+use App\Http\Controllers\Api\CommentaireController;
 use App\Http\Controllers\Api\EventController;
+use App\Http\Controllers\Api\FavoriController;
 use App\Http\Controllers\Api\PasswordResetController;
 use App\Http\Controllers\Api\QrCodeController;
 use App\Http\Controllers\Api\SouscriptionController;
+use App\Http\Controllers\Api\SuiviController;
+use App\Http\Controllers\Api\SuiviContronller;
 use App\Http\Controllers\Api\UtilisateurController;
 use App\Http\Controllers\API\VerifyEmailController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -34,13 +38,16 @@ Route::post('/auth/verifyotp', [VerifyEmailController::class, 'verifyOtp']);
 Route::post('/auth/resendotp', [VerifyEmailController::class, 'resendOtp']);
 
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     //    *****  email et modifications/validations  *****
         Route::post('/auth/password/sendotp', [PasswordResetController::class, 'sendResetOtp']);
         Route::post('/auth/password/resetotp', [PasswordResetController::class, 'ResetOtp']);
         
     Route::get('/me', [UtilisateurController::class,'me']);
-    Route::post('/me/update', [UtilisateurController::class,'update']);   
+    Route::post('/me/update', [UtilisateurController::class,'update']); 
+    
+    Route::get('/auth/me', [UtilisateurController::class, 'connectedUser'])->name('user.connected');
+
 }); 
 // ****  home page  ***** 
 Route::get('/home/events', [EventController::class, 'search_2']);
@@ -50,7 +57,9 @@ Route::get('/home/categories', [EventController::class, 'search'])->name('search
 Route::get('/home/stats', [EventController::class, 'stat']);// pas encore fait
 Route::get('/home/orgaEvent', [EventController::class, 'byOrganisateur']);
 
-
+// ****  orga page  ***** 
+Route::post('/scan_billet', [BilleterieController::class, 'verifierBillet']);
+Route::get('/home/featured', [EventController::class, 'featured']);
 
 // Route::get('/search', [EventController::class, 'search'])->name('search');
 
@@ -61,7 +70,7 @@ Route::get('/user/index', [AuthController::class, 'index'])->name('user.index');
 // Route::post('/billet/achat', [BilleterieController::class, 'achat'])->name('billet.achat');
 
 Route::get('/paiement/callback', [BilleterieController::class, 'callback'])->name('paiement.callback');
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::post('/logout', [AuthController::class,'logout']);
         //billet/payer
     Route::post('/billet/payer', [BilleterieController::class, 'payer']);
@@ -83,18 +92,59 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/events/{event}', [EventController::class, 'update']);
 
 // });
+//    *****  commentaire  *****
+Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+    Route::get('/evenements/{event}/commentaires', [CommentaireController::class, 'index']);
+    Route::post('/evenements/{event}/commentaires', [CommentaireController::class, 'store']);
+    Route::post('/evenements/{commenT}/modifier', [CommentaireController::class, 'update']);
+    Route::delete('/evenements/commentaires/{id}', [CommentaireController::class, 'destroy']);
+});
+
+
 
 //    *****  profil  *****
 
     //    *****  abonnement  *****
-    Route::middleware('auth:sanctum')->group(function () {
-        Route::post('/profil/souscrire', [SouscriptionController::class, 'souscrire']);
+    Route::middleware(['auth:sanctum', 'verified'])->prefix('souscriptions')->group(function () {
         Route::get('/profil/mon_abonnement', [SouscriptionController::class, 'monAbonnement']);
+        Route::get('/plans', [SouscriptionController::class, 'plans']);
+        Route::post('/', [SouscriptionController::class, 'paiementsouscrire']);
+        Route::post('/backsous/webhook', [SouscriptionController::class, 'webhooksouscription']);
+        Route::get('/statut', [SouscriptionController::class, 'statut']);
+        Route::get('/history', [SouscriptionController::class, 'historique']);
+    });
+    
+    //    *****  abonnement  *****
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/favoris', [FavoriController::class, 'index']);
+        Route::post('/favoris/{eventId}', [FavoriController::class, 'store']);
+        Route::delete('/favoris/{eventId}', [FavoriController::class, 'destroy']);
     });
 
+    //    *****  notifications  *****
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/notifications', function () {
+            return response()->json(auth()->user()->unreadNotifications);
+    });
+        Route::post('/notifications/mark-as-read', function () {
+        auth()->user()->unreadNotifications->markAsRead();
+        return response()->json(['message' => 'Notifications marquées comme lues.']);
+    });
+    });
+
+    Route::middleware('auth')->group(function () {
+        Route::get('suivre/index', [SuiviController::class, 'index'])->name('index.suivis');
+        Route::post('/suivre/{organisateurId}', [SuiviController::class, 'suivre'])->name('suivre.organisateur');
+        Route::delete('/suivre/{organisateurId}', [SuiviController::class, 'nePlusSuivre'])->name('neplus.suivre.organisateur');
+
+    });
+    
+                            
+    
 
 
-Route::middleware('auth:sanctum')->get('/test-auth', function (Request $request) {
+
+Route::middleware(['auth:sanctum', 'verified'])->get('/test-auth', function (Request $request) {
     return response()->json([
         'message' => 'Vous êtes connecté !',
         'user' => $request->user()

@@ -33,7 +33,7 @@ implements MustVerifyEmail
         'password',
     ];
     public function souscription(){
-        return $this->hasMany(Souscription::class);
+        return $this->hasMany(Souscription::class, 'utilisateur_id');
     }
     public function souscriptionActive(){
         return $this->souscription()
@@ -42,4 +42,20 @@ implements MustVerifyEmail
         ->latest('date_fin')
         ->first();
     }
+    public function favoris()
+    {
+        return $this->belongsToMany(Event::class, 'favoris', 'utilisateur_id', 'event_id')->withTimestamps();
+    }
+
+    public function suivis()
+    {
+        return $this->hasMany(Suivi::class);
+    }
+
+    public function organisateursSuivis()
+    {
+        return $this->belongsToMany(OrganisateurProfile::class, 'suivis', 'utilisateur_id', 'organisateur_id');
+    }
+
+
 }

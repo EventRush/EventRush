@@ -15,94 +15,11 @@ use Illuminate\Support\Str;
 
 class BilleterieController extends Controller
 {
-    //
-//     public function achat(Request $request)
-// {
-//     $request->validate([
-//         'ticket_id' => 'required|exists:tickets,id',
-//         'event_id' => 'required|exists:events,id',
-//         'montant' => 'required|numeric',
-//         'methode' => 'required|in:carte,PayPal,mobile_money',
-//     ]);
-    
-
-//     $billet = Billet::create([
-//         'event_id' => $request->event_id,
-//         'ticket_id' => $request->ticket_id,
-//         'utilisateur_id' => Auth::id(), // $request->user()->id
-//         'methode' => $request->methode,
-//         'status' => 'en_attente',
-//         'montant' => $request->montant,
-//         'qr_code' => Str::uuid()->toString(),
-//         'reference' => strtoupper(Str::random(10)), // REF2024XYZ
-//     ]);
-
-//     return response()->json([
-//         'message' => 'Billet enregistré. Paiement en attente.',
-//         'billet' => $billet
-//     ]);
-// }
-// public function payer(Request $request)
-// {
-//     $request->validate([
-//         'ticket_id' => 'required',
-//         // 'event_id' => 'required|exists:events,id',
-//         'event_id' => 'required',
-//         'montant' => 'required|numeric',
-//         'nom' => 'required|string',
-//         'prenom' => 'required|string',
-//         'telephone' => 'required|numeric',
-
-//         // 'telephone' => 'required|regex:/^(\+229)?(01|02)[0-9]{8}$/',
-
-//     ]);
-    
-//     // dd($request);
-//     $utilisateur = Auth::user(); // ou $request->user()
-
-//     // Étape 1 : créer un billet provisoire
-//     $billet = Billet::create([
-//         'event_id' => $request->event_id,
-//         'utilisateur_id' => $utilisateur->id,
-//         'ticket_id' => $request->ticket_id,
-//         'montant' => $request->montant,
-//         'status' => 'en_attente',
-//         'methode' => 'mobile_money',
-//         'reference' => Str::uuid(),
-//         'qr_code' => null, // À remplir après paiement réussi
-//     ]);
-
-//     // Étape 2 : Initialisation FedaPay
-//     FedaPay::setApiKey(env('FEDAPAY_SECRET_KEY'));
-//     FedaPay::setEnvironment(env('FEDAPAY_ENV', 'sandbox'));
-
-//     // Étape 3 : Créer la transaction FedaPay
-//     $transaction = Customer::create([
-//         'description' => 'Achat billet pour événement',
-//         'amount' => $billet->montant,
-//         'currency' => ['iso' => 'XOF'],
-//         'callback_url' => route('paiement.callback', ['reference' => $billet->reference]),
-//         'customer' => [
-//             'firstname' => $request->nom,
-//             'lastname' => $request->prenom,
-//             'email' => $utilisateur->email,
-//             'phone_number' => [
-//                 'number' => $request->telephone,
-//                 'country' => 'bj',
-//             ]
-//         ]
-//     ]);
-
-//     // $url = $transaction->generateHostedPaymentUrl();
-//      $url = 'https://api.fedapay.com/v1/customers';
-
-//     // Étape 4 : Retourner le lien au frontend
-//     return response()->json([
-//         'message' => 'Redirection vers le paiement',
-//         'payment_url' => $url,
-//         'billet_id' => $billet->id,
-//     ]);
-// }
+/**
+ * Summary of payer
+ * @param \Illuminate\Http\Request $request
+ * @return mixed|\Illuminate\Http\JsonResponse
+ */
 public function payer(Request $request)
 {
     // 1. Validation des données
@@ -136,7 +53,7 @@ public function payer(Request $request)
     
     // 4. Création de la transaction
     $transaction = Transaction::create([
-        'description' => 'Achat billet pour ' . $evenement->nom,
+        'description' => "Achat billet pour - {$evenement->titre}" ,
         'amount' => $billet->montant,
         'currency' => ['iso' => 'XOF'],
         'callback_url' => 'https://8e2b-2c0f-2a80-38f-2610-e97d-9081-f6ba-14e5.ngrok-free.app/api/paiement/callback?reference=' . $billet->reference,
@@ -166,6 +83,11 @@ public function payer(Request $request)
     ]);
 }
 
+/**
+ * Summary of callback
+ * @param \Illuminate\Http\Request $request
+ * @return mixed|\Illuminate\Http\JsonResponse
+ */
 public function callback(Request $request)
 {
     $reference = $request->query('reference');
@@ -205,5 +127,49 @@ public function callback(Request $request)
         'billet' => $billet
     ]);
 }
+
+    public function verifierBillet(Request $request)
+    {
+        $request->validate([
+            'qr_code' => 'required|string',
+        ]);
+
+        $billet = Billet::where('qr_code', $request->qr_code)
+                        ->with('utilisateur')
+                        ->first();
+
+        if (!$billet) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Billet invalide ou non trouvé.'
+            ], 404);
+        }
+
+        // Vérifier si le billet a déjà été scanné
+        if ($billet->status_scan === 'scanné') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ce billet a déjà été utilisé.'
+            ], 400);
+        }
+
+        // Marquer le billet comme scanné
+        $billet->update([
+            'status_scan' => 'scanné',
+            'scanned_at' => now(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'billet' => [
+                'id' => $billet->id,
+                'utilisateur' => [
+                    'nom' => $billet->utilisateur->nom,
+                    'email' => $billet->utilisateur->email,
+                ]
+            ]
+        ]);
+    }
+
 
 }

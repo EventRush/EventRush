@@ -17,6 +17,10 @@ class CheckSouscriptionActive
     {
         $utilisateur = $request->user();
 
+        if (!$utilisateur) {
+            return response()->json(['message' => 'Non authentifié.'], 401);
+        }
+
         if ($utilisateur->role !== 'organisateur'){
             return $next($request);
         }

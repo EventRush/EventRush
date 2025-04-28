@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('utilisateurs', function (Blueprint $table) {
-            //
-            $table->string('otp')->nullable();
-            $table->timestamp('otp_expires_at')->nullable();
-    
+        Schema::create('notifications', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->string('type');
+            $table->morphs('notifiable');
+            $table->text('data');
+            $table->timestamp('read_at')->nullable();
+            $table->timestamps();
         });
     }
 
@@ -24,8 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('utilisateurs', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('notifications');
     }
 };

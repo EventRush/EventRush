@@ -18,10 +18,12 @@ return new class extends Migration
             $table->foreignId('ticket_id')->constrained();
             $table->enum('methode', ['carte', 'PayPal', 'mobile_money'])->default('mobile_money');
             $table->enum('status', ['en_attente', 'paye', 'echoue'])->default('en_attente');  // Statut du paiement
+            $table->enum('status_scan', ['false', 'scanné'])->default('false');  
+            $table->date('scanned_at')->nullable();
             $table->decimal('montant', 10, 2);
             $table->uuid('qr_code')->unique()->nullable();
             $table->string('reference')->unique();  // Référence unique de la transaction MoMo
-            // $table->unsignedBigInteger('billet_fedapay_id')->nullable();
+            $table->unsignedBigInteger('billet_fedapay_id')->nullable();
             $table->timestamps();
             
         });

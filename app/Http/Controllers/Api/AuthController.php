@@ -82,7 +82,7 @@ class AuthController extends Controller
     public function index()
         {
             //
-            $utilisateurs = Utilisateur::orderBy('created_at', 'asc')->get();
+            $utilisateurs = Utilisateur::where('role', '!=', 'admin')->orderBy('created_at', 'asc')->get();
 
             return response()->json([
                 'message' => 'Voici les utilisateurs ',

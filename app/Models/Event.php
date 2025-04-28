@@ -22,9 +22,17 @@ class Event extends Model
     {
         return $this->hasMany(EventPhoto::class);
     }
+    
+        public function favorisePar()
+    {
+        return $this->belongsToMany(Utilisateur::class, 'favoris', 'event_id', 'utilisateur_id')->withTimestamps();
+    }
+
+    
+public function utilisateur()
+    {
+        return $this->belongsTo(Utilisateur::class, 'utilisateur_id');
+    }
+
 }
 
-// public function organisateur()
-    // {
-    //     return $this->belongsTo(OrganisateurProfile::class, 'organisateur_id');
-    // }

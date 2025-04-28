@@ -1,0 +1,128 @@
+public function up(): void
+    {
+        Schema::create('utilisateurs', function (Blueprint $table) {
+            $table->id();
+            $table->string('nom');
+            $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password');
+            $table->string('avatar')->nullable();
+            $table->string('otp')->nullable();
+            $table->timestamp('otp_expires_at')->nullable();
+            $table->enum('role', ['client', 'organisateur', 'admin'])->default('client');
+            $table->timestamps();
+        });
+    }
+
+    public function up(): void
+    {
+        Schema::create('organisateur_profiles', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('utilisateur_id')->constrained()->onDelete('cascade');
+            $table->string('nom_entreprise')->nullable();
+            $table->text('description')->nullable();
+            $table->string('logo')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    public function up(): void
+    {
+        Schema::create('souscriptions', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('organisateur_id')->constrained('organisateur_profiles')->onDelete('cascade');
+            $table->foreignId('utilisateur_id')->Constrained('utilisateurs')->onDelete('cascade');
+            $table->foreignId('plans_souscription_id')->constrained('plans_souscription')->onDelete('cascade');
+            // $table->enum('type', ['gratuit', 'standard', 'premium'])->default('gratuit');
+            $table->date('date_debut');
+            $table->date('date_fin');
+            $table->enum('statut', ['actif', 'expiré', 'annulé'])->default('actif');
+            $table->enum('methode', ['carte', 'PayPal', 'mobile_money'])->default('mobile_money');
+            $table->enum('statut_paiement', ['en_attente', 'success', 'echoue'])->default('en_attente');  // Statut du paiement
+            $table->decimal('montant', 10, 2);
+            $table->string('reference')->unique();  // Référence unique de la transaction MoMo
+            $table->unsignedBigInteger('souscription_fedapay_id')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    public function up(): void
+    {
+        Schema::create('events', function (Blueprint $table) {
+            $table->id();
+            // $table->foreignId('organisateur_id')->constrained('organisateur_profiles')->onDelete('cascade')->nullable();
+            $table->string('titre');
+            $table->text('description');
+            $table->date('date_debut');
+            $table->date('date_fin');
+            $table->string('lieu');
+            $table->enum('statut', ['brouillon', 'publié', 'annulé'])->default('brouillon');
+            $table->string('affiche')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    public function up(): void
+    {
+        Schema::create('tickets', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('event_id')->constrained()->onDelete('cascade');
+            // $table->string('nom');
+            $table->enum('type', ['standart', 'vip1', 'vip2'])->default('standart');
+            $table->decimal('prix', 8,2);
+            $table->string('image')->nullable();
+            $table->integer('quantité_disponible');
+            $table->timestamps();
+        });
+    }
+
+    public function up(): void
+    {
+        Schema::create('email_verifications', function (Blueprint $table) {
+            $table->id();
+            $table->string('email')->unique();
+            $table->string('token');    
+            $table->timestamps();
+        });
+    }
+    
+
+    public function up(): void
+    {
+        Schema::create('event_photos', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('event_id')->constrained()->onDelete('cascade');
+            $table->string('image_path');       
+            $table->timestamps();
+        });
+    }
+
+    public function up(): void
+    {
+        Schema::create('billets', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('event_id')->constrained();
+            $table->foreignId('utilisateur_id')->constrained();
+            $table->foreignId('ticket_id')->constrained();
+            $table->enum('methode', ['carte', 'PayPal', 'mobile_money'])->default('mobile_money');
+            $table->enum('status', ['en_attente', 'paye', 'echoue'])->default('en_attente');  // Statut du paiement
+            $table->decimal('montant', 10, 2);
+            $table->uuid('qr_code')->unique()->nullable();
+            $table->string('reference')->unique();  // Référence unique de la transaction MoMo
+            $table->unsignedBigInteger('billet_fedapay_id')->nullable();
+            $table->timestamps();
+            
+        });
+    }
+
+    public function up(): void
+    {
+        Schema::create('plans_souscriptions', function (Blueprint $table) {
+            $table->id(); 
+            $table->string('nom');
+            $table->text('description')->nullable();
+            $table->decimal('prix', 10, 2);
+            $table->integer('duree_jours'); // Exemple : 30 pour 1 mois
+            $table->timestamps();
+        });
+    }

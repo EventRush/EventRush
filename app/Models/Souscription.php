@@ -9,11 +9,18 @@ class Souscription extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['organisateur_id', 'utilisateur_id', 'type', 'date_debut', 'date_fin', 'statut'];
+    protected $fillable = ['organisateur_id', 'utilisateur_id', 'plans_souscription_id', 'date_debut', 'date_fin', 'statut', 'montant',
+        'methode', 'statut_paiement', 'reference', 'souscription_fedapay_id'];
 
     public function utilisateur()  {
         return $this->belongsTo(Utilisateur::class);        
     }
+
+    public function plan()
+    {
+        return $this->belongsTo(PlansSouscription::class);
+    }
+
     public function estActive(){
         if ($this->statut === 'actif' && 
             $this->date_fin->isPast()){

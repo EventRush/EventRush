@@ -84,3 +84,17 @@ intégration de ngrok sur le pc pour pouvoir etre accessible par fedapay pour mo
 
 18/04 
 finalisation des fonctions update 
+
+
+{
+  "plans_souscription_id": 4,
+  "telephone": "0164000001",
+  "nom": "Luc",
+  "pays": "BJ"
+}
+
+28/04
+{
+  "contenu": "Super événement, j'ai adoré !",
+  "note": 5
+}
