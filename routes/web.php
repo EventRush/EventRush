@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdmDashboardController;
 use App\Http\Controllers\Api\BilleterieController;
 use App\Http\Controllers\Api\QrCodeController;
+use App\Http\Controllers\Dashboard\TestContoller;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -46,6 +47,27 @@ Route::get('/admin/users/index', function () {
 Route::get('/admin/tickets/index', function () {
     return view('admin.tickets.index');
 })->name('admin.tickets.index');
+
+
+//  ***test
+
+Route::get('/testlogin',[TestContoller::class, 'testLoginForm'])->name('testlogin');
+Route::post('/testlogin',[TestContoller::class, 'testLogin'])->name('testLogin');
+Route::post('/testlogout',[TestContoller::class, 'testLogout'])->name('testLogout');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', [TestContoller::class, 'index'])->name('testdashboard');
+    Route::get('/dashboard_2', [TestContoller::class, 'index_2'])->name('testdashboard_2');
+
+});
+
+
+
+
+
+
+
+
+
 // Route::get('/paiement/callback', function () {
 //     return 'Paiement terminé. Vous pouvez fermer la fenêtre.';
 // })->name('paiement.callback');

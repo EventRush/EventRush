@@ -98,3 +98,15 @@ finalisation des fonctions update
   "contenu": "Super événement, j'ai adoré !",
   "note": 5
 }
+
+{
+    "nom": "Socrates",
+    "email": "socrates@gmail.com",
+    "password": "Faker0002",
+} organisateur
+
+{
+    "nom": "Malik",
+    "email": "malik@gmail.com",
+    "password": "Faker0004",
+} client

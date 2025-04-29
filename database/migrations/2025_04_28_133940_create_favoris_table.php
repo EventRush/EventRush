@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('favoris', function (Blueprint $table) {
             $table->id();
             $table->foreignId('utilisateur_id')->constrained('utilisateurs')->onDelete('cascade');
-            $table->foreignId('event_id')->constrained('événements')->onDelete('cascade');
+            $table->foreignId('event_id')->constrained('events')->onDelete('cascade');
             $table->timestamps();
 
             $table->unique(['utilisateur_id', 'event_id']); // Un même utilisateur ne peut pas ajouter deux fois le même event en favori

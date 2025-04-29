@@ -45,7 +45,7 @@ class SuiviController extends Controller
         ]);
         // Envoyer notification
     $organisateur = OrganisateurProfile::findOrFail($organisateurId);
-    $organisateur->user->notify(new OrganisateurSuiviNot($user));
+    $organisateur->utilisateur->notify(new OrganisateurSuiviNot($user));
 
 
 
