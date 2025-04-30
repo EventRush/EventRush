@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('organisateur_id')->constrained('organisateur_profiles')->onDelete('cascade');
             $table->foreignId('utilisateur_id')->Constrained('utilisateurs')->onDelete('cascade');
-            $table->foreignId('plans_souscription_id')->constrained('plans_souscription')->onDelete('cascade');
             // $table->enum('type', ['gratuit', 'standard', 'premium'])->default('gratuit');
             $table->date('date_debut');
             $table->date('date_fin');
