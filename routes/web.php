@@ -54,7 +54,7 @@ Route::get('/admin/tickets/index', function () {
 Route::get('/testlogin',[TestContoller::class, 'testLoginForm'])->name('testlogin');
 Route::post('/testlogin',[TestContoller::class, 'testLogin'])->name('testLogin');
 Route::post('/testlogout',[TestContoller::class, 'testLogout'])->name('testLogout');
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['web.auth'])->group(function () {
     Route::get('/dashboard', [TestContoller::class, 'index'])->name('testdashboard');
     Route::get('/dashboard_2', [TestContoller::class, 'index_2'])->name('testdashboard_2');
 

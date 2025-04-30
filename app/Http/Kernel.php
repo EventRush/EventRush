@@ -47,6 +47,7 @@ class Kernel extends HttpKernel
 
     protected $routeMiddleware = [
         'souscription.active' => \App\Http\Middleware\CheckSouscriptionActive::class,
+        'web.auth' => \App\Http\Middleware\WebAuth::class,
     ];
     /**
      * The application's middleware aliases.
