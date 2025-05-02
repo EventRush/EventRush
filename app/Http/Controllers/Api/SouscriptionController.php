@@ -25,6 +25,11 @@ class SouscriptionController extends Controller
         ]);
     
         $plan = PlansSouscription::find($request->plans_souscription_id);
+        if (!$plan) {
+            return response()->json([
+                'message' => 'Plans introuvable.'
+            ], 404);
+        }
         $utilisateur = $request->user();
     
         try {
@@ -37,12 +42,12 @@ class SouscriptionController extends Controller
                 "amount" => $plan->prix,
                 "currency" => ["iso" => "XOF"],
                 "customer" => [
-                    "firstname" => $utilisateur->prenom ?? $utilisateur->nom,
+                    "firstname" => $utilisateur->prenom ?: 'Inconnu',
                     "lastname" => $utilisateur->nom,
                     "email" => $utilisateur->email,
                     "phone" => [
                         "number" => $request->telephone,
-                        "country" => $request->pays
+                        "country" => 'BJ'
                     ]
                 ]
                 // ])
@@ -72,7 +77,8 @@ class SouscriptionController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Erreur lors de la création du paiement',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ], 500);
             
         }
