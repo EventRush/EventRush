@@ -106,7 +106,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/profil/mon_abonnement', [SouscriptionController::class, 'monAbonnement']);
         Route::get('/plans', [SouscriptionController::class, 'plans']);
         Route::post('/', [SouscriptionController::class, 'paiementsouscrire']);
-        Route::post('/backsous/webhook', [SouscriptionController::class, 'webhooksouscription']);
+        Route::post('/webhook', [SouscriptionController::class, 'webhooksouscription']);
         Route::get('/statut', [SouscriptionController::class, 'statut']);
         Route::get('/history', [SouscriptionController::class, 'historique']);
     });
@@ -151,8 +151,8 @@ Route::prefix('organisateur')->middleware(['authsanctum', 'role:organisateur', '
         Route::get('/events/{id}/participants', [BilleterieController::class, 'eventParticipants']);
     
         // Souscription
-        Route::post('/souscription', [SouscriptionController::class, 'store']);
-        Route::get('/souscription/statut', [SouscriptionController::class, 'status']);
+        // Route::post('/souscription', [SouscriptionController::class, 'store']);
+        // Route::get('/souscription/statut', [SouscriptionController::class, 'status']);
     
         // Dashboard
         Route::get('/statistiques', [OrganisateurStatController::class, 'organisateurStats']);

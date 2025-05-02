@@ -52,7 +52,10 @@ public function payer(Request $request)
 
     
     // 4. Création de la transaction
+
     $transaction = Transaction::create([
+        // dd([ 
+
         'description' => "Achat billet pour - {$evenement->titre}" ,
         'amount' => $billet->montant,
         'currency' => ['iso' => 'XOF'],
@@ -66,6 +69,8 @@ public function payer(Request $request)
                 'country' => 'BJ',
             ]
         ]
+        // ])
+
     ]);
 
     // 5. Génération du lien de paiement

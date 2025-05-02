@@ -16,76 +16,131 @@ use FedaPay\Transaction;
 
 class SouscriptionController extends Controller
 {
-    public function paiementsouscrire(Request $request){
-        $request->validate([
-            'plans_souscription_id' => 'required|exists:plans_souscriptions,id',
-            'telephone' => 'required|string',
-            'nom' => 'required|string',
-            'pays' => 'required|string', 
-        ]);
+    // public function paiementsouscrire(Request $request){
+    //     $request->validate([
+    //         'plans_souscription_id' => 'required|exists:plans_souscriptions,id',
+    //         'telephone' => 'nullable|string',
+    //         'nom' => 'nullable|string', 
+    //     ]);
     
-        $plan = PlansSouscription::find($request->plans_souscription_id);
-        if (!$plan) {
-            return response()->json([
-                'message' => 'Plans introuvable.'
-            ], 404);
-        }
-        $utilisateur = $request->user();
+    //     $plan = PlansSouscription::find($request->plans_souscription_id);
+    //     if (!$plan) {
+    //         return response()->json([
+    //             'message' => 'Plans introuvable.'
+    //         ], 404);
+    //     }
+    //     $utilisateur = $request->user();
     
-        try {
-            FedaPay::setApiKey(env('FEDAPAY_SECRET_KEY'));
-            FedaPay::setEnvironment(env('FEDAPAY_ENV', 'sandbox'));
+    //     try {
+    //         FedaPay::setApiKey(env('FEDAPAY_SECRET_KEY'));
+    //         FedaPay::setEnvironment(env('FEDAPAY_ENV', 'sandbox'));
 
-            $transaction = Transaction::create([
-            //    dd([ 
-                "description" => "Souscription organisateur - {$utilisateur->nom} -  {$plan->nom}",
-                // "amount" => $plan->prix,
-                "amount" => 1500,
+    //         $transaction = Transaction::create([
+    //         //    dd([ 
+    //             "description" => "Souscription organisateur - {$utilisateur->nom} -  {$plan->nom}",
+    //             'amount' => $plan->prix,
+    //             "currency" => ["iso" => "XOF"],
+    //             'callback_url' => 'https://8e2b-2c0f-2a80-38f-2610-e97d-9081-f6ba-14e5.ngrok-free.app/api/paiement/callback?reference=',
+    //             "customer" => [
+    //                 "firstname" => $utilisateur->prenom ?: 'Inconnu',
+    //                 "lastname" => $utilisateur->nom,
+    //                 "email" => $utilisateur->email,
+    //                 "phone" => [
+    //                     "number" => $request->telephone,
+    //                     "country" => 'BJ'
+    //                 ]
+    //             ]
+    //             // ])
+    //         ]);
+    
+    //         $token = $transaction->generateToken();
+    
+    //         //expirer l'ancienne souscription active si elle existe
+    //     $ancienne = $utilisateur->souscriptionActive();
+    //     if($ancienne) {
+    //         $ancienne->statut = 'expiré';
+    //         $ancienne->save();
+    //     }
 
-                "currency" => ["iso" => "XOF"],
-                "customer" => [
-                    "firstname" => $utilisateur->prenom ?: 'Inconnu',
-                    "lastname" => $utilisateur->nom,
-                    "email" => $utilisateur->email,
-                    "phone" => [
-                        "number" => $request->telephone,
-                        "country" => 'BJ'
-                    ]
-                ]
-                // ])
-            ]);
+    //         // Enregistrer la transaction côté base (optionnel mais recommandé)
+    //         // dd([ 
+    //         $utilisateur->souscription()->create([
+    //             'montant' => $plan->prix,
+    //             'statut_paiement' => 'en_attente',
+    //             'reference' => $transaction->id,
+    //             'methode' => 'mobile_money'
+    //             // ])
+    //         ]);
     
-            $token = $transaction->generateToken();
-    
-            //expirer l'ancienne souscription active si elle existe
-        $ancienne = $utilisateur->souscriptionActive();
-        if($ancienne) {
-            $ancienne->statut = 'expiré';
-            $ancienne->save();
-        }
-
-            // Enregistrer la transaction côté base (optionnel mais recommandé)
-            $utilisateur->souscription()->create([
-                'montant' => $plan->prix,
-                'statut_paiement' => 'en_attente',
-                'reference' => $transaction->id,
-                'methode' => 'mobile_money'
-            ]);
-    
-            return response()->json([
-                'message' => 'Paiement en attente de validation.',
-                'payment_url' => $token->url
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Erreur lors de la création du paiement',
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ], 500);
+    //         return response()->json([
+    //             'message' => 'Paiement en attente de validation.',
+    //             'payment_url' => $token->url
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'message' => 'Erreur lors de la création du paiement',
+    //             'error' => $e->getMessage(),
+    //             'trace' => $e->getTraceAsString()
+    //         ], 500);
             
-        }
-    }
+    //     }
+    // }
 
+    
+    public function paiementsouscrire(Request $request)
+{
+    $request->validate([
+        'plans_souscription_id' => 'required|exists:plans_souscriptions,id',
+        'telephone' => 'nullable|string',
+    ]);
+
+    $plan = PlansSouscription::findOrFail($request->plans_souscription_id);
+    $utilisateur = $request->user();
+
+    try {
+        FedaPay::setApiKey(env('FEDAPAY_SECRET_KEY'));
+        FedaPay::setEnvironment(env('FEDAPAY_ENV', 'sandbox'));
+
+        $reference = uniqid(); // pour suivre la transaction plus facilement
+
+        $transaction = Transaction::create([
+            // dd([
+
+          
+            "description" => "Souscription organisateur - {$utilisateur->nom} - {$plan->nom}",
+            // 'amount' => (int) $plan->prix,
+            "amount" => 5000,
+            "currency" => ["iso" => "XOF"],
+            // "callback_url" => env('FEDAPAY_CALLBACK_URL') . '?reference=' . $reference,
+            "customer" => [
+                "firstname" => $utilisateur->prenom ?: 'Inconnu',
+                "lastname" => $utilisateur->nom,
+                "email" => $utilisateur->email,
+                "phone" => [
+                    "number" => $request->telephone,
+                    "country" => 'BJ'
+                ]
+            ],
+            "metadata" => [
+                "user_id" => $utilisateur->id,
+                "plan_id" => $plan->id,
+                "reference" => $reference
+            ]
+            // ])
+        ]);
+
+        return response()->json([
+            'url' => $transaction->generateToken()->url,
+            'reference' => $reference
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Erreur lors de la création de la transaction',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
     public function webhooksouscription(Request $request)
 {
     $payload = $request->all();
@@ -135,6 +190,57 @@ class SouscriptionController extends Controller
 
     return response()->json(['message' => 'Événement ignoré'], 200);
 }
+
+    public function souscriptionWebhook(Request $request)
+    {
+        $payload = $request->all();
+
+        if (!isset($payload['event']) || $payload['event'] !== 'transaction.paid') {
+            return response()->json(['message' => 'Événement non géré'], 400);
+        }
+
+        $transaction = $payload['data']['object'];
+        $metadata = $transaction['metadata'];
+
+        $user = Utilisateur::find($metadata['user_id']);
+        $plan = PlansSouscription::find($metadata['plan_id']);
+
+        if (!$user || !$plan) {
+            return response()->json(['message' => 'Utilisateur ou plan introuvable'], 404);
+        }
+
+        // Donner le rôle
+        // vérification du role 'organisateur'
+        if($user->role !== 'organisateur'){
+            $user->role = 'organisateur';
+            $user->save();
+        }
+
+        // Créer l’organisateur si nécessaire
+        $organisateur = $user->organisateurProfile;
+        if (!$organisateur) {
+            $organisateur = OrganisateurProfile::create([
+                'utilisateur_id' => $user->id,
+            ]);
+        }
+
+        // Enregistrer la souscription
+        $souscription = Souscription::create([
+            'organisateur_id' => $organisateur->id,
+            'plans_souscription_id' => $plan->id,
+            'date_debut' => now(),
+            'date_fin' => now()->addDays($plan->duree),
+            'status' => 'valide',
+            'statut' => 'actif',
+            'statut_paiement' => 'success',
+            'montant' => $plan->prix,
+        ]);
+
+        return response()->json([
+            'message' => 'Souscription enregistrée',
+            'souscription' => $souscription
+        ], 200);
+    }
     //
     /**
      * Summary of souscrire
