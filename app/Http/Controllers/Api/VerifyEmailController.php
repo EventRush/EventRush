@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Mail\OtpMail;
 use App\Models\Utilisateur;
+use App\Notifications\ConfirmationInscription;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -39,6 +40,8 @@ class VerifyEmailController extends Controller
         'otp' => null,
         'otp_expires_at' => null
     ]);
+
+    $utilisateur->notify(new ConfirmationInscription());
 
     return response()->json(['message' => 'Email confirmé avec succès. vous pouvez desormais vous connecter via la page de login.']);
 }
