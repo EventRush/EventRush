@@ -11,7 +11,7 @@ use App\Http\Controllers\Api\SouscriptionController;
 use App\Http\Controllers\Api\SuiviController;
 use App\Http\Controllers\Api\SuiviContronller;
 use App\Http\Controllers\Api\UtilisateurController;
-use App\Http\Controllers\API\VerifyEmailController;
+use App\Http\Controllers\Api\VerifyEmailController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
