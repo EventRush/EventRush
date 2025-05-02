@@ -91,6 +91,16 @@ class AuthController extends Controller
         200);
         }
 
+        public function usersActifs()
+{
+    $utilisateurs = Utilisateur::where('last_seen_at', '>=', now()->subMinutes(5))->get();
+
+    return response()->json([
+        'en_ligne' => $utilisateurs->count(),
+        'utilisateurs' => $utilisateurs
+    ]);
+}
+
 }
 
 

@@ -42,11 +42,13 @@ class Kernel extends HttpKernel
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \App\Http\Middleware\UpdateLasteSeen::class,
         ],
     ];
 
     protected $routeMiddleware = [
         'souscription.active' => \App\Http\Middleware\CheckSouscriptionActive::class,
+        'admin' => \App\Http\Middleware\CheckAdminRole::class,
         // 'web.auth' => \App\Http\Middleware\WebAuth::class,
     ];
     /**

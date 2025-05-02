@@ -57,5 +57,10 @@ implements MustVerifyEmail
         return $this->belongsToMany(OrganisateurProfile::class, 'suivis', 'utilisateur_id', 'organisateur_id');
     }
 
+    public function billets()
+    {
+        return $this->hasMany(Billet::class);
+    }
+
 
 }

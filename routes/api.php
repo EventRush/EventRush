@@ -5,6 +5,8 @@ use App\Http\Controllers\Api\BilleterieController;
 use App\Http\Controllers\Api\CommentaireController;
 use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\FavoriController;
+use App\Http\Controllers\Api\OrganisateurEventController;
+use App\Http\Controllers\Api\OrganisateurStatController;
 use App\Http\Controllers\Api\PasswordResetController;
 use App\Http\Controllers\Api\QrCodeController;
 use App\Http\Controllers\Api\SouscriptionController;
@@ -57,15 +59,10 @@ Route::get('/home/categories', [EventController::class, 'search'])->name('search
 Route::get('/home/stats', [EventController::class, 'stat']);// pas encore fait
 Route::get('/home/orgaEvent', [EventController::class, 'byOrganisateur']);
 
-// ****  orga page  ***** 
-Route::post('/scan_billet', [BilleterieController::class, 'verifierBillet']);
-Route::get('/home/featured', [EventController::class, 'featured']);
 
 // Route::get('/search', [EventController::class, 'search'])->name('search');
 
 
-
-Route::get('/user/index', [AuthController::class, 'index'])->name('user.index');
 
 // Route::post('/billet/achat', [BilleterieController::class, 'achat'])->name('billet.achat');
 
@@ -136,6 +133,63 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('suivre/index', [SuiviController::class, 'index'])->name('index.suivis');
         Route::post('/suivre/{organisateurId}', [SuiviController::class, 'suivre'])->name('suivre.organisateur');
         Route::delete('/suivre/{organisateurId}', [SuiviController::class, 'nePlusSuivre'])->name('neplus.suivre.organisateur');
+
+    });
+
+// ***** organisateur
+Route::prefix('organisateur')->middleware(['authsanctum', 'role:organisateur', 'souscription.active'])->group(function(){
+
+        // Événements
+        Route::get('/events', [OrganisateurEventController::class, 'index']);
+        Route::post('/events', [OrganisateurEventController::class, 'store']);
+        Route::get('/events/{id}', [OrganisateurEventController::class, 'show']);
+        Route::put('/events/{id}', [OrganisateurEventController::class, 'update']);
+        Route::delete('/events/{id}', [OrganisateurEventController::class, 'destroy']);
+    
+        // Billets & Participants
+        Route::get('/events/{id}/billets', [BilleterieController::class, 'eventBillets']);
+        Route::get('/events/{id}/participants', [BilleterieController::class, 'eventParticipants']);
+    
+        // Souscription
+        Route::post('/souscription', [SouscriptionController::class, 'store']);
+        Route::get('/souscription/statut', [SouscriptionController::class, 'status']);
+    
+        // Dashboard
+        Route::get('/statistiques', [OrganisateurStatController::class, 'organisateurStats']);
+  
+        // ****  orga page  ***** 
+        Route::post('/scan_billet', [BilleterieController::class, 'verifierBillet']);
+        Route::get('/home/featured', [EventController::class, 'featured']);
+
+});
+
+
+ //  ***** admin
+    Route::middleware(['auth:sanctum', 'verified', 'admin'])->group(function () {
+        Route::get('/user/index', [AuthController::class, 'index'])->name('user.index');
+        Route::get('/user/actifs', [AuthController::class, 'usersActifs']);
+
+
+         // Utilisateurs
+    // Route::get('/utilisateurs', [AdminController::class, 'indexUsers']);
+    // Route::get('/utilisateurs/{id}', [AdminController::class, 'showUser']);
+    // Route::put('/utilisateurs/{id}/ban', [AdminController::class, 'banUser']);
+    // Route::put('/utilisateurs/{id}/unban', [AdminController::class, 'unbanUser']);
+    // Route::delete('/utilisateurs/{id}', [AdminController::class, 'destroyUser']);
+
+    // // Événements
+    // Route::get('/evenements', [AdminController::class, 'allEvents']);
+    // Route::get('/evenements/{id}', [AdminController::class, 'showEvent']);
+    // Route::put('/evenements/{id}/valider', [AdminController::class, 'validateEvent']);
+    // Route::put('/evenements/{id}/rejeter', [AdminController::class, 'rejectEvent']);
+    // Route::delete('/evenements/{id}', [AdminController::class, 'deleteEvent']);
+
+    // // Souscriptions
+    // Route::get('/souscriptions', [AdminController::class, 'allSouscriptions']);
+    // Route::put('/souscriptions/{id}/valider', [AdminController::class, 'validateSouscription']);
+
+    // // Dashboard
+    // Route::get('/statistiques', [StatController::class, 'adminStats']);
 
     });
     

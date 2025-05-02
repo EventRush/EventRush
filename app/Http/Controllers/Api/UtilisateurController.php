@@ -95,37 +95,5 @@ class UtilisateurController extends Controller
     }
 
  
-// public function update(Request $request, )
-// {
-//     /**
-//      * @var \App\Models\Utilisateur $utilisateur
-//      */
-//     $utilisateur = Auth::user();
 
-//     $validated = $request->validate([
-//         'nom' => 'sometimes|string|max:255',
-//         'email' => 'sometimes|email|unique:utilisateurs,email,' . $utilisateur->id,
-//         'avatar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
-//     ]);
-
-//     // Gestion de l'image
-//     if ($request->hasFile('avatar')) {
-//         // Optionnel : supprimer l'ancien avatar
-//         if ($utilisateur->avatar) {\Storage::disk('public')->delete($utilisateur->avatar);
-//         }
-
-//         // Stocker le nouveau fichier dans le dossier "avatars"
-//         $path = $request->file('avatar')->store('avatars', 'public');
-
-//         // Ajouter le chemin dans les données validées
-//         $validated['avatar'] = $path;
-//     }
-
-//     $utilisateur->update($validated);
-
-//     return response()->json([
-//         'message' => 'Profil mis à jour avec succès.',
-//         'user' => $utilisateur->fresh()
-//     ]);
-// }
 }
