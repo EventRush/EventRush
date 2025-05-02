@@ -37,11 +37,11 @@ Route::get('/auth/me', [UtilisateurController::class, 'connectedUser'])->name('u
 Route::post('/auth/verifyotp', [VerifyEmailController::class, 'verifyOtp']);
 Route::post('/auth/resendotp', [VerifyEmailController::class, 'resendOtp']);
 
+//    *****  email et modifications/validations  *****
+Route::post('/auth/password/sendotp', [PasswordResetController::class, 'sendResetOtp']);
+Route::post('/auth/password/resetotp', [PasswordResetController::class, 'ResetOtp']);
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
-    //    *****  email et modifications/validations  *****
-        Route::post('/auth/password/sendotp', [PasswordResetController::class, 'sendResetOtp']);
-        Route::post('/auth/password/resetotp', [PasswordResetController::class, 'ResetOtp']);
         
     Route::get('/me', [UtilisateurController::class,'me']);
     Route::post('/me/update', [UtilisateurController::class,'update']); 
