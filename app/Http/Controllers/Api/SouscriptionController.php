@@ -39,7 +39,9 @@ class SouscriptionController extends Controller
             $transaction = Transaction::create([
             //    dd([ 
                 "description" => "Souscription organisateur - {$utilisateur->nom} -  {$plan->nom}",
-                "amount" => $plan->prix,
+                // "amount" => $plan->prix,
+                "amount" => 1500,
+
                 "currency" => ["iso" => "XOF"],
                 "customer" => [
                     "firstname" => $utilisateur->prenom ?: 'Inconnu',

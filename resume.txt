@@ -110,3 +110,4 @@ finalisation des fonctions update
     "email": "malik@gmail.com",
     "password": "Faker0004",
 } client
+
