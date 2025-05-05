@@ -20,6 +20,12 @@ class EventController extends Controller
 
     public function store(Request $request)
     {
+        $admin = auth()->user();
+
+        if($admin->role !== 'admin'){
+            return response()->json(['message' => 'Non autorisé'], 403);
+
+        }
         $validated = $request->validate([
             
             // 'organisateur_id' => 'required|exists:organisateur_profiles,id',
@@ -59,6 +65,12 @@ class EventController extends Controller
 
     public function update(Request $request, Event $event)
     {
+        $admin = auth()->user();
+
+        if($admin->role !== 'admin'){
+            return response()->json(['message' => 'Non autorisé'], 403);
+
+        }
         // $this->authorize('update', $event); // uniquement l'organisateur 
         $request->validate([
             'titre' => 'nullable|string|max:255',
@@ -101,6 +113,12 @@ class EventController extends Controller
 
     public function destroy(Event $event)
     {
+        $admin = auth()->user();
+
+        if($admin->role !== 'admin'){
+            return response()->json(['message' => 'Non autorisé'], 403);
+
+        }
         $event->delete();
         $event->photos()->delete();
         return response()->json(['message' => 'Événement supprimé avec succès.']);

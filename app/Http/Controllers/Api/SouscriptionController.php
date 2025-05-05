@@ -91,7 +91,7 @@ class SouscriptionController extends Controller
 {
     $request->validate([
         'plans_souscription_id' => 'required|exists:plans_souscriptions,id',
-        'telephone' => 'nullable|string',
+        'telephone' => 'nullable|numeric',
     ]);
 
     $plan = PlansSouscription::findOrFail($request->plans_souscription_id);
@@ -108,16 +108,16 @@ class SouscriptionController extends Controller
 
           
             "description" => "Souscription organisateur - {$utilisateur->nom} - {$plan->nom}",
-            // 'amount' => (int) $plan->prix,
-            "amount" => 5000,
+            'amount' => (int) $plan->prix,
+            // "amount" => 5000,
             "currency" => ["iso" => "XOF"],
             // "callback_url" => env('FEDAPAY_CALLBACK_URL') . '?reference=' . $reference,
             "customer" => [
-                "firstname" => $utilisateur->prenom ?: 'Inconnu',
-                "lastname" => $utilisateur->nom,
+                "firstname" => $request->prenom ?: 'Inconnu',
+                "lastname" => $request->nom ?: $utilisateur->nom,
                 "email" => $utilisateur->email,
                 "phone" => [
-                    "number" => $request->telephone,
+                    "number" => $request->telephone ?: 64000001,
                     "country" => 'BJ'
                 ]
             ],

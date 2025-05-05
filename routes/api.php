@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\FavoriController;
 use App\Http\Controllers\Api\OrganisateurEventController;
 use App\Http\Controllers\Api\OrganisateurStatController;
 use App\Http\Controllers\Api\PasswordResetController;
+use App\Http\Controllers\Api\PlansSouscriptionsController;
 use App\Http\Controllers\Api\QrCodeController;
 use App\Http\Controllers\Api\SouscriptionController;
 use App\Http\Controllers\Api\SuiviController;
@@ -44,7 +45,8 @@ Route::post('/auth/password/sendotp', [PasswordResetController::class, 'sendRese
 Route::post('/auth/password/resetotp', [PasswordResetController::class, 'ResetOtp']);
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
-        
+    Route::post('/logout', [AuthController::class,'logout']);
+   
     Route::get('/me', [UtilisateurController::class,'me']);
     Route::post('/me/update', [UtilisateurController::class,'update']); 
     
@@ -68,7 +70,6 @@ Route::get('/home/orgaEvent', [EventController::class, 'byOrganisateur']);
 
 Route::get('/paiement/callback', [BilleterieController::class, 'callback'])->name('paiement.callback');
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
-    Route::post('/logout', [AuthController::class,'logout']);
         //billet/payer
     Route::post('/billet/payer', [BilleterieController::class, 'payer']);
 
@@ -121,7 +122,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     });
     });
 
-    Route::middleware('auth')->group(function () {
+    Route::middleware('auth:sanctum')->group(function () {
         Route::get('suivre/index', [SuiviController::class, 'index'])->name('index.suivis');
         Route::post('/suivre/{organisateurId}', [SuiviController::class, 'suivre'])->name('suivre.organisateur');
         Route::delete('/suivre/{organisateurId}', [SuiviController::class, 'nePlusSuivre'])->name('neplus.suivre.organisateur');
@@ -144,7 +145,7 @@ Route::prefix('organisateur')->middleware(['authsanctum', 'role:organisateur', '
         Route::get('/events', [OrganisateurEventController::class, 'index']);
         Route::post('/events', [OrganisateurEventController::class, 'store']);
         Route::get('/events/{id}', [OrganisateurEventController::class, 'show']);
-        Route::put('/events/{id}', [OrganisateurEventController::class, 'update']);
+        Route::post('/events/{id}', [OrganisateurEventController::class, 'update']);
         Route::delete('/events/{id}', [OrganisateurEventController::class, 'destroy']);
     
         // Billets & Participants
@@ -188,6 +189,11 @@ Route::prefix('organisateur')->middleware(['authsanctum', 'role:organisateur', '
     // // Souscriptions
     Route::get('/souscriptions', [AdminController::class, 'allSouscriptions']);
     Route::get('/souscris', [AdminController::class, 'souscris']);
+
+    // // Plans Souscriptions
+    Route::post('/souscriptions/plan', [PlansSouscriptionsController::class, 'addPlan']);
+    Route::post('/souscriptions/plan/{id}', [PlansSouscriptionsController::class, 'updatePlan']);
+    Route::delete('/souscriptions/plan/{id}', [PlansSouscriptionsController::class, 'deletePlan']);
 
     // Route::put('/souscriptions/{id}/valider', [AdminController::class, 'validateSouscription']);
 

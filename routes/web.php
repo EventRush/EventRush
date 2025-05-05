@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Admin\AdmDashboardController;
-use App\Http\Controllers\Api\BilleterieController;
 use App\Http\Controllers\Api\QrCodeController;
 use App\Http\Controllers\Dashboard\TestContoller;
 use Illuminate\Support\Facades\Route;
@@ -67,8 +66,3 @@ Route::middleware(['web.auth'])->group(function () {
 
 
 
-
-// Route::get('/paiement/callback', function () {
-//     return 'Paiement terminé. Vous pouvez fermer la fenêtre.';
-// })->name('paiement.callback');
-// Route::get('/paiement/callback', [BilleterieController::class, 'callback'])->name('paiement.callback');

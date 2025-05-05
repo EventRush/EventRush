@@ -10,4 +10,6 @@ class Ticket extends Model
     use HasFactory;
     protected $fillable = ['event_id', 'type',  'prix', 'image', 'quantité_disponible'];
 
+    protected $casts = [ 'prix' => 'float',
+];
 }
