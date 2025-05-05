@@ -26,11 +26,11 @@ class EventResource extends JsonResource
             'photos' => $this->photos->map(function ($photo) {
                 return asset('storage//app/public/' . $photo->image_path);
             }),
-            // 'organisateur' => [
-            //     'id' => $this->organisateur->id,
-            //     'nom_entreprise' => $this->organisateur->nom_entreprise,
-            //     'logo' => $this->organisateur->logo ? asset('storage/' . $this->organisateur->logo) : null,
-            // ],
+            'organisateur' => [
+                'id' => $this->organisateur->id,
+                'nom_entreprise' => $this->organisateur->nom_entreprise,
+                'logo' => $this->organisateur->logo ? asset('storage/' . $this->organisateur->logo) : null,
+            ],
         ];
     }
     //     return [

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\OrganisateurProfile;
 use App\Models\Suivi;
+use App\Models\Utilisateur;
 use App\Notifications\OrganisateurSuiviNot;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,6 +18,7 @@ class SuiviController extends Controller
     public function index()
     {
         $user = Auth::user();
+        
 
         $organisateursSuivis = $user->organisateursSuivis()->with('suiveurs')->get();
 

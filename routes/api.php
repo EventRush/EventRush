@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BilleterieController;
 use App\Http\Controllers\Api\CommentaireController;
@@ -11,7 +12,6 @@ use App\Http\Controllers\Api\PasswordResetController;
 use App\Http\Controllers\Api\QrCodeController;
 use App\Http\Controllers\Api\SouscriptionController;
 use App\Http\Controllers\Api\SuiviController;
-use App\Http\Controllers\Api\SuiviContronller;
 use App\Http\Controllers\Api\UtilisateurController;
 use App\Http\Controllers\Api\VerifyEmailController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -101,15 +101,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
 //    *****  profil  *****
 
-    //    *****  abonnement  *****
-    Route::middleware(['auth:sanctum', 'verified'])->prefix('souscriptions')->group(function () {
-        Route::get('/profil/mon_abonnement', [SouscriptionController::class, 'monAbonnement']);
-        Route::get('/plans', [SouscriptionController::class, 'plans']);
-        Route::post('/', [SouscriptionController::class, 'paiementsouscrire']);
-        Route::post('/webhook', [SouscriptionController::class, 'webhooksouscription']);
-        Route::get('/statut', [SouscriptionController::class, 'statut']);
-        Route::get('/history', [SouscriptionController::class, 'historique']);
-    });
+    
     
     //    *****  abonnement  *****
     Route::middleware('auth:sanctum')->group(function () {
@@ -136,6 +128,15 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     });
 
+    //    *****  abonnement  *****
+    Route::middleware(['auth:sanctum', 'verified'])->prefix('souscriptions')->group(function () {
+        Route::get('/profil/mon_abonnement', [SouscriptionController::class, 'monAbonnement']);
+        Route::get('/plans', [SouscriptionController::class, 'plans']);
+        Route::post('/', [SouscriptionController::class, 'paiementsouscrire']);
+        Route::post('/webhook', [SouscriptionController::class, 'webhooksouscription']);
+        Route::get('/statut', [SouscriptionController::class, 'statut']);
+        Route::get('/history', [SouscriptionController::class, 'historique']);
+    });
 // ***** organisateur
 Route::prefix('organisateur')->middleware(['authsanctum', 'role:organisateur', 'souscription.active'])->group(function(){
 
@@ -171,21 +172,23 @@ Route::prefix('organisateur')->middleware(['authsanctum', 'role:organisateur', '
 
 
          // Utilisateurs
-    // Route::get('/utilisateurs', [AdminController::class, 'indexUsers']);
-    // Route::get('/utilisateurs/{id}', [AdminController::class, 'showUser']);
-    // Route::put('/utilisateurs/{id}/ban', [AdminController::class, 'banUser']);
-    // Route::put('/utilisateurs/{id}/unban', [AdminController::class, 'unbanUser']);
-    // Route::delete('/utilisateurs/{id}', [AdminController::class, 'destroyUser']);
+    Route::get('/users', [AdminController::class, 'indexUsers']);
+    Route::get('/users/{id}', [AdminController::class, 'showUser']);
+    Route::post('/users/{id}/ban', [AdminController::class, 'banUser']);
+    Route::post('/users/{id}/unban', [AdminController::class, 'unbanUser']);
+    Route::delete('/users/{id}', [AdminController::class, 'destroyUser']);
 
     // // Événements
-    // Route::get('/evenements', [AdminController::class, 'allEvents']);
-    // Route::get('/evenements/{id}', [AdminController::class, 'showEvent']);
-    // Route::put('/evenements/{id}/valider', [AdminController::class, 'validateEvent']);
-    // Route::put('/evenements/{id}/rejeter', [AdminController::class, 'rejectEvent']);
-    // Route::delete('/evenements/{id}', [AdminController::class, 'deleteEvent']);
+    Route::get('/evenements', [AdminController::class, 'allEvents']);
+    Route::get('/evenements/{id}', [AdminController::class, 'showEvent']);
+    // Route::post('/evenements/{id}/valider', [AdminController::class, 'validateEvent']);
+    // Route::post('/evenements/{id}/rejeter', [AdminController::class, 'rejectEvent']);
+    Route::delete('/evenements/{id}', [AdminController::class, 'deleteEvent']);
 
     // // Souscriptions
-    // Route::get('/souscriptions', [AdminController::class, 'allSouscriptions']);
+    Route::get('/souscriptions', [AdminController::class, 'allSouscriptions']);
+    Route::get('/souscris', [AdminController::class, 'souscris']);
+
     // Route::put('/souscriptions/{id}/valider', [AdminController::class, 'validateSouscription']);
 
     // // Dashboard
