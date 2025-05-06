@@ -305,7 +305,8 @@ class SouscriptionController extends Controller
      */
     public function plans()
     {
-        return response()->json(PlansSouscription::all()->orderBY('id'));
+        $plans = PlansSouscription::orderBy('id');
+        return response()->json($plans);
     }
 
 
