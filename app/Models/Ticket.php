@@ -12,4 +12,13 @@ class Ticket extends Model
 
     protected $casts = [ 'prix' => 'float',
 ];
+
+    public function event()
+    {
+        return $this->belongsTo(Event::class);
+    }
+
+    public function utilisateur()  {
+        return $this->belongsTo(Utilisateur::class);        
+    }
 }

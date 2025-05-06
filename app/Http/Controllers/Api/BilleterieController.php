@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Billet;
 use App\Models\Event;
 use App\Models\Ticket;
+use App\Models\Utilisateur;
 use FedaPay\Customer;
 use FedaPay\FedaPay;
 use FedaPay\Transaction;
@@ -76,8 +77,9 @@ public function payer(Request $request)
                 'country' => 'BJ',
             ],
             "metadata" => [
+                'type' => 'Billet',
                 "user_id" => $utilisateur->id,
-                "ticket" => $ticket->id,
+                "ticket_id" => $ticket->id,
                 "reference" => $reference
             ]
         ]
@@ -102,42 +104,52 @@ public function payer(Request $request)
 
 public function webhookBillet(Request $request)
 {
-    $reference = $request->query('reference');
+    $payload = $request->all();
+
+    if (!isset($payload['event']) || $payload['event'] !== 'transaction.paid') {
+        return response()->json(['message' => 'Événement non géré'], 400);
+    }
+
+    
+
+    $transaction = $payload['data']['object'];
+    $metadata = $transaction['metadata'];
+
+    $user = Utilisateur::find($metadata['user_id']);
+    $ticket = Ticket::find($metadata['ticket_id']);
+    $reference = $metadata['reference'];
+
+    if (!$user || !$ticket) {
+        return response()->json(['message' => 'Utilisateur ou ticket introuvable'], 404);
+    }
 
     if (!$reference) {
         return response()->json(['message' => 'Référence manquante.'], 400);
     }
 
-    $billet = Billet::where('reference', $reference)->first();
+    $billet_paye = Billet::where('reference', $reference);
 
-    if (!$billet) {
-        return response()->json(['message' => 'Billet introuvable.'], 404);
-    }
-
-    if ($billet->status === 'paye') {
+    if ($billet_paye->status === 'paye') {
         return response()->json(['message' => 'Paiement déjà confirmé.']);
     }
 
-    // Vérifier auprès de FedaPay
-    FedaPay::setApiKey(env('FEDAPAY_SECRET_KEY'));
-    FedaPay::setEnvironment(env('FEDAPAY_ENV', 'sandbox'));
-
-
-    $fedapayTransaction = Transaction::retrieve($billet->billet_fedapay_id);
-
-    if ($fedapayTransaction->status !== 'approved') {
-        return response()->json(['message' => 'Paiement non valide.', 'status' => $fedapayTransaction->status], 402);
-    }
-
-    // Paiement validé, on confirme
-    $billet->status = 'paye';
-    $billet->qr_code = Str::uuid();
-    $billet->save();
-    return response()->json([
-        'message' => 'Paiement confirmé via FedaPay',
-        'qr_code' => $billet->qr_code,
-        'billet' => $billet
+    // Enregistrer la souscription
+    $billet = Billet::create([
+        'event_id' => $ticket->event_id,
+        'utilisateur_id' => $user->id,
+        'ticket_id' => $ticket->id,
+        'methode' => 'mobile_money',
+        'status' => 'paye',
+        'montant' => $ticket->prix,
+        'qr_code' => Str::uuid(),
+        'reference' => $reference,
     ]);
+
+    return response()->json([
+        'message' => 'Billet acheté',
+        'billet' => $billet,
+        'qr_code' => $billet->qr_code
+    ], 200);
 }
 
 /**

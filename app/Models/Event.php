@@ -29,10 +29,20 @@ class Event extends Model
     }
 
     
-public function utilisateur()
-    {
-        return $this->belongsTo(Utilisateur::class, 'utilisateur_id');
-    }
+    public function utilisateur()
+        {
+            return $this->belongsTo(Utilisateur::class, 'utilisateur_id');
+        }
+
+        public function billets()
+        {
+            return $this->hasMany(Billet::class);
+        }
+    
+    public function tickets()
+        {
+            return $this->hasMany(Ticket::class);
+        }
 
 }
 

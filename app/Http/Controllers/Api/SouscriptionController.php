@@ -122,6 +122,7 @@ class SouscriptionController extends Controller
                 ]
             ],
             "metadata" => [
+                "type" => "Souscription",
                 "user_id" => $utilisateur->id,
                 "plan_id" => $plan->id,
                 "reference" => $reference
@@ -141,55 +142,55 @@ class SouscriptionController extends Controller
         ], 500);
     }
 }
-    public function webhooksouscription(Request $request)
-{
-    $payload = $request->all();
+//     public function webhooksouscription(Request $request)
+// {
+//     $payload = $request->all();
 
-    if ($payload['event'] === 'transaction.approved') {
-        $data = $payload['data']['object'];
-        $ref = $data['id'];
-        $email = $data['customer']['email'];
-        $montant = $data['amount'] / 100; 
+//     if ($payload['event'] === 'transaction.approved') {
+//         $data = $payload['data']['object'];
+//         $ref = $data['id'];
+//         $email = $data['customer']['email'];
+//         $montant = $data['amount'] / 100; 
 
-        // Trouver l'utilisateur
-        $utilisateur = Utilisateur::where('email', $email)->first();
-        if (!$utilisateur) return response()->json(['message' => 'Utilisateur non trouvé'], 404);
+//         // Trouver l'utilisateur
+//         $utilisateur = Utilisateur::where('email', $email)->first();
+//         if (!$utilisateur) return response()->json(['message' => 'Utilisateur non trouvé'], 404);
 
-        // Trouver la souscription en attente
-        $souscription = Souscription::where('reference', $ref)
-            ->where('statut_paiement', 'en_attente')
-            ->first();
+//         // Trouver la souscription en attente
+//         $souscription = Souscription::where('reference', $ref)
+//             ->where('statut_paiement', 'en_attente')
+//             ->first();
 
-        if (!$souscription) return response()->json(['message' => 'Souscription introuvable'], 404);
+//         if (!$souscription) return response()->json(['message' => 'Souscription introuvable'], 404);
 
-        // Activer la souscription
-        $souscription->update([
-            'statut' => 'actif',
-            'statut_paiement' => 'success',
-            'date_debut' => now(),
-            'date_fin' => now()->addDays($souscription->plan->duree_jours),
-            'montant' => $montant,
-        ]);
+//         // Activer la souscription
+//         $souscription->update([
+//             'statut' => 'actif',
+//             'statut_paiement' => 'success',
+//             'date_debut' => now(),
+//             'date_fin' => now()->addDays($souscription->plan->duree_jours),
+//             'montant' => $montant,
+//         ]);
 
-        // Donner le rôle
-        // vérification du role 'organisateur'
-        if($utilisateur->role !== 'organisateur'){
-            $utilisateur->role = 'organisateur';
-            $utilisateur->save();
-        }
-        // Créer le profil organisateur si pas encore fait
-        if (!$utilisateur->organisateurProfile) {
-            OrganisateurProfile::create(['utilisateur_id' => $utilisateur->id]);
-        }
+//         // Donner le rôle
+//         // vérification du role 'organisateur'
+//         if($utilisateur->role !== 'organisateur'){
+//             $utilisateur->role = 'organisateur';
+//             $utilisateur->save();
+//         }
+//         // Créer le profil organisateur si pas encore fait
+//         if (!$utilisateur->organisateurProfile) {
+//             OrganisateurProfile::create(['utilisateur_id' => $utilisateur->id]);
+//         }
 
-        return response()->json([
-            'message' => 'Souscription activée',
-            'souscription' => $souscription
-        ]);
-    }
+//         return response()->json([
+//             'message' => 'Souscription activée',
+//             'souscription' => $souscription
+//         ]);
+//     }
 
-    return response()->json(['message' => 'Événement ignoré'], 200);
-}
+//     return response()->json(['message' => 'Événement ignoré'], 200);
+// }
 
     public function souscriptionWebhook(Request $request)
     {
@@ -204,6 +205,7 @@ class SouscriptionController extends Controller
 
         $user = Utilisateur::find($metadata['user_id']);
         $plan = PlansSouscription::find($metadata['plan_id']);
+        $reference = $metadata['reference'];
 
         if (!$user || !$plan) {
             return response()->json(['message' => 'Utilisateur ou plan introuvable'], 404);
@@ -227,13 +229,16 @@ class SouscriptionController extends Controller
         // Enregistrer la souscription
         $souscription = Souscription::create([
             'organisateur_id' => $organisateur->id,
+            'utilisateur_id' => $user->id,
             'plans_souscription_id' => $plan->id,
             'date_debut' => now(),
             'date_fin' => now()->addDays($plan->duree),
-            'status' => 'valide',
+            'methode' => 'mobile_money',
             'statut' => 'actif',
             'statut_paiement' => 'success',
             'montant' => $plan->prix,
+            'reference' => $reference,
+
         ]);
 
         return response()->json([

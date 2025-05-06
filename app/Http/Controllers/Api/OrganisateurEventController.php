@@ -13,7 +13,7 @@ class OrganisateurEventController extends Controller
     public function index()
     {
         $organisateur = auth()->user();
-        $events = Event::where('organisateur_id', $organisateur->id)->latest()->get();
+        $events = Event::where('utilisateur_id', $organisateur->id)->latest()->get();
         return EventResource::collection($events);
     }
 
@@ -32,7 +32,7 @@ class OrganisateurEventController extends Controller
             'affiche' => 'image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $validated['organisateur_id'] = $organisateur->id;
+        $validated['utilisateur_id'] = $organisateur->id;
 
         if ($request->hasFile('affiche')) {
             $validated['affiche'] = $request->file('affiche')->store('events/affiches', 'public');   
@@ -54,7 +54,7 @@ class OrganisateurEventController extends Controller
     {
         $organisateur = auth()->user();
 
-        if ($event->organisateur_id !== $organisateur->id) {
+        if ($event->utilisateur_id !== $organisateur->id) {
             return response()->json(['message' => 'Non autorisé.'], 403);
         }
 
@@ -65,7 +65,7 @@ class OrganisateurEventController extends Controller
     {
         $organisateur = auth()->user();
 
-        if ($event->organisateur_id !== $organisateur->id) {
+        if ($event->utilisateur_id !== $organisateur->id) {
             return response()->json(['message' => 'Non autorisé.'], 403);
         }
 
@@ -110,7 +110,7 @@ class OrganisateurEventController extends Controller
     {
         $organisateur = auth()->user();
 
-        if ($event->organisateur_id !== $organisateur->id) {
+        if ($event->utilisateur_id !== $organisateur->id) {
             return response()->json(['message' => 'Non autorisé.'], 403);
         }
 
@@ -133,7 +133,7 @@ class OrganisateurEventController extends Controller
 
         $event = Event::with('billets')->findOrFail($event_id);
 
-        if ($event->organisateur_id !== $organisateur->id) {
+        if ($event->utilisateur_id !== $organisateur->id) {
             return response()->json(['message' => 'Non autorisé.'], 403);
         }
 
@@ -152,7 +152,7 @@ class OrganisateurEventController extends Controller
 
         $event = Event::with(['billets.utilisateur'])->findOrFail($event_id);
 
-        if ($event->organisateur_id !== $organisateur->id) {
+        if ($event->utilisateur_id !== $organisateur->id) {
             return response()->json(['message' => 'Non autorisé.'], 403);
         }
 

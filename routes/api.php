@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\FavoriController;
 use App\Http\Controllers\Api\OrganisateurEventController;
 use App\Http\Controllers\Api\OrganisateurStatController;
+use App\Http\Controllers\Api\OrganisateurTicketsController;
 use App\Http\Controllers\Api\PasswordResetController;
 use App\Http\Controllers\Api\PlansSouscriptionsController;
 use App\Http\Controllers\Api\QrCodeController;
@@ -53,7 +54,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/auth/me', [UtilisateurController::class, 'connectedUser'])->name('user.connected');
 
 }); 
-// ****  home page  ***** 
+// ****  home page  *****
+
+// Evenements
 Route::get('/home/events', [EventController::class, 'search_2']);
 Route::get('/home/featured', [EventController::class, 'featured']);
 Route::get('/home/upcoming', [EventController::class, 'upcoming']);
@@ -61,14 +64,19 @@ Route::get('/home/categories', [EventController::class, 'search'])->name('search
 Route::get('/home/stats', [EventController::class, 'stat']);// pas encore fait
 Route::get('/home/orgaEvent', [EventController::class, 'byOrganisateur']);
 
+Route::get('/events/{eventsId}/ticket', [OrganisateurTicketsController::class, 'indexTicketsEvent']);
+Route::get('/events/ticket/{id}', [OrganisateurTicketsController::class, 'showTicket']);
 
-// Route::get('/search', [EventController::class, 'search'])->name('search');
+
+Route::apiResource('events', EventController::class);
+Route::post('/events/{event}', [EventController::class, 'update']);
 
 
 
-// Route::post('/billet/achat', [BilleterieController::class, 'achat'])->name('billet.achat');
+
 
 Route::get('/paiement/callback', [BilleterieController::class, 'callback'])->name('paiement.callback');
+Route::get('/billet/webhook', [BilleterieController::class, 'webhookBillet']);
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         //billet/payer
     Route::post('/billet/payer', [BilleterieController::class, 'payer']);
@@ -86,9 +94,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
 //    *****  event  *****
 // Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('events', EventController::class);
-    Route::post('/events/{event}', [EventController::class, 'update']);
-
+ 
 // });
 //    *****  commentaire  *****
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
@@ -130,11 +136,13 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     });
 
     //    *****  abonnement  *****
+    Route::post('/webhook', [SouscriptionController::class, 'webhooksouscription']);
+
     Route::middleware(['auth:sanctum', 'verified'])->prefix('souscriptions')->group(function () {
         Route::get('/profil/mon_abonnement', [SouscriptionController::class, 'monAbonnement']);
         Route::get('/plans', [SouscriptionController::class, 'plans']);
         Route::post('/', [SouscriptionController::class, 'paiementsouscrire']);
-        Route::post('/webhook', [SouscriptionController::class, 'webhooksouscription']);
+        // Route::post('/webhook', [SouscriptionController::class, 'webhooksouscription']);
         Route::get('/statut', [SouscriptionController::class, 'statut']);
         Route::get('/history', [SouscriptionController::class, 'historique']);
     });
@@ -147,7 +155,12 @@ Route::prefix('organisateur')->middleware(['authsanctum', 'role:organisateur', '
         Route::get('/events/{id}', [OrganisateurEventController::class, 'show']);
         Route::post('/events/{id}', [OrganisateurEventController::class, 'update']);
         Route::delete('/events/{id}', [OrganisateurEventController::class, 'destroy']);
-    
+
+            // tikets
+            Route::post('/events/{eventsId}/ticket', [OrganisateurTicketsController::class, 'addTicket']);
+            Route::post('/events/ticket/{id}', [OrganisateurTicketsController::class, 'updateTicket']);
+            Route::delete('/events/ticket/{id}', [OrganisateurTicketsController::class, 'destroyTicket']);
+
         // Billets & Participants
         Route::get('/events/{id}/billets', [BilleterieController::class, 'eventBillets']);
         Route::get('/events/{id}/participants', [BilleterieController::class, 'eventParticipants']);
