@@ -180,7 +180,7 @@ Route::prefix('organisateur')->middleware(['authsanctum', 'role:organisateur', '
 
 
  //  ***** admin
-    Route::middleware(['auth:sanctum', 'verified', 'admin'])->group(function () {
+Route::prefix('admin')->middleware(['auth:sanctum', 'verified', 'admin'])->group(function () {
         Route::get('/user/index', [AuthController::class, 'index'])->name('user.index');
         Route::get('/user/actifs', [AuthController::class, 'usersActifs']);
 

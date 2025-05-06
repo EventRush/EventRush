@@ -21,7 +21,7 @@ creation du model et de la table(migration) utilisateur
 
             {
                 "nom": "Luc",
-                "email": "luctowanoutowanou@gmail.com",
+                "email": "luctowanou@gmail.com",
                 "password": "chadrack0000",
                 "password_confirmation": "chadrack0000"
 

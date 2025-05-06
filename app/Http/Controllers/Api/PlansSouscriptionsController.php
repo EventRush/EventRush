@@ -19,13 +19,17 @@ class PlansSouscriptionsController extends Controller
 
         }
 
-        $validated = $request->validate([
+        
+            $validated = $request->validate([
+              
             'nom' => 'required|string|max:255',
-            'description' => 'string',
+            'description' => 'nullable|string',
             'prix' => 'required|integer',
-            'duree_jours' => 'required|integer',
-          
+            'duree_jours' => 'required|integer'
+       
         ]);
+        // dd([$validated]);
+   
         $plan = PlansSouscription::create($validated);
         $plans = PlansSouscription::class;
        
