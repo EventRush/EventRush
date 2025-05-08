@@ -56,6 +56,7 @@ class AuthController extends Controller
             return response()->json(['message' => 'Veuillez vérifier votre email'], 403);
         }
     
+        Auth::login($utilisateur);
         $token = $utilisateur->createToken('auth_token')->plainTextToken;
     
         return response()->json([
@@ -74,7 +75,7 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
 {
-    $request->utilisateur()->tokens()->delete();
+    $request->user()->tokens()->delete();
 
     return response()->json(['message' => 'Déconnexion réussie']);
 }

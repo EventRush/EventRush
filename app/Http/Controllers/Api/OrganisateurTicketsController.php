@@ -40,8 +40,10 @@ class OrganisateurTicketsController extends Controller
         $request->validate([
             'type' => 'required|in:brouillon,publié,annulé',
             'prix' => 'required|numeric' ,
-            'quantite' => 'required|integer' ,
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:4096'          
+            'quantite' => 'required|integer|min:1' ,
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:4096' ,
+            'date_limite_vente' => 'required|date|after:now' 
+
         ]);
         $imagePath = null;
 
@@ -53,7 +55,9 @@ class OrganisateurTicketsController extends Controller
             'event_id' => $eventsId,
             'type' => $request->type,
             'quantite_disponible' => $request->quantite,
+            'quantite_restante' => $request->quantite, //initier
             'image' => $imagePath,
+            'date_limite_vente' => $request->date_limite_vente 
         ]);
 
         return response()->json($ticket, 201);
@@ -78,9 +82,9 @@ class OrganisateurTicketsController extends Controller
         }
 
         $request->validate([
-            'type' => 'in:brouillon,publié,annulé',
-            'prix' => 'numeric' ,
-            'quantite_disponible' => 'integer' ,
+            'type' => 'in:standart,vip1,vip2',
+            'prix' => 'nullable|numeric' ,
+            'quantite_disponible' => 'nullable|integer' ,
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:4096'          
         ]);
         $imagePath = null;
@@ -95,6 +99,7 @@ class OrganisateurTicketsController extends Controller
             'quantite_disponible',
             'image'
         ]));
+        if ($request->has('quantite_disponible')) $ticket->quantite_restante = $request->quantite_disponible;
         $ticket->save();
 
         return response()->json($ticket, 201);

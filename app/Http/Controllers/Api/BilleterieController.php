@@ -38,6 +38,17 @@ public function payer(Request $request)
     $ticket = Ticket::findOrFail($request->ticket_id);
     $evenement = Event::find( $ticket->event_id);
 
+    if(!$ticket){
+        return response()->json(['message' => 'Ticket non trouvé'], 404);
+    }
+    if($ticket->quantite_restante<1){
+        return response()->json(['message' => 'La totalité des tickets a déjà été vendue'], 403);
+    }
+
+    if($ticket->date_limite_vente && now()->greaterThan($ticket->date_limite_vente)){
+        return response()->json(['message' => 'La vente de ce ticket est terminée'], 403);
+    }
+
     // 2. Création du billet en attente
     // $billet = Billet::create([
     //     'event_id' => $request->event_id,
@@ -144,6 +155,8 @@ public function webhookBillet(Request $request)
         'qr_code' => Str::uuid(),
         'reference' => $reference,
     ]);
+    $ticket->quantite_restante -= 1 ;
+    $ticket->save();
 
     return response()->json([
         'message' => 'Billet acheté',

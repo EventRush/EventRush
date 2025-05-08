@@ -31,7 +31,7 @@ class PlansSouscriptionsController extends Controller
         // dd([$validated]);
    
         $plan = PlansSouscription::create($validated);
-        $plans = PlansSouscription::class;
+        $plans = PlansSouscription::all();
        
 
         return response()->json([

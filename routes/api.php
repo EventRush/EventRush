@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\AuthGoogleController;
 use App\Http\Controllers\Api\BilleterieController;
 use App\Http\Controllers\Api\CommentaireController;
 use App\Http\Controllers\Api\EventController;
@@ -33,7 +34,9 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::post('/auth/register', [AuthController::class, 'register']);
-Route::post('/auth/login', [AuthController::class, 'login'])->name('login');
+Route::post('/auth/login', [AuthController::class, 'login'])->name('login');  //api/auth/google/callback
+Route::get('auth/google', [AuthGoogleController::class, 'redirectToGoogle']);
+Route::get('auth/google/callback', [AuthGoogleController::class, 'handleGoogleCallback']);
 Route::get('/auth/me', [UtilisateurController::class, 'connectedUser'])->name('user.connected');
 
 //    *****  email et modifications/validations  *****
