@@ -23,6 +23,10 @@ class AuthGoogleController extends Controller
             $googleUser = Socialite::driver('google')->stateless()->user();
 
             $user = Utilisateur::where(['email' => $googleUser->getEmail()])->first();
+            if (!$googleUser) {
+                return response()->json(['error' => 'Impossible de récupérer les informations utilisateur.'], 500);
+            }
+    
 
             if($user) {
                 if(!$user->google_id) {
@@ -56,7 +60,10 @@ class AuthGoogleController extends Controller
         
 
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Erreur lors de la connexion Google.'], 500);
-        }
+            return response()->json([
+                'error' => 'Erreur lors de la connexion Google.',
+                'details' => $e->getMessage()
+            ],500);
+    }
     }
 }
