@@ -37,6 +37,8 @@ Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/login', [AuthController::class, 'login'])->name('login');  //api/auth/google/callback
 Route::get('auth/google', [AuthGoogleController::class, 'redirectToGoogle']);
 Route::get('auth/google/callback', [AuthGoogleController::class, 'handleGoogleCallback']);
+Route::get('auth/google/callback/manuel', [AuthGoogleController::class, 'GoogleCallbackmanuel']);
+
 Route::get('/auth/me', [UtilisateurController::class, 'connectedUser'])->name('user.connected');
 
 //    *****  email et modifications/validations  *****
