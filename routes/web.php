@@ -57,7 +57,7 @@ Route::get('/admin/tickets/index', function () {
 //     Route::get('/dashboard', [TestContoller::class, 'index'])->name('testdashboard');
 //     Route::get('/dashboard_2', [TestContoller::class, 'index_2'])->name('testdashboard_2');
 
-});
+// });
 
 
 
