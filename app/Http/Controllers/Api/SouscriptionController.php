@@ -285,7 +285,7 @@ try {
         $transaction = $event->entity;
 
     
-    $metadata = $transaction->metadata;
+    $metadata = $transaction->custom_metadata;
 
     // Vérification des métadonnées
     if (!isset($metadata->user_id, $metadata->plan_id, $metadata->reference)) {
