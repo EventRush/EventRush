@@ -277,17 +277,9 @@ try {
     
     // Vérification de l'événement
 
-    if (!$event || $event->name !== 'transaction.approved' ) {
-        // Log::error("Événement non géré : " . $payload['event']);
-        return response()->json(['message' => 'Événement non géré'], 400);
-    }
+    if ($event->name === 'transaction.approved' ) {
 
-    $transaction = json_decode($event->object);
-    // Vérifier si $transaction est bien un objet
-    if (!is_object($transaction)) {
-        Log::error('Le webhook n\'a pas renvoyé un objet valide : ' . json_encode($transaction));
-        return response()->json(['message' => 'Transaction invalide'], 400);
-    }
+        $transaction = $event->entity;
 
     
     $metadata = $transaction->metadata;
@@ -350,7 +342,14 @@ try {
             'message' => 'Souscription déjà enregistrée',
             'souscription' => $existingSouscription
         ], 200);
+
+
     }
+    }
+        return response()->json(['message' => 'Événement non géré'], 400);
+
+    
+    
 }
     /**
      * Summary of souscrire
