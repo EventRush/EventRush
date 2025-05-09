@@ -116,6 +116,9 @@ class SouscriptionController extends Controller
                 "firstname" => $request->prenom ?: 'Inconnu',
                 "lastname" => $request->nom ?: $utilisateur->nom,
                 "email" => $utilisateur->email,
+                "type" => "Souscription",
+                "user_id" => $utilisateur->id,
+                "plan_id" => $plan->id,
                 "phone" => [
                     "number" => $request->telephone ?: 64000001,
                     "country" => 'BJ'
