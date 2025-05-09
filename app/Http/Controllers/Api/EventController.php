@@ -207,8 +207,8 @@ class EventController extends Controller
     // Récupérer les événements à venir (accueil)
     public function upcoming()
     {
-        $events = Event::where('date', '>=', now())
-            ->orderBy('date')
+        $events = Event::where('date_debut', '>=', now())
+            ->orderBy('date_debut')
             ->take(5)
             ->get();
 
