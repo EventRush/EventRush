@@ -283,6 +283,13 @@ try {
     }
 
     $transaction = json_decode($event->object);
+    // Vérifier si $transaction est bien un objet
+    if (!is_object($transaction)) {
+        Log::error('Le webhook n\'a pas renvoyé un objet valide : ' . json_encode($transaction));
+        return response()->json(['message' => 'Transaction invalide'], 400);
+    }
+
+    
     $metadata = $transaction->metadata;
 
     // Vérification des métadonnées
