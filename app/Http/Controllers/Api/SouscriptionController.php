@@ -253,11 +253,15 @@ class SouscriptionController extends Controller
     public function souscriptionWebhook(Request $request)
 {
     $payload = $request->all();
-    dd($payload);
+    // dd($payload);
     // Vérification de l'événement
-    if (!isset($payload['event']) || ($payload['event'] !== 'approved' && $payload['name'] !== 'transaction.approved')) {
+    if ($payload['status'] == 'approved' && $payload['name'] == 'transaction.approved') {
         // Log::error("Événement non géré : " . $payload['event']);
         return response()->json(['message' => 'Événement non géré'], 400);
+    }
+    if (!isset($payload['event']) || ($payload['event'] !== 'approved' && $payload['name'] !== 'transaction.approved')) {
+        // Log::error("Événement non géré : " . $payload['event']);
+        return response()->json(['message' => 'Événement non '], 400);
     }
 
     $transaction = $payload['data']['object'];
