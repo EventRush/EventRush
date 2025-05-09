@@ -124,7 +124,7 @@ class SouscriptionController extends Controller
                     "country" => 'BJ'
                 ]
             ],
-            "metadata" => [
+            "custom_metadata" => [
                 "type" => "Souscription",
                 "user_id" => $utilisateur->id,
                 "plan_id" => $plan->id,
