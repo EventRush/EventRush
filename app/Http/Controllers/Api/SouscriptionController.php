@@ -111,7 +111,7 @@ class SouscriptionController extends Controller
             'amount' => (int) $plan->prix,
             // "amount" => 5000,
             "currency" => ["iso" => "XOF"],
-            // "callback_url" => env('FEDAPAY_CALLBACK_URL') . '?reference=' . $reference,
+            "callback_url" => env('FEDAPAY_CALLBACK_URL') . '?reference=' . $reference,
             "customer" => [
                 "firstname" => $request->prenom ?: 'Inconnu',
                 "lastname" => $request->nom ?: $utilisateur->nom,
