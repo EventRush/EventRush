@@ -282,7 +282,7 @@ try {
         return response()->json(['message' => 'Événement non géré'], 400);
     }
 
-    $transaction = $event->object;
+    $transaction = json_decode($event->object);
     $metadata = $transaction->metadata;
 
     // Vérification des métadonnées
