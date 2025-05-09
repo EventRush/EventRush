@@ -81,7 +81,7 @@ Route::post('/events/{event}', [EventController::class, 'update']);
 
 
 
-Route::get('/paiement/callback', [BilleterieController::class, 'callback'])->name('paiement.callback');
+// Route::get('/paiement/callback', [BilleterieController::class, 'callback'])->name('paiement.callback');
 Route::get('/billet/webhook', [BilleterieController::class, 'webhookBillet']);
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         //billet/payer
@@ -142,7 +142,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     });
 
     //    *****  abonnement  *****
-    Route::post('/webhook', [SouscriptionController::class, 'webhooksouscription']);
+    Route::post('/souscriptions/webhook', [SouscriptionController::class, 'webhooksouscription']);
 
     Route::middleware(['auth:sanctum', 'verified'])->prefix('souscriptions')->group(function () {
         Route::get('/profil/mon_abonnement', [SouscriptionController::class, 'monAbonnement']);
