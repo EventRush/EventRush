@@ -196,7 +196,7 @@ class SouscriptionController extends Controller
     {
         $payload = $request->all();
 
-        if (!isset($payload['event']) || $payload['event'] !== 'transaction.paid') {
+        if (!isset($payload['event']) || $payload['event'] !== 'transaction.approved') {
             return response()->json(['message' => 'Événement non géré'], 400);
         }
 
