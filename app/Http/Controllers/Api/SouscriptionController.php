@@ -255,7 +255,7 @@ class SouscriptionController extends Controller
     $payload = $request->all();
     // dd($payload);
     // Vérification de l'événement
-    if (isset($payload['event']) === 'transaction.approved') {
+    if (isset($payload['event']) || ($payload['event']) === 'transaction.approved') {
         // Log::error("Événement non géré : " . $payload['event']);
         return response()->json(['message' => 'Événement non géré'], 401);
     }
