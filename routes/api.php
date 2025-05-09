@@ -142,7 +142,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     });
 
     //    *****  abonnement  *****
-    Route::post('/souscriptions/webhook', [SouscriptionController::class, 'webhooksouscription']);
+    Route::post('/souscriptions/webhook', [SouscriptionController::class, 'souscriptionWebhook']);
 
     Route::middleware(['auth:sanctum', 'verified'])->prefix('souscriptions')->group(function () {
         Route::get('/profil/mon_abonnement', [SouscriptionController::class, 'monAbonnement']);
