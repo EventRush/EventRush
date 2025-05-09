@@ -256,7 +256,7 @@ class SouscriptionController extends Controller
 
     // Vérification de l'événement
     if (!isset($payload['event']) || ($payload['event'] !== 'transaction.paid' && $payload['event'] !== 'transaction.approved')) {
-        Log::error("Événement non géré : " . $payload['event']);
+        // Log::error("Événement non géré : " . $payload['event']);
         return response()->json(['message' => 'Événement non géré'], 400);
     }
 
@@ -265,7 +265,7 @@ class SouscriptionController extends Controller
 
     // Vérification des métadonnées
     if (!isset($metadata['user_id'], $metadata['plan_id'], $metadata['reference'])) {
-        Log::error("Métadonnées manquantes dans le webhook : " . json_encode($metadata));
+        // Log::error("Métadonnées manquantes dans le webhook : " . json_encode($metadata));
         return response()->json(['message' => 'Métadonnées manquantes'], 400);
     }
 
@@ -274,7 +274,7 @@ class SouscriptionController extends Controller
     $reference = $metadata['reference'];
 
     if (!$user || !$plan) {
-        Log::error("Utilisateur ou plan introuvable : User ID = {$metadata['user_id']}, Plan ID = {$metadata['plan_id']}");
+        // Log::error("Utilisateur ou plan introuvable : User ID = {$metadata['user_id']}, Plan ID = {$metadata['plan_id']}");
         return response()->json(['message' => 'Utilisateur ou plan introuvable'], 404);
     }
 
@@ -309,14 +309,14 @@ class SouscriptionController extends Controller
             'reference' => $reference,
         ]);
 
-        Log::info("Souscription enregistrée avec succès : " . json_encode($souscription));
+        // Log::info("Souscription enregistrée avec succès : " . json_encode($souscription));
 
         return response()->json([
             'message' => 'Souscription enregistrée',
             'souscription' => $souscription
         ], 200);
     } else {
-        Log::warning("Souscription déjà existante pour la référence : " . $reference);
+        // Log::warning("Souscription déjà existante pour la référence : " . $reference);
         return response()->json([
             'message' => 'Souscription déjà enregistrée',
             'souscription' => $existingSouscription
