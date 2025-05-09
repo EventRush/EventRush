@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Utilisateur;
 use FedaPay\FedaPay;
+use FedaPay\Log;
 use FedaPay\Transaction;
 
 
@@ -142,7 +143,10 @@ class SouscriptionController extends Controller
         ], 500);
     }
 }
+
+
 //     public function webhooksouscription(Request $request)
+
 // {
 //     $payload = $request->all();
 
@@ -192,40 +196,107 @@ class SouscriptionController extends Controller
 //     return response()->json(['message' => 'Événement ignoré'], 200);
 // }
 
+    // public function souscriptionWebhook(Request $request)
+    // {
+    //     $payload = $request->all();
+
+    //     if (!isset($payload['event']) || $payload['event'] !== 'transaction.approved') {
+    //         return response()->json(['message' => 'Événement non géré'], 400);
+    //     }
+
+    //     $transaction = $payload['data']['object'];
+    //     $metadata = $transaction['metadata'];
+
+    //     $user = Utilisateur::find($metadata['user_id']);
+    //     $plan = PlansSouscription::find($metadata['plan_id']);
+    //     $reference = $metadata['reference'];
+
+    //     if (!$user || !$plan) {
+    //         return response()->json(['message' => 'Utilisateur ou plan introuvable'], 404);
+    //     }
+
+    //     // Donner le rôle
+    //     // vérification du role 'organisateur'
+    //     if($user->role !== 'organisateur'){
+    //         $user->role = 'organisateur';
+    //         $user->save();
+    //     }
+
+    //     // Créer l’organisateur si nécessaire
+    //     $organisateur = $user->organisateurProfile;
+    //     if (!$organisateur) {
+    //         $organisateur = OrganisateurProfile::create([
+    //             'utilisateur_id' => $user->id,
+    //         ]);
+    //     }
+
+    //     // Enregistrer la souscription
+    //     $souscription = Souscription::create([
+    //         'organisateur_id' => $organisateur->id,
+    //         'utilisateur_id' => $user->id,
+    //         'plans_souscription_id' => $plan->id,
+    //         'date_debut' => now(),
+    //         'date_fin' => now()->addDays($plan->duree),
+    //         'methode' => 'mobile_money',
+    //         'statut' => 'actif',
+    //         'statut_paiement' => 'success',
+    //         'montant' => $plan->prix,
+    //         'reference' => $reference,
+
+    //     ]);
+
+    //     return response()->json([
+    //         'message' => 'Souscription enregistrée',
+    //         'souscription' => $souscription
+    //     ], 200);
+    // }
+    //
+
     public function souscriptionWebhook(Request $request)
-    {
-        $payload = $request->all();
+{
+    $payload = $request->all();
 
-        if (!isset($payload['event']) || $payload['event'] !== 'transaction.approved') {
-            return response()->json(['message' => 'Événement non géré'], 400);
-        }
+    // Vérification de l'événement
+    if (!isset($payload['event']) || ($payload['event'] !== 'transaction.paid' && $payload['event'] !== 'transaction.approved')) {
+        Log::error("Événement non géré : " . $payload['event']);
+        return response()->json(['message' => 'Événement non géré'], 400);
+    }
 
-        $transaction = $payload['data']['object'];
-        $metadata = $transaction['metadata'];
+    $transaction = $payload['data']['object'];
+    $metadata = $transaction['metadata'];
 
-        $user = Utilisateur::find($metadata['user_id']);
-        $plan = PlansSouscription::find($metadata['plan_id']);
-        $reference = $metadata['reference'];
+    // Vérification des métadonnées
+    if (!isset($metadata['user_id'], $metadata['plan_id'], $metadata['reference'])) {
+        Log::error("Métadonnées manquantes dans le webhook : " . json_encode($metadata));
+        return response()->json(['message' => 'Métadonnées manquantes'], 400);
+    }
 
-        if (!$user || !$plan) {
-            return response()->json(['message' => 'Utilisateur ou plan introuvable'], 404);
-        }
+    $user = Utilisateur::find($metadata['user_id']);
+    $plan = PlansSouscription::find($metadata['plan_id']);
+    $reference = $metadata['reference'];
 
-        // Donner le rôle
-        // vérification du role 'organisateur'
-        if($user->role !== 'organisateur'){
-            $user->role = 'organisateur';
-            $user->save();
-        }
+    if (!$user || !$plan) {
+        Log::error("Utilisateur ou plan introuvable : User ID = {$metadata['user_id']}, Plan ID = {$metadata['plan_id']}");
+        return response()->json(['message' => 'Utilisateur ou plan introuvable'], 404);
+    }
 
-        // Créer l’organisateur si nécessaire
-        $organisateur = $user->organisateurProfile;
-        if (!$organisateur) {
-            $organisateur = OrganisateurProfile::create([
-                'utilisateur_id' => $user->id,
-            ]);
-        }
+    // Donner le rôle d'organisateur si ce n'est pas déjà fait
+    if ($user->role !== 'organisateur') {
+        $user->role = 'organisateur';
+        $user->save();
+    }
 
+    // Créer l’organisateur si nécessaire
+    $organisateur = $user->organisateurProfile;
+    if (!$organisateur) {
+        $organisateur = OrganisateurProfile::create([
+            'utilisateur_id' => $user->id,
+        ]);
+    }
+
+    // Vérification pour éviter de dupliquer l'enregistrement
+    $existingSouscription = Souscription::where('reference', $reference)->first();
+    if (!$existingSouscription) {
         // Enregistrer la souscription
         $souscription = Souscription::create([
             'organisateur_id' => $organisateur->id,
@@ -238,15 +309,22 @@ class SouscriptionController extends Controller
             'statut_paiement' => 'success',
             'montant' => $plan->prix,
             'reference' => $reference,
-
         ]);
+
+        Log::info("Souscription enregistrée avec succès : " . json_encode($souscription));
 
         return response()->json([
             'message' => 'Souscription enregistrée',
             'souscription' => $souscription
         ], 200);
+    } else {
+        Log::warning("Souscription déjà existante pour la référence : " . $reference);
+        return response()->json([
+            'message' => 'Souscription déjà enregistrée',
+            'souscription' => $existingSouscription
+        ], 200);
     }
-    //
+}
     /**
      * Summary of souscrire
      * @param \Illuminate\Http\Request $request
