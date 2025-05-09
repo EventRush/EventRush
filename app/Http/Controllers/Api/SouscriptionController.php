@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Utilisateur;
 use FedaPay\FedaPay;
 use FedaPay\Transaction;
+use FedaPay\Webhook;
 use Illuminate\Support\Facades\Log;
 
 class SouscriptionController extends Controller
@@ -252,19 +253,39 @@ class SouscriptionController extends Controller
 
     public function souscriptionWebhook(Request $request)
 {
-    $payload = $request->all();
-    // dd($payload);
+    $load = $request->all();
+    $endpoint_secret = 'wh_sandbox_momFrGT1lLp2F-OkMCzR_kPp';
+
+    $payload = @file_get_contents('php://input');
+    $sig_header = $_SERVER['HTTP_X_FEDAPAY_SIGNATURE'];
+    $event = null;
+
+try {
+    $event = Webhook::constructEvent(
+        $payload, $sig_header, $endpoint_secret
+    );
+} catch(\UnexpectedValueException $e) {
+    // Invalid payload
+
+    http_response_code(400);
+    exit();
+} catch(\FedaPay\Error\SignatureVerification $e) {
+    // Invalid signature
+
+    http_response_code(400);
+    exit();
+}
+    // $payload = $request->all();
+    
     // Vérification de l'événement
-    if (isset($payload['event']) || ($payload['event']) === 'transaction.approved') {
+
+    if (!$event || $event->name !== 'transaction.approved' ) {
         // Log::error("Événement non géré : " . $payload['event']);
-        return response()->json(['message' => 'Événement non géré'], 401);
-    }
-    if (!isset($payload['event']) || ($payload['event'] !== 'approved' && $payload['name'] !== 'transaction.approved')) {
-        // Log::error("Événement non géré : " . $payload['event']);
-        return response()->json(['message' => 'Événement non '], 400);
+        return response()->json(['message' => 'Événement non géré'], 400);
     }
 
-    $transaction = $payload['data']['object'];
+    $load = $request->all();
+    $transaction = $load['data']['object'];
     $metadata = $transaction['metadata'];
 
     // Vérification des métadonnées
