@@ -253,9 +253,7 @@ class SouscriptionController extends Controller
 
     public function souscriptionWebhook(Request $request)
 {
-    $load = $request->all();
     $endpoint_secret = 'wh_sandbox_momFrGT1lLp2F-OkMCzR_kPp';
-
     $payload = @file_get_contents('php://input');
     $sig_header = $_SERVER['HTTP_X_FEDAPAY_SIGNATURE'];
     $event = null;
@@ -284,19 +282,18 @@ try {
         return response()->json(['message' => 'Événement non géré'], 400);
     }
 
-    $load = $request->all();
-    $transaction = $load['data']['object'];
-    $metadata = $transaction['metadata'];
+    $transaction = $event->object;
+    $metadata = $transaction->metadata;
 
     // Vérification des métadonnées
-    if (!isset($metadata['user_id'], $metadata['plan_id'], $metadata['reference'])) {
+    if (!isset($metadata->user_id, $metadata->plan_id, $metadata->reference)) {
         // Log::error("Métadonnées manquantes dans le webhook : " . json_encode($metadata));
         return response()->json(['message' => 'Métadonnées manquantes'], 400);
     }
 
-    $user = Utilisateur::find($metadata['user_id']);
-    $plan = PlansSouscription::find($metadata['plan_id']);
-    $reference = $metadata['reference'];
+    $user = Utilisateur::find($metadata->user_id);
+    $plan = PlansSouscription::find($metadata->plan_id);
+    $reference = $metadata->reference;
 
     if (!$user || !$plan) {
         // Log::error("Utilisateur ou plan introuvable : User ID = {$metadata['user_id']}, Plan ID = {$metadata['plan_id']}");
