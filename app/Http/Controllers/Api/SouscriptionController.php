@@ -10,10 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Utilisateur;
 use FedaPay\FedaPay;
-use FedaPay\Log;
 use FedaPay\Transaction;
-
-
+use Illuminate\Support\Facades\Log;
 
 class SouscriptionController extends Controller
 {
