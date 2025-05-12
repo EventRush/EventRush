@@ -28,6 +28,11 @@ class Event extends Model
         return $this->belongsToMany(Utilisateur::class, 'favoris', 'event_id', 'utilisateur_id')->withTimestamps();
     }
 
+    public function organisateur()
+        {
+            return $this->belongsTo(OrganisateurProfile::class);
+        }
+
     
     public function utilisateur()
         {
@@ -38,6 +43,7 @@ class Event extends Model
         {
             return $this->hasMany(Billet::class);
         }
+
     
     public function tickets()
         {

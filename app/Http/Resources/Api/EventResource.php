@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Api;
 
+use App\Models\OrganisateurProfile;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -14,6 +15,7 @@ class EventResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $organisateur = OrganisateurProfile::where('utilisateur_id', $this->utilisateur_id);
         return [
             'id' => $this->id,
             'titre' => $this->titre,
@@ -27,9 +29,9 @@ class EventResource extends JsonResource
                 return asset('storage//app/public/' . $photo->image_path);
             }),
             'organisateur' => [
-                'id' => $this->organisateur->id,
-                'nom_entreprise' => $this->organisateur->nom_entreprise,
-                'logo' => $this->organisateur->logo ? asset('storage/' . $this->organisateur->logo) : null,
+                'id' => $organisateur->id,
+                'nom_entreprise' => $organisateur->nom_entreprise,
+                'logo' => $organisateur->logo ? asset('storage/' . $organisateur->logo) : null,
             ],
         ];
     }
