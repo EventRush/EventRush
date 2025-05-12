@@ -155,7 +155,7 @@ Route::get('/organisateur/{organisateurId}/events', [OrganisateurEventController
 Route::get('/events/{eventsId}/ticket', [OrganisateurTicketsController::class, 'indexTicketsEvent']);
 Route::get('/events/ticket/{ticketId}', [OrganisateurTicketsController::class, 'showTicket']);
 
-Route::prefix('organisateur')->middleware(['auth:sanctum', 'role:organisateur', 'souscription.active'])->group(function(){
+Route::prefix('organisateur')->middleware(['auth:sanctum', 'organisateur', 'souscription.active'])->group(function(){
 
         // Événements
         Route::get('/events', [OrganisateurEventController::class, 'index']); 

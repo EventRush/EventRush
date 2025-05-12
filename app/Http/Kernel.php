@@ -49,6 +49,8 @@ class Kernel extends HttpKernel
     protected $routeMiddleware = [
         'souscription.active' => \App\Http\Middleware\CheckSouscriptionActive::class,
         'admin' => \App\Http\Middleware\CheckAdminRole::class,
+        'organisateur' => \App\Http\Middleware\CheckOrganisateurRole::class,
+
         // 'web.auth' => \App\Http\Middleware\WebAuth::class,
     ];
     /**
