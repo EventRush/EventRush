@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\EventResource;
 use App\Models\Event;
+use App\Models\Utilisateur;
 use Illuminate\Http\Request;
 
 class OrganisateurEventController extends Controller
@@ -17,9 +18,9 @@ class OrganisateurEventController extends Controller
         return EventResource::collection($events);
     }
 
-    public function indexEventOrgaID()
+    public function indexEventOrgaID($organisateurId)
     {
-        $organisateur = auth()->user();
+        $organisateur = Utilisateur::find($organisateurId);
         $events = Event::where('utilisateur_id', $organisateur->id)->latest()->get();
         return EventResource::collection($events);
     }

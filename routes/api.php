@@ -163,17 +163,7 @@ Route::prefix('organisateur')->middleware(['auth:sanctum', 'role:organisateur', 
 
             
     
-        // Souscription
-        // Route::post('/souscription', [SouscriptionController::class, 'store']);
-        // Route::get('/souscription/statut', [SouscriptionController::class, 'status']);
-    
-        // Dashboard
-        Route::get('/statistiques', [OrganisateurStatController::class, 'organisateurStats']);
-  
-        // ****  orga page  ***** 
-        Route::post('/scan_billet', [BilleterieController::class, 'verifierBillet']);
-        Route::get('/home/featured', [EventController::class, 'featured']);
-
+       
         Route::prefix('organisateur')->middleware( 'souscription.active')->group(function(){
             // Événements
             Route::post('/events', [OrganisateurEventController::class, 'store']); //
@@ -189,6 +179,19 @@ Route::prefix('organisateur')->middleware(['auth:sanctum', 'role:organisateur', 
             Route::get('/events/{id}/billets', [BilleterieController::class, 'eventBillets']); //
             Route::get('/events/{id}/participants', [BilleterieController::class, 'eventParticipants']); //
         });
+
+    
+    // Route::post('/souscription', [SouscriptionController::class, 'store']);
+    // Route::get('/souscription/statut', [SouscriptionController::class, 'status']);
+        
+    // Souscription
+    // Dashboard
+    Route::get('/statistiques', [OrganisateurStatController::class, 'organisateurStats']);
+  
+    // ****  orga page  ***** 
+    Route::post('/scan_billet', [BilleterieController::class, 'verifierBillet']);
+    Route::get('/home/featured', [EventController::class, 'featured']);
+
 
 
 });
