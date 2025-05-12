@@ -12,6 +12,12 @@ class Souscription extends Model
     protected $fillable = ['organisateur_id', 'utilisateur_id', 'plans_souscription_id', 'date_debut', 'date_fin', 'statut', 'montant',
         'methode', 'statut_paiement', 'reference', 'souscription_fedapay_id'];
 
+
+    protected $casts = [
+    'date_debut' => 'datetime',
+    'date_fin' => 'datetime',
+    ];
+
     public function utilisateur()  {
         return $this->belongsTo(Utilisateur::class);        
     }
