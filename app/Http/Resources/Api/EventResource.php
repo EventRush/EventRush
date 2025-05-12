@@ -15,7 +15,7 @@ class EventResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $organisateur = OrganisateurProfile::where('utilisateur_id', $this->utilisateur_id);
+        $organisateur = OrganisateurProfile::where('utilisateur_id', $this->utilisateur_id)->first();
         return [
             'id' => $this->id,
             'titre' => $this->titre,
@@ -28,11 +28,11 @@ class EventResource extends JsonResource
             'photos' => $this->photos->map(function ($photo) {
                 return asset('storage//app/public/' . $photo->image_path);
             }),
-            'organisateur' => [
+            'organisateur' =>  $organisateur ? [
                 'id' => $organisateur->id,
                 'nom_entreprise' => $organisateur->nom_entreprise,
                 'logo' => $organisateur->logo ? asset('storage/' . $organisateur->logo) : null,
-            ],
+            ]: null,
         ];
     }
     //     return [
