@@ -325,7 +325,7 @@ try {
             'utilisateur_id' => $user->id,
             'plans_souscription_id' => $plan->id,
             'date_debut' => now(),
-            'date_fin' => now()->addDays($plan->duree),
+            'date_fin' => now()->addDays($plan->duree_jours),
             'methode' => 'mobile_money',
             'statut' => 'actif',
             'statut_paiement' => 'success',
