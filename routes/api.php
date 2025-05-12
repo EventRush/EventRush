@@ -153,7 +153,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/history', [SouscriptionController::class, 'historique']);
     });
 // ***** organisateur
-Route::prefix('organisateur')->middleware(['authsanctum', 'role:organisateur', 'souscription.active'])->group(function(){
+Route::prefix('organisateur')->middleware(['auth:sanctum', 'role:organisateur', 'souscription.active'])->group(function(){
 
         // Événements
         Route::get('/events', [OrganisateurEventController::class, 'index']);
