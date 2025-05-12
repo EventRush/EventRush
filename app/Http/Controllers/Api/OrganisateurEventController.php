@@ -17,6 +17,13 @@ class OrganisateurEventController extends Controller
         return EventResource::collection($events);
     }
 
+    public function indexEventOrgaID()
+    {
+        $organisateur = auth()->user();
+        $events = Event::where('utilisateur_id', $organisateur->id)->latest()->get();
+        return EventResource::collection($events);
+    }
+
     public function store(Request $request)
     {
         $organisateur = auth()->user();

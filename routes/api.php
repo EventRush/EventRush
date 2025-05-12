@@ -70,8 +70,6 @@ Route::get('/home/categories', [EventController::class, 'search'])->name('search
 Route::get('/home/stats', [EventController::class, 'stat']);// pas encore fait
 Route::get('/home/orgaEvent', [EventController::class, 'byOrganisateur']);
 
-Route::get('/events/{eventsId}/ticket', [OrganisateurTicketsController::class, 'indexTicketsEvent']);
-Route::get('/events/ticket/{id}', [OrganisateurTicketsController::class, 'showTicket']);
 
 
 Route::apiResource('events', EventController::class);
@@ -153,23 +151,17 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/history', [SouscriptionController::class, 'historique']);
     });
 // ***** organisateur
+Route::get('/organisateur/{organisateurId}/events', [OrganisateurEventController::class, 'indexEventOrgaID']);
+Route::get('/events/{eventsId}/ticket', [OrganisateurTicketsController::class, 'indexTicketsEvent']);
+Route::get('/events/ticket/{ticketId}', [OrganisateurTicketsController::class, 'showTicket']);
+
 Route::prefix('organisateur')->middleware(['auth:sanctum', 'role:organisateur', 'souscription.active'])->group(function(){
 
         // Événements
-        Route::get('/events', [OrganisateurEventController::class, 'index']);
-        Route::post('/events', [OrganisateurEventController::class, 'store']);
+        Route::get('/events', [OrganisateurEventController::class, 'index']); 
         Route::get('/events/{id}', [OrganisateurEventController::class, 'show']);
-        Route::post('/events/{id}', [OrganisateurEventController::class, 'update']);
-        Route::delete('/events/{id}', [OrganisateurEventController::class, 'destroy']);
 
-            // tikets
-            Route::post('/events/{eventsId}/ticket', [OrganisateurTicketsController::class, 'addTicket']);
-            Route::post('/events/ticket/{id}', [OrganisateurTicketsController::class, 'updateTicket']);
-            Route::delete('/events/ticket/{id}', [OrganisateurTicketsController::class, 'destroyTicket']);
-
-        // Billets & Participants
-        Route::get('/events/{id}/billets', [BilleterieController::class, 'eventBillets']);
-        Route::get('/events/{id}/participants', [BilleterieController::class, 'eventParticipants']);
+            
     
         // Souscription
         // Route::post('/souscription', [SouscriptionController::class, 'store']);
@@ -181,6 +173,23 @@ Route::prefix('organisateur')->middleware(['auth:sanctum', 'role:organisateur', 
         // ****  orga page  ***** 
         Route::post('/scan_billet', [BilleterieController::class, 'verifierBillet']);
         Route::get('/home/featured', [EventController::class, 'featured']);
+
+        Route::prefix('organisateur')->middleware( 'souscription.active')->group(function(){
+            // Événements
+            Route::post('/events', [OrganisateurEventController::class, 'store']); //
+            Route::post('/events/{id}', [OrganisateurEventController::class, 'update']); //
+            Route::delete('/events/{id}', [OrganisateurEventController::class, 'destroy']); //
+
+            // tikets
+            Route::post('/events/{eventsId}/ticket', [OrganisateurTicketsController::class, 'addTicket']); //
+            Route::post('/events/ticket/{id}', [OrganisateurTicketsController::class, 'updateTicket']); //
+            Route::delete('/events/ticket/{id}', [OrganisateurTicketsController::class, 'destroyTicket']); //
+
+            // Billets & Participants
+            Route::get('/events/{id}/billets', [BilleterieController::class, 'eventBillets']); //
+            Route::get('/events/{id}/participants', [BilleterieController::class, 'eventParticipants']); //
+        });
+
 
 });
 
