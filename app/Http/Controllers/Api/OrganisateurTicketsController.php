@@ -75,7 +75,7 @@ class OrganisateurTicketsController extends Controller
     }
     public function addTicket(Request $request, $eventsId){
 
-        $organisateur = auth()->user();
+        $organisateur = Auth::user();
         $event = Event::findOrFail($eventsId);
 
 

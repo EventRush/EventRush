@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\BilleterieController;
 use App\Http\Controllers\Api\CommentaireController;
 use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\FavoriController;
+use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\OrganisateurEventController;
 use App\Http\Controllers\Api\OrganisateurStatController;
 use App\Http\Controllers\Api\OrganisateurTicketsController;
@@ -122,15 +123,21 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     });
 
     //    *****  notifications  *****
-    Route::middleware('auth:sanctum')->group(function () {
-        Route::get('/notifications', function () {
-            return response()->json(auth()->user()->unreadNotifications);
-    });
-        Route::post('/notifications/mark-as-read', function () {
-        auth()->user()->unreadNotifications->markAsRead();
-        return response()->json(['message' => 'Notifications marquées comme lues.']);
-    });
-    });
+
+     Route::middleware('auth:sanctum')->group(function () {
+    Route::get('notifications', [NotificationController::class, 'index']);
+    Route::post('notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead']);
+    }); 
+    // Route::middleware('auth:sanctum')->group(function () {
+    //     Route::get('/notifications', function () {
+    //         return response()->json(auth()->user()->unreadNotifications);
+    // });
+   
+    //     Route::post('/notifications/mark-as-read', function () {
+    //     auth()->user()->unreadNotifications->markAsRead();
+    //     return response()->json(['message' => 'Notifications marquées comme lues.']);
+    // });
+    // });
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('suivre/index', [SuiviController::class, 'index'])->name('index.suivis');
@@ -165,7 +172,7 @@ Route::prefix('organisateur')->middleware(['auth:sanctum', 'organisateur', 'sous
             
     
        
-        Route::prefix('organisateur')->middleware( 'souscription.active')->group(function(){
+        Route::middleware( 'souscription.active')->group(function(){
             // Événements
             Route::post('/events', [OrganisateurEventController::class, 'store']); //
             Route::post('/events/{id}', [OrganisateurEventController::class, 'update']); //
