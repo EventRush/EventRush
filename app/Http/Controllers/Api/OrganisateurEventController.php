@@ -31,14 +31,19 @@ class OrganisateurEventController extends Controller
 
         $validated = $request->validate([
             'titre' => 'required|string|max:255',
-            'description' => 'required|string',
+            'description' => 'nullable|string',
             'date_debut' => 'required|date',
             'date_fin' => 'required|date|after_or_equal:date_debut',
             'lieu' => 'required|string|max:255',
-            'statut' => 'in:brouillon,publié,annulé',
+            'statut' => 'in:brouillon,publié,annulé|default:publié',
             'photos.*' => 'image|mimes:jpg,jpeg,png|max:2048',
             'affiche' => 'image|mimes:jpg,jpeg,png|max:2048',
         ]);
+
+        // Valeur par défaut pour le statut si non présent dans la requête
+        if (!$request->has('statut')) {
+            $validated['statut'] = 'publié';
+        }
 
         $validated['utilisateur_id'] = $organisateur->id;
 
