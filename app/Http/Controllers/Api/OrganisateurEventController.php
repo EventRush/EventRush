@@ -51,6 +51,8 @@ class OrganisateurEventController extends Controller
             $validated['affiche'] = $request->file('affiche')->store('events/affiches', 'public');   
         }
 
+        $validated['utilisateur_id'] = auth()->id();
+
         $event = Event::create($validated);
 
         if ($request->hasFile('photos')) {
@@ -60,6 +62,7 @@ class OrganisateurEventController extends Controller
             }
         }
 
+        
         return new EventResource($event->load('photos'));
     }
 

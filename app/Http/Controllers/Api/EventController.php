@@ -40,6 +40,8 @@ class EventController extends Controller
         ]);
         // $validated['organisateur_id'] = auth()->user()->organisateurProfile->id;
 
+            $validated['utilisateur_id'] = auth()->id();
+
             // Valeur par défaut pour le statut si non présent dans la requête
             if (!$request->has('statut')) {
                 $validated['statut'] = 'publié';
