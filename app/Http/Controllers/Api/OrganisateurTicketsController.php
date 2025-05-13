@@ -59,7 +59,7 @@ class OrganisateurTicketsController extends Controller
         $event = Event::findOrFail($eventsId);
 
 
-        if ($event->organisateur_id !== $organisateur->id) {
+        if ($event->utilisateur_id !== $organisateur->id) {
             return response()->json(['message' => 'Non autorisé.'], 403);
         }
         $request->validate([
@@ -102,7 +102,7 @@ class OrganisateurTicketsController extends Controller
         $event = Event::findOrFail($id);
 
 
-        if ($event->organisateur_id !== $organisateur->id) {
+        if ($event->utilisateur_id !== $organisateur->id) {
             return response()->json(['message' => 'Non autorisé.'], 403);
         }
 
@@ -136,7 +136,7 @@ class OrganisateurTicketsController extends Controller
         $event = Event::findOrFail($ticket->event_id);
 
 
-        if ($event->organisateur_id !== $organisateur->id) {
+        if ($event->utilisateur_id !== $organisateur->id) {
             return response()->json(['message' => 'Non autorisé.'], 403);
         }
 
