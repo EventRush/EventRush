@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\TicketRessource;
 use App\Models\Event;
 use App\Models\OrganisateurProfile;
 use App\Models\Ticket;
@@ -14,24 +15,43 @@ class OrganisateurTicketsController extends Controller
     //
       public function index()
     {
-        // Récupérer l'organisateur connecté
-        $user = Auth::user();
+         // Récupérer l'organisateur connecté
+    $user = Auth::user();
 
-        if ($user->role !== 'organisateur') {
-            return response()->json([
-                'message' => 'Organisateur non trouvé.'
-            ], 404);
-        }
-
-        // Récupérer les tickets liés aux événements de cet organisateur
-        $tickets = Ticket::whereHas('event', function ($query) use ($user) {
-            $query->where('utilisateur_id', $user->id);
-        })->get();
-
+    if ($user->role !== 'organisateur') {
         return response()->json([
-            'message' => 'Liste des tickets récupérée avec succès',
-            'tickets' => $tickets
-        ],200);
+            'message' => 'Organisateur non trouvé.'
+        ], 404);
+    }
+
+    // Récupérer les tickets liés aux événements de cet organisateur
+    $tickets = Ticket::whereHas('event', function ($query) use ($user) {
+        $query->where('utilisateur_id', $user->id);
+    })->get();
+
+    return response()->json([
+        'message' => 'Liste des tickets récupérée avec succès',
+        'tickets' => TicketRessource::collection($tickets)
+    ],200);
+
+        // Récupérer l'organisateur connecté
+        // $user = Auth::user();
+
+        // if ($user->role !== 'organisateur') {
+        //     return response()->json([
+        //         'message' => 'Organisateur non trouvé.'
+        //     ], 404);
+        // }
+
+        // // Récupérer les tickets liés aux événements de cet organisateur
+        // $tickets = Ticket::whereHas('event', function ($query) use ($user) {
+        //     $query->where('utilisateur_id', $user->id);
+        // })->get();
+
+        // return response()->json([
+        //     'message' => 'Liste des tickets récupérée avec succès',
+        //     'tickets' => $tickets
+        // ],200);
     }
 
 
