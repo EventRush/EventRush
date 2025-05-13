@@ -25,7 +25,7 @@ class OrganisateurTicketsController extends Controller
 
         // Récupérer les tickets liés aux événements de cet organisateur
         $tickets = Ticket::whereHas('event', function ($query) use ($user) {
-            $query->where('organisateur_id', $user->id);
+            $query->where('utilisateur_id', $user->id);
         })->get();
 
         return response()->json([
