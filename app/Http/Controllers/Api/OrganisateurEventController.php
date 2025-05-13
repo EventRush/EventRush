@@ -7,6 +7,7 @@ use App\Http\Resources\Api\EventResource;
 use App\Models\Event;
 use App\Models\Utilisateur;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class OrganisateurEventController extends Controller
 {
@@ -27,7 +28,8 @@ class OrganisateurEventController extends Controller
 
     public function store(Request $request)
     {
-        $organisateur = auth()->user();
+        // $organisateur = auth()->user();
+        $organisateur = Auth::user();
 
         $validated = $request->validate([
             'titre' => 'required|string|max:255',
@@ -36,8 +38,8 @@ class OrganisateurEventController extends Controller
             'date_fin' => 'required|date|after_or_equal:date_debut',
             'lieu' => 'required|string|max:255',
             'statut' => 'in:brouillon,publié,annulé',
-            'photos.*' => 'image|mimes:jpg,jpeg,png|max:2048',
-            'affiche' => 'image|mimes:jpg,jpeg,png|max:2048',
+            'photos.*' => 'image|mimes:jpg,jpeg,png|max:6300',
+            'affiche' => 'image|mimes:jpg,jpeg,png|max:6300',
         ]);
 
         // Valeur par défaut pour le statut si non présent dans la requête
@@ -50,8 +52,6 @@ class OrganisateurEventController extends Controller
         if ($request->hasFile('affiche')) {
             $validated['affiche'] = $request->file('affiche')->store('events/affiches', 'public');   
         }
-
-        $validated['utilisateur_id'] = auth()->id();
 
         $event = Event::create($validated);
 
