@@ -83,7 +83,7 @@ class OrganisateurTicketsController extends Controller
             return response()->json(['message' => 'Non autorisé.'], 403);
         }
         $request->validate([
-            'type' => 'required|in:brouillon,publié,annulé',
+            'type' => 'required|in:standart,vip1,vip2',
             'prix' => 'required|numeric' ,
             'quantite' => 'required|integer|min:1' ,
             'image' => 'image|mimes:jpg,jpeg,png|max:4096' ,
