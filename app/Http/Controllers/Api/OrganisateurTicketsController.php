@@ -66,7 +66,7 @@ class OrganisateurTicketsController extends Controller
             'type' => 'required|in:brouillon,publié,annulé',
             'prix' => 'required|numeric' ,
             'quantite' => 'required|integer|min:1' ,
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:4096' ,
+            'image' => 'image|mimes:jpg,jpeg,png|max:4096' ,
             'date_limite_vente' => 'required|date|after:now' 
 
         ]);
@@ -110,7 +110,7 @@ class OrganisateurTicketsController extends Controller
             'type' => 'in:standart,vip1,vip2',
             'prix' => 'nullable|numeric' ,
             'quantite_disponible' => 'nullable|integer' ,
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:4096'          
+            'image' => 'image|mimes:jpg,jpeg,png|max:4096'          
         ]);
         $imagePath = null;
 
