@@ -40,6 +40,10 @@ class EventController extends Controller
         ]);
         // $validated['organisateur_id'] = auth()->user()->organisateurProfile->id;
 
+            // Valeur par défaut pour le statut si non présent dans la requête
+            if (!$request->has('statut')) {
+                $validated['statut'] = 'publié';
+            }
             if ($request->hasFile('affiche')) {
                 $validated['affiche'] = $request->file('affiche')->store('events/affiches', 'public');   
             }
