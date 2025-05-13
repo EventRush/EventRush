@@ -35,7 +35,7 @@ class OrganisateurEventController extends Controller
             'date_debut' => 'required|date',
             'date_fin' => 'required|date|after_or_equal:date_debut',
             'lieu' => 'required|string|max:255',
-            'statut' => 'in:brouillon,publié,annulé|default:publié',
+            'statut' => 'in:brouillon,publié,annulé',
             'photos.*' => 'image|mimes:jpg,jpeg,png|max:2048',
             'affiche' => 'image|mimes:jpg,jpeg,png|max:2048',
         ]);
