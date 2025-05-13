@@ -159,6 +159,7 @@ Route::prefix('organisateur')->middleware(['auth:sanctum', 'organisateur', 'sous
 
         // Événements
         Route::get('/events', [OrganisateurEventController::class, 'index']); 
+        Route::get('/ticket', [OrganisateurTicketsController::class, 'index']);
         Route::get('/events/{id}', [OrganisateurEventController::class, 'show']);
 
             

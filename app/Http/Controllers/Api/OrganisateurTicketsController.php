@@ -7,10 +7,35 @@ use App\Models\Event;
 use App\Models\OrganisateurProfile;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class OrganisateurTicketsController extends Controller
 {
     //
+      public function index()
+    {
+        // Récupérer l'organisateur connecté
+        $user = Auth::user();
+
+        if ($user->role !== 'organisateur') {
+            return response()->json([
+                'message' => 'Organisateur non trouvé.'
+            ], 404);
+        }
+
+        // Récupérer les tickets liés aux événements de cet organisateur
+        $tickets = Ticket::whereHas('event', function ($query) use ($user) {
+            $query->where('organisateur_id', $user->id);
+        })->get();
+
+        return response()->json([
+            'message' => 'Liste des tickets récupérée avec succès',
+            'tickets' => $tickets
+        ],200);
+    }
+
+
+
     public function indexTicketsEvent($eventsId){
         $event = Event::findOrFail($eventsId);
         $organisateur = OrganisateurProfile::where('utilisateur_id', $event->utilisateur_id)->first();
