@@ -86,7 +86,7 @@ class OrganisateurTicketsController extends Controller
             'type' => 'required|in:standart,vip1,vip2',
             'prix' => 'required|numeric' ,
             'quantite' => 'required|integer|min:1' ,
-            'image' => 'image|mimes:jpg,jpeg,png|max:4096' ,
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:4096' ,
             'date_limite_vente' => 'required|date|after:now' 
 
         ]);
