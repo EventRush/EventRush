@@ -141,6 +141,7 @@ class OrganisateurTicketsController extends Controller
 
 
         if ($request->has('type')) $ticket->type = $request->type;
+        if ($request->has('prix')) $ticket->prix = $request->prix;
         if ($request->has('quantite_disponible')) {
 
             $ticket->quantité_disponible = $request->quantite_disponible;
