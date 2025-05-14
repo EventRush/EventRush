@@ -108,9 +108,13 @@ class OrganisateurEventController extends Controller
             }
         }
 
-        $event->fill($request->only([
-            'titre', 'description', 'date_debut', 'date_fin', 'lieu', 'statut'
-        ]));
+        if ($request->has('titre')) $event->titre = $request->titre;
+        if ($request->has('description')) $event->description = $request->description;
+        if ($request->has('date_debut')) $event->date_debut = $request->date_debut;
+        if ($request->has('date_fin')) $event->date_fin = $request->date_fin; 
+        if ($request->has('lieu')) $event->lieu = $request->lieu;
+        if ($request->has('statut')) $event->statut = $request->statut;
+       
 
         $event->save();
 
