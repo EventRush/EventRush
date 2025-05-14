@@ -99,6 +99,7 @@ class OrganisateurTicketsController extends Controller
         $ticket = Ticket::create([
             'event_id' => $eventsId,
             'type' => $request->type,
+            'prix' => $request->prix,
             'quantité_disponible' => $request->quantite,
             'quantite_restante' => $request->quantite, //initier
             'image' => $imagePath,
