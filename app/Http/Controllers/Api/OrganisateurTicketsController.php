@@ -139,12 +139,13 @@ class OrganisateurTicketsController extends Controller
             $ticket->image = $imagePath;
         }
 
-        $ticket->fill($request->only([
-            'type',
-            'quantite_disponible',
-            'image'
-        ]));
-        if ($request->has('quantite_disponible')) $ticket->quantite_restante = $request->quantite_disponible;
+
+        if ($request->has('type')) $ticket->type = $request->type;
+        if ($request->has('quantite_disponible')) {
+
+            $ticket->quantite_disponible = $request->quantite_disponible;
+            $ticket->quantite_restante = $request->quantite_disponible;
+        }
         $ticket->save();
 
         return response()->json($ticket, 201);
