@@ -139,7 +139,7 @@ class OrganisateurTicketsController extends Controller
             $ticket->image = $imagePath;
         }
 
-        $ticket->update($request->only([
+        $ticket->fill($request->only([
             'type',
             'quantite_disponible',
             'image'

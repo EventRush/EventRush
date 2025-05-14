@@ -49,20 +49,7 @@ public function payer(Request $request)
         return response()->json(['message' => 'La vente de ce ticket est terminée'], 403);
     }
 
-    // 2. Création du billet en attente
-    // $billet = Billet::create([
-    //     'event_id' => $request->event_id,
-    //     'utilisateur_id' => $utilisateur->id,
-    //     'ticket_id' => $request->ticket_id,
-    //     'montant' => $request->montant,
-    //     'status' => 'en_attente',
-    //     'methode' => 'mobile_money',
-    //     'reference' => Str::uuid(),
-    //     'qr_code' => null,
-    // ]);
-    // $evenement = Event::find( $request->event_id);
 
-    
     // 3. Configuration FedaPay
     FedaPay::setApiKey(env('FEDAPAY_SECRET_KEY'));
     FedaPay::setEnvironment(env('FEDAPAY_ENV', 'sandbox')); // ou 'live'
