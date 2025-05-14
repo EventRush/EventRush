@@ -130,7 +130,7 @@ class OrganisateurTicketsController extends Controller
             'type' => 'in:standart,vip1,vip2',
             'prix' => 'nullable|numeric' ,
             'quantite_disponible' => 'nullable|integer' ,
-            'image' => 'image|mimes:jpg,jpeg,png|max:4096'          
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:4096'          
         ]);
         $imagePath = null;
 
