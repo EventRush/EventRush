@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Ticket extends Model
 {
     use HasFactory;
-    protected $fillable = ['event_id', 'type',  'prix', 'image', 'quantité_disponible'];
+    protected $fillable = ['event_id', 'type',  'prix', 'image', 'quantité_disponible', 'quantite_restante', 'date_limite_vente'];
 
     protected $casts = [ 'prix' => 'float',
 ];
