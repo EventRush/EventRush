@@ -99,7 +99,7 @@ class OrganisateurTicketsController extends Controller
         $ticket = Ticket::create([
             'event_id' => $eventsId,
             'type' => $request->type,
-            'quantite_disponible' => $request->quantite,
+            'quantité_disponible' => $request->quantite,
             'quantite_restante' => $request->quantite, //initier
             'image' => $imagePath,
             'date_limite_vente' => $request->date_limite_vente 
@@ -143,7 +143,7 @@ class OrganisateurTicketsController extends Controller
         if ($request->has('type')) $ticket->type = $request->type;
         if ($request->has('quantite_disponible')) {
 
-            $ticket->quantite_disponible = $request->quantite_disponible;
+            $ticket->quantité_disponible = $request->quantite_disponible;
             $ticket->quantite_restante = $request->quantite_disponible;
         }
         $ticket->save();
