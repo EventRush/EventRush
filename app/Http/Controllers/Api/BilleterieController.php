@@ -10,6 +10,7 @@ use App\Models\Utilisateur;
 use FedaPay\Customer;
 use FedaPay\FedaPay;
 use FedaPay\Transaction;
+use FedaPay\Webhook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -65,7 +66,8 @@ public function payer(Request $request)
         'description' => "Achat billet pour - {$evenement->titre} - de - {$utilisateur->nom}" ,
         'amount' => (int) $ticket->prix,
         'currency' => ['iso' => 'XOF'],
-        // 'callback_url' => 'https://8e2b-2c0f-2a80-38f-2610-e97d-9081-f6ba-14e5.ngrok-free.app/api/paiement/callback?reference=' . $billet->reference,
+        "callback_url" => 'https://gestevent-main-ai7iif.laravel.cloud/api/billet/webhook' . '?reference=' . $reference,
+                    // 'callback_url' => 'https://8e2b-2c0f-2a80-38f-2610-e97d-9081-f6ba-14e5.ngrok-free.app/api/paiement/callback?reference=' . $billet->reference,
         'customer' => [
             'firstname' => $request->prenom ?: 'Inconnu',
             'lastname' => $request->nom ?: $utilisateur->nom,
@@ -74,7 +76,7 @@ public function payer(Request $request)
                 'number' => $request->telephone ?: 64000001,
                 'country' => 'BJ',
             ],
-            "metadata" => [
+            "custom_metadata" => [
                 'type' => 'Billet',
                 "user_id" => $utilisateur->id,
                 "ticket_id" => $ticket->id,
@@ -99,23 +101,54 @@ public function payer(Request $request)
         'reference' => $reference
     ]);
 }
-
-public function webhookBillet(Request $request)
+    /**
+     * Summary of webhookBillet
+     * @param \Illuminate\Http\Request $request
+     * @return mixed|\Illuminate\Http\JsonResponse
+     */
+    public function webhookBillet(Request $request)
 {
-    $payload = $request->all();
+    $endpoint_secret = 'wh_sandbox_k3xfQnlg3C75xcetgkNSJeoR';
+    $payload = @file_get_contents('php://input');
+    $sig_header = $_SERVER['HTTP_X_FEDAPAY_SIGNATURE'];
+    $event = null;
 
-    if (!isset($payload['event']) || $payload['event'] !== 'transaction.paid') {
-        return response()->json(['message' => 'Événement non géré'], 400);
-    }
+    try {
+    $event = Webhook::constructEvent(
+        $payload, $sig_header, $endpoint_secret
+    );
+}catch(\UnexpectedValueException $e) {
+    // Invalid payload
+
+    http_response_code(400);
+    exit();
+} catch(\FedaPay\Error\SignatureVerification $e) {
+    // Invalid signature
+
+    http_response_code(400);
+    exit();
+}
 
     
+    if ($event->name === 'transaction.approved' ) {
 
-    $transaction = $payload['data']['object'];
-    $metadata = $transaction['metadata'];
+        $transaction = $event->entity;
 
-    $user = Utilisateur::find($metadata['user_id']);
-    $ticket = Ticket::find($metadata['ticket_id']);
-    $reference = $metadata['reference'];
+    
+    $metadata = $transaction->custom_metadata;
+
+    // Vérification des métadonnées
+    if (!isset($metadata->user_id, $metadata->ticket_id, $metadata->reference)) {
+        // Log::error("Métadonnées manquantes dans le webhook : " . json_encode($metadata));
+        return response()->json(['message' => 'Métadonnées manquantes'], 400);
+    }
+
+    $user = Utilisateur::find($metadata->user_id);
+    $ticket = Ticket::find($metadata->ticket_id);
+    // $evenement = Event::find($ticket->event_id);
+    $reference = $metadata->reference;
+
+    
 
     if (!$user || !$ticket) {
         return response()->json(['message' => 'Utilisateur ou ticket introuvable'], 404);
@@ -150,7 +183,65 @@ public function webhookBillet(Request $request)
         'billet' => $billet,
         'qr_code' => $billet->qr_code
     ], 200);
+    }
+
+        return response()->json(['message' => 'Événement non géré'], 400);
+
+    
 }
+
+// public function webhookBillet(Request $request)
+// {
+    
+//     $payload = $request->all();
+
+//     if (!isset($payload['event']) || $payload['event'] !== 'transaction.paid') {
+//         return response()->json(['message' => 'Événement non géré'], 400);
+//     }
+
+    
+
+//     $transaction = $payload['data']['object'];
+//     $metadata = $transaction['metadata'];
+
+//     $user = Utilisateur::find($metadata['user_id']);
+//     $ticket = Ticket::find($metadata['ticket_id']);
+//     $reference = $metadata['reference'];
+
+//     if (!$user || !$ticket) {
+//         return response()->json(['message' => 'Utilisateur ou ticket introuvable'], 404);
+//     }
+
+//     if (!$reference) {
+//         return response()->json(['message' => 'Référence manquante.'], 400);
+//     }
+
+//     $billet_paye = Billet::where('reference', $reference);
+
+//     if ($billet_paye->status === 'paye') {
+//         return response()->json(['message' => 'Paiement déjà confirmé.']);
+//     }
+
+//     // Enregistrer la souscription
+//     $billet = Billet::create([
+//         'event_id' => $ticket->event_id,
+//         'utilisateur_id' => $user->id,
+//         'ticket_id' => $ticket->id,
+//         'methode' => 'mobile_money',
+//         'status' => 'paye',
+//         'montant' => $ticket->prix,
+//         'qr_code' => Str::uuid(),
+//         'reference' => $reference,
+//     ]);
+//     $ticket->quantite_restante -= 1 ;
+//     $ticket->save();
+
+//     return response()->json([
+//         'message' => 'Billet acheté',
+//         'billet' => $billet,
+//         'qr_code' => $billet->qr_code
+//     ], 200);
+// }
 
 /**
  * Summary of callback

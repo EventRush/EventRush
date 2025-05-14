@@ -104,7 +104,7 @@ class OrganisateurEventController extends Controller
             $event->photos()->delete();
             foreach ($request->file('photos') as $photo) {
                 $photoPath = $photo->store('events/photos', 'public');
-                $event->photos()->create(['image_path' => $photoPath]);
+                $event->photos()->create(['image_path' => $photoPath]); 
             }
         }
 
