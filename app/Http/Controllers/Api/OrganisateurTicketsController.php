@@ -119,7 +119,7 @@ class OrganisateurTicketsController extends Controller
 
         $organisateur = auth()->user();
         $ticket = Ticket::findOrFail($id);
-        $event = Event::findOrFail($id);
+        $event = Event::findOrFail($ticket->event_id);
 
 
         if ($event->utilisateur_id !== $organisateur->id) {
