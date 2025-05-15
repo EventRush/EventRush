@@ -59,7 +59,7 @@ class OrganisateurTicketsController extends Controller
     public function indexTicketsEvent($eventsId){
         $event = Event::findOrFail($eventsId);
         $organisateur = OrganisateurProfile::where('utilisateur_id', $event->utilisateur_id)->first();
-        $tickets = $event->tickets();
+        $tickets = $event->tickets()->get();
         $tickets->transform(function($ticket){
             $ticket->image_url = $ticket->image ? asset('storage/app/public/' . $ticket->image) : null;
             return $ticket;
