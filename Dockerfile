@@ -19,6 +19,9 @@ WORKDIR /var/www/html
 # Copie composer depuis l’image officielle
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
+# Remplace le VirtualHost d'Apache pour pointer vers public/
+COPY ./docker/apache.conf /etc/apache2/sites-available/000-default.conf
+
 # Installe les dépendances PHP
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 

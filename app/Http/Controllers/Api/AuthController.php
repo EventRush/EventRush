@@ -58,11 +58,14 @@ class AuthController extends Controller
     
         Auth::login($utilisateur);
         $token = $utilisateur->createToken('auth_token')->plainTextToken;
+        
     
         return response()->json([
             'access_token' => $token, 
             'token_type' => 'Bearer',
-            'message'=> 'Utilisateur connecté'
+            'message'=> 'Utilisateur connecté',
+            'role' => $utilisateur->role, 
+
         ]);
     
         
