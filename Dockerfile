@@ -18,6 +18,10 @@ COPY ./docker/apache.conf /etc/apache2/sites-available/000-default.conf
 # Copie ton code Laravel dans le conteneur
 COPY . /var/www/html
 
+COPY . /var/www/html
+WORKDIR /var/www/html
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader
+
 # Donne les bonnes permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html
