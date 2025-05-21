@@ -1,44 +1,33 @@
-# Utilise PHP 8.2 avec Apache
 FROM php:8.2-apache
 
-# Active mod_rewrite d’Apache
+# Installe les dépendances système et les extensions PHP nécessaires
+RUN apt-get update && apt-get install -y \
+    git unzip zip libpng-dev libonig-dev libxml2-dev libzip-dev libjpeg-dev libfreetype6-dev \
+    && docker-php-ext-install pdo_mysql mbstring zip gd
+
+# Active mod_rewrite pour Laravel
 RUN a2enmod rewrite
 
-# Installe les extensions nécessaires
-RUN apt-get update && apt-get install -y \
-    git unzip libzip-dev libpng-dev libjpeg-dev libfreetype6-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_mysql zip gd
-
-# Copie les fichiers du projet dans le conteneur
+# Copie les fichiers du projet
 COPY . /var/www/html
 
-# Place-toi dans le bon dossier
+# Accède au dossier du projet
 WORKDIR /var/www/html
 
-# Copie composer depuis l’image officielle
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-
-# Remplace le VirtualHost d'Apache pour pointer vers public/
-COPY ./docker/apache.conf /etc/apache2/sites-available/000-default.conf
+# Installe Composer (si pas déjà dans l'image de base)
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Installe les dépendances PHP
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-# Clé d'application
-RUN php artisan key:generate
-
-
-# Donne les bons droits à Laravel
+# Donne les permissions correctes
 RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html/storage /var/www/html/bootstrap/cache
+    && chmod -R 755 /var/www/html/storage
 
-# Nettoyer & cacher config/routes/views
-RUN php artisan config:clear
-RUN php artisan route:clear
-RUN php artisan view:clear
-RUN php artisan config:cache
-RUN php artisan route:cache
+# Supprime .env si présent (Render injectera les variables)
+RUN rm -f .env
 
-# Exécuter les migrations
-RUN php artisan migrate --force
+# Compile le cache de config (si APP_KEY est déjà défini dans Render)
+RUN php artisan config:clear && php artisan config:cache
+
+EXPOSE 80
