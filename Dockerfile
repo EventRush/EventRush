@@ -25,6 +25,20 @@ COPY ./docker/apache.conf /etc/apache2/sites-available/000-default.conf
 # Installe les dépendances PHP
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
+# Clé d'application
+RUN php artisan key:generate
+
+
 # Donne les bons droits à Laravel
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Nettoyer & cacher config/routes/views
+RUN php artisan config:clear
+RUN php artisan route:clear
+RUN php artisan view:clear
+RUN php artisan config:cache
+RUN php artisan route:cache
+
+# Exécuter les migrations
+RUN php artisan migrate --force
