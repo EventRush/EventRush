@@ -159,7 +159,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     });
 // ***** organisateur
 Route::get('/organisateur/{organisateurId}/events', [OrganisateurEventController::class, 'indexEventOrgaID']);
-Route::get('/events/{eventsId}/ticket', [OrganisateurTicketsController::class, 'indexTicketsEvent']);
+Route::get('/events/{eventId}/ticket', [OrganisateurTicketsController::class, 'indexTicketsEvent']);
 Route::get('/events/ticket/{ticketId}', [OrganisateurTicketsController::class, 'showTicket']);
 
 Route::prefix('organisateur')->middleware(['auth:sanctum', 'organisateur', 'souscription.active'])->group(function(){
@@ -179,7 +179,7 @@ Route::prefix('organisateur')->middleware(['auth:sanctum', 'organisateur', 'sous
             Route::delete('/events/{id}', [OrganisateurEventController::class, 'destroy']); //
 
             // tikets
-            Route::post('/events/{eventsId}/ticket', [OrganisateurTicketsController::class, 'addTicket']); //
+            Route::post('/events/{eventId}/ticket', [OrganisateurTicketsController::class, 'addTicket']); //
             Route::post('/events/ticket/{id}', [OrganisateurTicketsController::class, 'updateTicket']); //
             Route::delete('/events/ticket/{id}', [OrganisateurTicketsController::class, 'destroyTicket']); //
 

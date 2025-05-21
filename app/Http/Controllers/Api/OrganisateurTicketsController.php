@@ -56,8 +56,8 @@ class OrganisateurTicketsController extends Controller
 
 
 
-    public function indexTicketsEvent($eventsId){
-        $event = Event::findOrFail($eventsId);
+    public function indexTicketsEvent($eventId){
+        $event = Event::findOrFail($eventId);
         $organisateur = OrganisateurProfile::where('utilisateur_id', $event->utilisateur_id)->first();
         $tickets = $event->tickets()->get();
         $tickets->transform(function($ticket){
@@ -73,10 +73,10 @@ class OrganisateurTicketsController extends Controller
         ]);
 
     }
-    public function addTicket(Request $request, $eventsId){
+    public function addTicket(Request $request, $eventId){
 
         $organisateur = Auth::user();
-        $event = Event::findOrFail($eventsId);
+        $event = Event::findOrFail($eventId);
 
 
         if ($event->utilisateur_id !== $organisateur->id) {
@@ -97,7 +97,7 @@ class OrganisateurTicketsController extends Controller
         }
 
         $ticket = Ticket::create([
-            'event_id' => $eventsId,
+            'event_id' => $eventId,
             'type' => $request->type,
             'prix' => $request->prix,
             'quantité_disponible' => $request->quantite,
