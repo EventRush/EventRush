@@ -18,7 +18,7 @@ RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/storage
 
-# Supprime .env pour laisser Render injecter les variables
-RUN rm -f .env
-
 EXPOSE 80
+
+# Commande de démarrage
+CMD ["sh", "-c", "php artisan config:clear && php artisan migrate --force && apache2-foreground"]
