@@ -38,6 +38,6 @@ RUN php artisan config:cache
 RUN php artisan route:cache
 
 # Exécuter les migrations
-RUN php artisan migrate --force
+##
 
 EXPOSE 80
