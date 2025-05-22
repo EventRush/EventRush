@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install pdo_mysql mbstring zip gd
 
 # Apache config (à créer dans le même dossier)
-COPY apache.conf /etc/apache2/sites-available/000-default.conf
+COPY docker/apache.conf /etc/apache2/sites-available/000-default.conf
 
 # Active mod_rewrite pour Laravel
 RUN a2enmod rewrite
