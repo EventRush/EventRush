@@ -21,4 +21,11 @@ RUN chown -R www-data:www-data /var/www/html \
 EXPOSE 80
 
 # Commande de démarrage
-CMD ["sh", "-c", "php artisan config:clear && php artisan migrate --force && apache2-foreground"]
+CMD ["apache2-foreground"]
+
+# Copie le script d’entrée
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# Utilise le script comme point d’entrée
+ENTRYPOINT ["/entrypoint.sh"]
