@@ -40,4 +40,8 @@ RUN php artisan route:cache
 # Exécuter les migrations
 ##
 
+# Clé Laravel
+RUN php artisan key:generate
+
+
 EXPOSE 80
