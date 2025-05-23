@@ -66,7 +66,7 @@ public function payer(Request $request)
         'description' => "Achat billet pour - {$evenement->titre} - de - {$utilisateur->nom}" ,
         'amount' => (int) $ticket->prix,
         'currency' => ['iso' => 'XOF'],
-        "callback_url" => 'https://eventrush.onrender.com//api/billet/webhook' . '?reference=' . $reference,
+        "callback_url" => 'https://eventrush.onrender.com/api/billet/webhook' . '?reference=' . $reference,
                     // 'callback_url' => 'https://8e2b-2c0f-2a80-38f-2610-e97d-9081-f6ba-14e5.ngrok-free.app/api/paiement/callback?reference=' . $billet->reference,
         'customer' => [
             'firstname' => $request->prenom ?: 'Inconnu',
