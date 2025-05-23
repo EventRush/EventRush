@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Souscription;
+use App\Observers\SouscriptionObserver;
 use Dedoc\Scramble\Scramble;
 use Dedoc\Scramble\Support\Generator\OpenApi;
 use Dedoc\Scramble\Support\Generator\SecurityScheme;
@@ -35,6 +37,8 @@ class AppServiceProvider extends ServiceProvider
                 SecurityScheme::http('bearer')
             );
         });
+
+        Souscription::observe(SouscriptionObserver::class);
     }
     // public function boot(): void
     // {

@@ -17,7 +17,8 @@ implements MustVerifyEmail
     protected $utilisateur    =   "utilisateurs";
 
     protected $fillable = [
-        'nom', 'email', 'email_verified_at', 'password', 'avatar', 'role', 'otp', 'otp_espires_at', 'google_id',
+        'nom', 'email', 'email_verified_at', 'password', 
+        'avatar', 'role', 'otp', 'otp_espires_at', 'google_id', 'points'
     ];
 
     public function organisateurProfil(){

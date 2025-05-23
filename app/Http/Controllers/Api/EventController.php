@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\EventResource;
 use App\Models\Event;
 use App\Models\Utilisateur;
+use App\Services\PointService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
 {
@@ -64,6 +66,13 @@ class EventController extends Controller
 
     public function show(Event $event)
     {
+        $event = Event::findOrFail($event);
+        $user = Auth::user();
+
+        if ($user) {
+        PointService::enregistrerVueEvenement($user, $event);
+    }
+
         // return new EventResource($event->load('organisateur'));
         return new EventResource($event);
 
