@@ -66,11 +66,11 @@ class EventController extends Controller
 
     public function show(Event $event)
     {
-        $event = Event::findOrFail($event);
-        $user = Auth::user();
+        // $event = Event::findOrFail($event);
+        $utilisateur = Auth::user();
 
-        if ($user) {
-        PointService::enregistrerVueEvenement($user, $event);
+        if ($utilisateur) {
+        PointService::enregistrerVueEvenement($utilisateur, $event);
     }
 
         // return new EventResource($event->load('organisateur'));
