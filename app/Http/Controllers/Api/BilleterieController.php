@@ -156,9 +156,9 @@ public function payer(Request $request)
         return response()->json(['message' => 'Référence manquante.'], 400);
     }
 
-    $billet_paye = Billet::where('reference', $reference);
+    $billet_paye = Billet::where('reference', $reference)->first();
 
-    if ($billet_paye->status === 'paye') {
+    if ($billet_paye && $billet_paye->status === 'paye') {
         return response()->json(['message' => 'Paiement déjà confirmé.']);
     }
 
@@ -173,8 +173,8 @@ public function payer(Request $request)
         'qr_code' => Str::uuid(),
         'reference' => $reference,
     ]);
-    // $ticket->quantite_restante -= 1 ;
-    // $ticket->save();
+    $ticket->quantite_restante -= 1 ;
+    $ticket->save();
 
     return response()->json([
         'message' => 'Billet acheté',
