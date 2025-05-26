@@ -71,16 +71,16 @@ public function payer(Request $request)
             'firstname' => $request->prenom ?: 'Inconnu',
             'lastname' => $request->nom ?: $utilisateur->nom,
             'email' => $utilisateur->email,
-            'phone_number' => [
+            'phone' => [
                 'number' => $request->telephone ?: 64000001,
                 'country' => 'BJ',
-            ],
-            "custom_metadata" => [
-                "type" => "Billet",
-                "user_id" => $utilisateur->id,
-                "ticket_id" => $ticket->id,
-                "reference" => $reference
             ]
+        ],
+        "custom_metadata" => [
+            "type" => "Billet",
+            "user_id" => $utilisateur->id,
+            "ticket_id" => $ticket->id,
+            "reference" => $reference
         ]
         // ])
 
