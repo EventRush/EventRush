@@ -76,7 +76,7 @@ public function payer(Request $request)
                 'country' => 'BJ',
             ],
             "custom_metadata" => [
-                "type" => 'Billet',
+                "type" => "Billet",
                 "user_id" => $utilisateur->id,
                 "ticket_id" => $ticket->id,
                 "reference" => $reference
