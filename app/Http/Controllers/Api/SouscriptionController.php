@@ -90,8 +90,7 @@ class SouscriptionController extends Controller
     public function paiementsouscrire(Request $request)
 {
     $request->validate([
-        'plans_souscription_id' => 'required|exists:plans_souscriptions,id',
-        'telephone' => 'numeric',
+        'plans_souscription_id' => 'required|exists:plans_souscriptions,id'
     ]);
 
     $plan = PlansSouscription::findOrFail($request->plans_souscription_id);
