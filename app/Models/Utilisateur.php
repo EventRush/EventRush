@@ -48,14 +48,14 @@ implements MustVerifyEmail
         return $this->belongsToMany(Event::class, 'favoris', 'utilisateur_id', 'event_id')->withTimestamps();
     }
 
-    public function suivis()
+    public function suiveurs()
     {
         return $this->hasMany(Suivi::class);
     }
 
-    public function organisateursSuivis()
+    public function utilisateurSuivis()
     {
-        return $this->belongsToMany(OrganisateurProfile::class, 'suivis', 'utilisateur_id', 'organisateur_id');
+        return $this->hasMany(Suivi::class,  'utilisateur_id',);
     }
 
     public function billets()

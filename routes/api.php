@@ -138,13 +138,18 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     //     return response()->json(['message' => 'Notifications marquées comme lues.']);
     // });
     // });
+    Route::middleware('auth:sanctum')->prefix('suivis')->group(function () {
+    Route::get('/', [SuiviController::class, 'index']);
+    Route::post('/suivre/{id}', [SuiviController::class, 'suivre']);
+    Route::delete('/ne-plus-suivre/{id}', [SuiviController::class, 'nePlusSuivre']);
+});
 
-    Route::middleware('auth:sanctum')->group(function () {
-        Route::get('suivre/index', [SuiviController::class, 'index'])->name('index.suivis');
-        Route::post('/suivre/{organisateurId}', [SuiviController::class, 'suivre'])->name('suivre.organisateur');
-        Route::delete('/suivre/{organisateurId}', [SuiviController::class, 'nePlusSuivre'])->name('neplus.suivre.organisateur');
+    // Route::middleware('auth:sanctum')->group(function () {
+    //     Route::get('suivre/index', [SuiviController::class, 'index'])->name('index.suivis');
+    //     Route::post('/suivre/{organisateurId}', [SuiviController::class, 'suivre'])->name('suivre.organisateur');
+    //     Route::delete('/suivre/{organisateurId}', [SuiviController::class, 'nePlusSuivre'])->name('neplus.suivre.organisateur');
 
-    });
+    // });
 
     //    *****  abonnement  *****
     Route::post('/souscriptions/webhook', [SouscriptionController::class, 'souscriptionWebhook']);

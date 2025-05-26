@@ -11,7 +11,7 @@ class Suivi extends Model
 
     protected $fillable = [
         'utilisateur_id',
-        'organisateur_id',
+        'suivi_id',
     ];
 
     public function utilisateur()
@@ -19,9 +19,9 @@ class Suivi extends Model
         return $this->belongsTo(Utilisateur::class);
     }
 
-    public function organisateur()
+    public function suivi()
     {
-        return $this->belongsTo(OrganisateurProfile::class);
+        return $this->belongsTo(Utilisateur::class);
     }
 
 }

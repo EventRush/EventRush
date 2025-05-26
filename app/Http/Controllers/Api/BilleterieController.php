@@ -7,6 +7,7 @@ use App\Models\Billet;
 use App\Models\Event;
 use App\Models\Ticket;
 use App\Models\Utilisateur;
+use App\Notifications\NbrAchatNot;
 use FedaPay\Customer;
 use FedaPay\FedaPay;
 use FedaPay\Transaction;
@@ -143,7 +144,7 @@ public function payer(Request $request)
 
     $user = Utilisateur::find($metadata->user_id);
     $ticket = Ticket::find($metadata->ticket_id);
-    // $evenement = Event::find($ticket->event_id);
+    $evenement = Event::find($ticket->event_id);
     $reference = $metadata->reference;
 
     
@@ -175,6 +176,16 @@ public function payer(Request $request)
     ]);
     $ticket->quantite_restante -= 1 ;
     $ticket->save();
+
+    $evenement->nbr_achat += 1 ;
+    $evenement->save();
+
+    // Déterminer si une notification doit être envoyée
+    $nbr = $evenement->nbr_achat;
+    if ($nbr === 1 || $nbr === 5 || $nbr % 10 === 0) {
+        $organisateur = $evenement->utilisateur; // relation utilisateur() sur Event
+        $organisateur->notify(new NbrAchatNot($evenement, $nbr));
+    }
 
     return response()->json([
         'message' => 'Billet acheté',

@@ -14,13 +14,27 @@ class SouscriptionObserver
     {
         //
         $utilisateur = $souscription->utilisateur;
+        $plan = $souscription->plan;
+
+        if($plan->id == 1){
+            $pt = 0;
+        }
+        if($plan->id == 2){
+            $pt = 3;
+        }
+        if($plan->id == 3){
+            $pt = 5;
+        }
 
         // Exemple : 10 points à chaque souscription
         PointLog::create([
             'utilisateur_id' => $utilisateur->id,
-            'type' => 'souscription',
-            'points' => 10,
+            'type' => 'souscription_à_plan' . $plan->nom,
+            'points' => 10+$pt,
         ]);
+
+        $utilisateur->points += 10+$pt;
+        $utilisateur->save();
 
     }
 

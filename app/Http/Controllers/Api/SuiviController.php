@@ -16,54 +16,61 @@ class SuiviController extends Controller
 
     // Liste des organisateurs suivis
     public function index()
-    {
-        $user = Auth::user();
-        
+{
+    $user = Auth::user();
 
-        $organisateursSuivis = $user->organisateursSuivis()->with('suiveurs')->get();
+    // Récupérer les utilisateurs suivis avec leurs suiveurs
+    $utilisateursSuivis = $user->utilisateurSuivis()->with('suiveurs')->get();
 
-        return response()->json([
-            'organisateurs_suivis' => $organisateursSuivis
-        ]);
+    return response()->json([
+        'utilisateurs_suivis' => $utilisateursSuivis
+    ]);
+}
+
+public function suivre($id)
+{
+    $user = Auth::user();
+
+    // Ne pas se suivre soi-même
+    if ($user->id == $id) {
+        return response()->json(['message' => 'Vous ne pouvez pas vous suivre vous-même.'], 400);
     }
 
+    // Vérifier si déjà suivi
+    $existe = Suivi::where('utilisateur_id', $user->id)
+                   ->where('suivi_id', $id)
+                   ->exists();
 
-    public function suivre($organisateurId)
-    {
-        $user = Auth::user();
-
-        // Vérifier si déjà suivi
-        $existe = Suivi::where('utilisateur_id', $user->id)
-                       ->where('organisateur_id', $organisateurId)
-                       ->exists();
-
-        if ($existe) {
-            return response()->json(['message' => 'Déjà suivi.']);
-        }
-
-        Suivi::create([
-            'utilisateur_id' => $user->id,
-            'organisateur_id' => $organisateurId,
-        ]);
-        // Envoyer notification
-    $organisateur = OrganisateurProfile::findOrFail($organisateurId);
-    $organisateur->utilisateur->notify(new OrganisateurSuiviNot($user));
-
-
-
-        return response()->json(['message' => 'Organisateur suivi avec succès.']);
+    if ($existe) {
+        return response()->json(['message' => 'Déjà suivi.']);
     }
 
-    public function nePlusSuivre($organisateurId)
-    {
-        $user = Auth::user();
+    Suivi::create([
+        'utilisateur_id' => $user->id,
+        'suivi_id' => $id,
+    ]);
 
-        Suivi::where('utilisateur_id', $user->id)
-             ->where('organisateur_id', $organisateurId)
-             ->delete();
+    // Notification
+    $suivi = Utilisateur::findOrFail($id);
+    $suivi->notify(new OrganisateurSuiviNot($user));
 
-        return response()->json(['message' => 'Organisateur désuivi avec succès.']);
-    }
+    return response()->json(['message' => 'Utilisateur suivi avec succès.']);
+}
+
+public function nePlusSuivre($id)
+{
+    $user = Auth::user();
+
+    Suivi::where('utilisateur_id', $user->id)
+         ->where('suivi_id', $id)
+         ->delete();
+
+    return response()->json(['message' => 'Utilisateur désuivi avec succès.']);
+}
+
+
+   
+
 
 
 }

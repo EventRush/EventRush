@@ -16,75 +16,6 @@ use Illuminate\Support\Facades\Log;
 
 class SouscriptionController extends Controller
 {
-    // public function paiementsouscrire(Request $request){
-    //     $request->validate([
-    //         'plans_souscription_id' => 'required|exists:plans_souscriptions,id',
-    //         'telephone' => 'nullable|string',
-    //         'nom' => 'nullable|string', 
-    //     ]);
-    
-    //     $plan = PlansSouscription::find($request->plans_souscription_id);
-    //     if (!$plan) {
-    //         return response()->json([
-    //             'message' => 'Plans introuvable.'
-    //         ], 404);
-    //     }
-    //     $utilisateur = $request->user();
-    
-    //     try {
-    //         FedaPay::setApiKey(env('FEDAPAY_SECRET_KEY'));
-    //         FedaPay::setEnvironment(env('FEDAPAY_ENV', 'sandbox'));
-
-    //         $transaction = Transaction::create([
-    //         //    dd([ 
-    //             "description" => "Souscription organisateur - {$utilisateur->nom} -  {$plan->nom}",
-    //             'amount' => $plan->prix,
-    //             "currency" => ["iso" => "XOF"],
-    //             'callback_url' => 'https://8e2b-2c0f-2a80-38f-2610-e97d-9081-f6ba-14e5.ngrok-free.app/api/paiement/callback?reference=',
-    //             "customer" => [
-    //                 "firstname" => $utilisateur->prenom ?: 'Inconnu',
-    //                 "lastname" => $utilisateur->nom,
-    //                 "email" => $utilisateur->email,
-    //                 "phone" => [
-    //                     "number" => $request->telephone,
-    //                     "country" => 'BJ'
-    //                 ]
-    //             ]
-    //             // ])
-    //         ]);
-    
-    //         $token = $transaction->generateToken();
-    
-    //         //expirer l'ancienne souscription active si elle existe
-    //     $ancienne = $utilisateur->souscriptionActive();
-    //     if($ancienne) {
-    //         $ancienne->statut = 'expiré';
-    //         $ancienne->save();
-    //     }
-
-    //         // Enregistrer la transaction côté base (optionnel mais recommandé)
-    //         // dd([ 
-    //         $utilisateur->souscription()->create([
-    //             'montant' => $plan->prix,
-    //             'statut_paiement' => 'en_attente',
-    //             'reference' => $transaction->id,
-    //             'methode' => 'mobile_money'
-    //             // ])
-    //         ]);
-    
-    //         return response()->json([
-    //             'message' => 'Paiement en attente de validation.',
-    //             'payment_url' => $token->url
-    //         ]);
-    //     } catch (\Exception $e) {
-    //         return response()->json([
-    //             'message' => 'Erreur lors de la création du paiement',
-    //             'error' => $e->getMessage(),
-    //             'trace' => $e->getTraceAsString()
-    //         ], 500);
-            
-    //     }
-    // }
 
     
     public function paiementsouscrire(Request $request)
@@ -146,112 +77,6 @@ class SouscriptionController extends Controller
 }
 
 
-//     public function webhooksouscription(Request $request)
-
-// {
-//     $payload = $request->all();
-
-//     if ($payload['event'] === 'transaction.approved') {
-//         $data = $payload['data']['object'];
-//         $ref = $data['id'];
-//         $email = $data['customer']['email'];
-//         $montant = $data['amount'] / 100; 
-
-//         // Trouver l'utilisateur
-//         $utilisateur = Utilisateur::where('email', $email)->first();
-//         if (!$utilisateur) return response()->json(['message' => 'Utilisateur non trouvé'], 404);
-
-//         // Trouver la souscription en attente
-//         $souscription = Souscription::where('reference', $ref)
-//             ->where('statut_paiement', 'en_attente')
-//             ->first();
-
-//         if (!$souscription) return response()->json(['message' => 'Souscription introuvable'], 404);
-
-//         // Activer la souscription
-//         $souscription->update([
-//             'statut' => 'actif',
-//             'statut_paiement' => 'success',
-//             'date_debut' => now(),
-//             'date_fin' => now()->addDays($souscription->plan->duree_jours),
-//             'montant' => $montant,
-//         ]);
-
-//         // Donner le rôle
-//         // vérification du role 'organisateur'
-//         if($utilisateur->role !== 'organisateur'){
-//             $utilisateur->role = 'organisateur';
-//             $utilisateur->save();
-//         }
-//         // Créer le profil organisateur si pas encore fait
-//         if (!$utilisateur->organisateurProfile) {
-//             OrganisateurProfile::create(['utilisateur_id' => $utilisateur->id]);
-//         }
-
-//         return response()->json([
-//             'message' => 'Souscription activée',
-//             'souscription' => $souscription
-//         ]);
-//     }
-
-//     return response()->json(['message' => 'Événement ignoré'], 200);
-// }
-
-    // public function souscriptionWebhook(Request $request)
-    // {
-    //     $payload = $request->all();
-
-    //     if (!isset($payload['event']) || $payload['event'] !== 'transaction.approved') {
-    //         return response()->json(['message' => 'Événement non géré'], 400);
-    //     }
-
-    //     $transaction = $payload['data']['object'];
-    //     $metadata = $transaction['metadata'];
-
-    //     $user = Utilisateur::find($metadata['user_id']);
-    //     $plan = PlansSouscription::find($metadata['plan_id']);
-    //     $reference = $metadata['reference'];
-
-    //     if (!$user || !$plan) {
-    //         return response()->json(['message' => 'Utilisateur ou plan introuvable'], 404);
-    //     }
-
-    //     // Donner le rôle
-    //     // vérification du role 'organisateur'
-    //     if($user->role !== 'organisateur'){
-    //         $user->role = 'organisateur';
-    //         $user->save();
-    //     }
-
-    //     // Créer l’organisateur si nécessaire
-    //     $organisateur = $user->organisateurProfile;
-    //     if (!$organisateur) {
-    //         $organisateur = OrganisateurProfile::create([
-    //             'utilisateur_id' => $user->id,
-    //         ]);
-    //     }
-
-    //     // Enregistrer la souscription
-    //     $souscription = Souscription::create([
-    //         'organisateur_id' => $organisateur->id,
-    //         'utilisateur_id' => $user->id,
-    //         'plans_souscription_id' => $plan->id,
-    //         'date_debut' => now(),
-    //         'date_fin' => now()->addDays($plan->duree),
-    //         'methode' => 'mobile_money',
-    //         'statut' => 'actif',
-    //         'statut_paiement' => 'success',
-    //         'montant' => $plan->prix,
-    //         'reference' => $reference,
-
-    //     ]);
-
-    //     return response()->json([
-    //         'message' => 'Souscription enregistrée',
-    //         'souscription' => $souscription
-    //     ], 200);
-    // }
-    //
 
     public function souscriptionWebhook(Request $request)
 {
@@ -358,51 +183,51 @@ try {
      * @param \Illuminate\Http\Request $request
      * @return mixed|\Illuminate\Http\JsonResponse
      */
-    public function souscrire(Request $request){
-        $request->validate([
-           'plans_souscription_id' => 'required|exists:plans_souscriptions,id',
-        ]);
+    // public function souscrire(Request $request){
+    //     $request->validate([
+    //        'plans_souscription_id' => 'required|exists:plans_souscriptions,id',
+    //     ]);
 
-        $plan = PlansSouscription::find($request->plans_souscription_id);
-        $utilisateur = $request->user();
+    //     $plan = PlansSouscription::find($request->plans_souscription_id);
+    //     $utilisateur = $request->user();
          
-        //expirer l'ancienne souscription active si elle existe
-        $ancienne = $utilisateur->souscriptionActive();
-        if($ancienne) {
-            $ancienne->statut = 'expiré';
-            $ancienne->save();
-        }
+    //     //expirer l'ancienne souscription active si elle existe
+    //     $ancienne = $utilisateur->souscriptionActive();
+    //     if($ancienne) {
+    //         $ancienne->statut = 'expiré';
+    //         $ancienne->save();
+    //     }
 
-        // creer une nouvelle ligne
-        $souscription = new Souscription([
-            'plans_souscription_id' => $plan->id,
-            'date_debut' => now(),
-            'date_fin' => now()->addDays($plan->duree_jours),
-            'statut' => 'actif',
-        ]);
-        $utilisateur->souscription()->save($souscription);
+    //     // creer une nouvelle ligne
+    //     $souscription = new Souscription([
+    //         'plans_souscription_id' => $plan->id,
+    //         'date_debut' => now(),
+    //         'date_fin' => now()->addDays($plan->duree_jours),
+    //         'statut' => 'actif',
+    //     ]);
+    //     $utilisateur->souscription()->save($souscription);
 
-        // vérification du role 'organisateur'
-        if($utilisateur->role !== 'organisateur'){
-            $utilisateur->role = 'organisateur';
-            $utilisateur->save();
-        }
+    //     // vérification du role 'organisateur'
+    //     if($utilisateur->role !== 'organisateur'){
+    //         $utilisateur->role = 'organisateur';
+    //         $utilisateur->save();
+    //     }
 
-        $user = Auth::user(); 
-        $orga = OrganisateurProfile::where('utilisateur_id', $user->id)->first();
+    //     $user = Auth::user(); 
+    //     $orga = OrganisateurProfile::where('utilisateur_id', $user->id)->first();
 
         
-        if(!$orga){
-          OrganisateurProfile::create([
-            'utilisateur_id' => $user->id
-          ]) ;
-        }
+    //     if(!$orga){
+    //       OrganisateurProfile::create([
+    //         'utilisateur_id' => $user->id
+    //       ]) ;
+    //     }
 
-        return response()->json([
-            'message' => 'Souscription éffectué.',
-            'souscription' => $souscription
-        ]);
-    }
+    //     return response()->json([
+    //         'message' => 'Souscription éffectué.',
+    //         'souscription' => $souscription
+    //     ]);
+    // }
 
     // Voir les plans disponibles
     /**
