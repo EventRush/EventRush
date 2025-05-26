@@ -11,7 +11,7 @@ class Billet extends Model
 
     protected $fillable = [
         'event_id', 'utilisateur_id', 'ticket_id', 'qr_code', 'montant',
-        'methode', 'statut', 'reference', 'billet_fedapay_id', 'status_scan', 'scanned_at'
+        'methode', 'status', 'reference', 'billet_fedapay_id', 'status_scan', 'scanned_at'
     ];
     
     public function utilisateur(){
