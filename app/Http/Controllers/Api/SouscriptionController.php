@@ -91,7 +91,7 @@ class SouscriptionController extends Controller
 {
     $request->validate([
         'plans_souscription_id' => 'required|exists:plans_souscriptions,id',
-        'telephone' => 'nullable|numeric',
+        'telephone' => 'numeric',
     ]);
 
     $plan = PlansSouscription::findOrFail($request->plans_souscription_id);
