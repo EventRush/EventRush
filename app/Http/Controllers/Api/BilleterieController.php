@@ -173,8 +173,8 @@ public function payer(Request $request)
         'qr_code' => Str::uuid(),
         'reference' => $reference,
     ]);
-    $ticket->quantite_restante -= 1 ;
-    $ticket->save();
+    // $ticket->quantite_restante -= 1 ;
+    // $ticket->save();
 
     return response()->json([
         'message' => 'Billet acheté',
