@@ -81,7 +81,7 @@ Route::post('/events/{event}', [EventController::class, 'update']);
 
 
 // Route::get('/paiement/callback', [BilleterieController::class, 'callback'])->name('paiement.callback');
-Route::get('/billet/webhook', [BilleterieController::class, 'webhookBillet']);
+Route::post('/billet/webhook', [BilleterieController::class, 'webhookBillet']);
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         //billet/payer
     Route::post('/billet/payer', [BilleterieController::class, 'payer']);
