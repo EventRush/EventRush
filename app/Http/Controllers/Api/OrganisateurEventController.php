@@ -134,7 +134,7 @@ class OrganisateurEventController extends Controller
         $organisateur = Auth::user();
         $event = Event::find($eventId);
 
-        dd($event->utilisateur_id);
+        // dd($event->utilisateur_id);
 
         if ($event->utilisateur_id !== $organisateur->id) {
             return response()->json(['message' => 'Non autorisé.'], 403);
