@@ -116,10 +116,10 @@ class OrganisateurTicketsController extends Controller
         return response()->json([$ticket, $image]);
     }
 
-    public function updateTicket(Request $request, $id){
+    public function updateTicket(Request $request, $ticketId){
 
         $organisateur = auth()->user();
-        $ticket = Ticket::findOrFail($id);
+        $ticket = Ticket::findOrFail($ticketId);
         $event = Event::findOrFail($ticket->event_id);
 
 
@@ -153,8 +153,8 @@ class OrganisateurTicketsController extends Controller
         return response()->json($ticket, 201);
     }
 
-    public function destroyTicket($id){
-        $ticket = Ticket::findOrFail($id);
+    public function destroyTicket($ticketId){
+        $ticket = Ticket::findOrFail($ticketId);
         $organisateur = auth()->user();
         $event = Event::findOrFail($ticket->event_id);
 

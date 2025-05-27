@@ -41,7 +41,7 @@ class PlansSouscriptionsController extends Controller
         ]);
     }
 
-    public function updatePlan(Request $request, $id)
+    public function updatePlan(Request $request, $planId)
     {
         $admin = auth()->user();
 
@@ -50,7 +50,7 @@ class PlansSouscriptionsController extends Controller
 
         }
 
-        $plan = PlansSouscription::findOrFail($id);
+        $plan = PlansSouscription::findOrFail($planId);
         if(!$plan){
             return response()->json(['message' => 'Plan non trouvé'], 404);
 
@@ -77,14 +77,14 @@ class PlansSouscriptionsController extends Controller
             'plan' => $plan
         ]);
     }
-    public function deletePlan($id){
+    public function deletePlan($planId){
         $admin = auth()->user();
 
         if($admin->role !== 'admin'){
             return response()->json(['message' => 'Non autorisé'],403);
 
         }
-        $plan = PlansSouscription::findOrFail($id);
+        $plan = PlansSouscription::findOrFail($planId);
         if(!$plan){
             return response()->json(['message' => 'Plan non trouvé'], 404);
 

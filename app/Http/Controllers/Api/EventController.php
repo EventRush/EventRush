@@ -64,9 +64,9 @@ class EventController extends Controller
         // return new EventResource($event->load('photos', 'organisateur') );
     }
 
-    public function show(Event $event)
+    public function show($eventId)
     {
-        // $event = Event::findOrFail($event);
+        $event = Event::findOrFail($eventId);
         $utilisateur = Auth::user();
 
         if ($utilisateur) {
@@ -78,9 +78,10 @@ class EventController extends Controller
 
     }
 
-    public function update(Request $request, Event $event)
+    public function update(Request $request, $eventId)
     {
         $admin = auth()->user();
+        $event = Event::findOrFail($eventId);
 
         if($admin->role !== 'admin'){
             return response()->json(['message' => 'Non autorisé'], 403);

@@ -25,11 +25,11 @@ class AdminController extends Controller
     200);
     }
 
-    public function showUser(Request $request, $id)
+    public function showUser(Request $request, $userId)
     {
         
 
-        $user = Utilisateur::find($id);
+        $user = Utilisateur::find($userId);
 
         return response()->json([
             'message' => 'Informations de l\'utilisateur',
@@ -39,28 +39,28 @@ class AdminController extends Controller
         ]);
     }
 
-    public function destroyUser($id)
+    public function destroyUser($userId)
     {
-        $user = Utilisateur::find($id);
+        $user = Utilisateur::find($userId);
 
         $user->delete();
 
         return response()->json(['message' => 'Utilisateur supprimé avec succès.']);
     }
 
-    public function showEvent($id)
+    public function showEvent($eventId)
     {
 
-        $event = Event::findOrFail($id);
+        $event = Event::findOrFail($eventId);
 
         return new EventResource($event->load('organisateur'));
         // return new EventResource($event);
 
     }
 
-    public function deleteEvent($id)
+    public function deleteEvent($eventId)
     {
-        $event = Event::findOrFail($id);
+        $event = Event::findOrFail($eventId);
         $event->delete();
         $event->photos()->delete();
         return response()->json(['message' => 'Événement supprimé avec succès.']);

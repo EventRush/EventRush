@@ -43,14 +43,14 @@ class CommentaireController extends Controller
             'commentaire' => $commentaire
         ], 201);
     }
-    public function update(Request $request, $comId)
+    public function update(Request $request, $commentId)
 {
 
     $request->validate([
         'contenu' => 'nullable|string',
         'note' => 'nullable|integer|min:1|max:5',
     ]);
-    $commentaire = Commentaire::findOrFail($comId);
+    $commentaire = Commentaire::findOrFail($commentId);
 
     if (Auth::id() !== $commentaire->utilisateur_id) {
         return response()->json(['message' => 'Non autorisé.'], 403);
@@ -78,9 +78,9 @@ class CommentaireController extends Controller
     ], 200); // 200 au lieu de 201 ici pour une mise à jour
 }
 
-    public function destroy($id)
+    public function destroy($commentId)
     {
-        $commentaire = Commentaire::findOrFail($id);
+        $commentaire = Commentaire::findOrFail($commentId);
        
         if (Auth::id() !== $commentaire->utilisateur_id) {
             return response()->json(['message' => 'Non autorisé.'], 403);

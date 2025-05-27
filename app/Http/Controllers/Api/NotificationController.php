@@ -19,10 +19,10 @@ class NotificationController extends Controller
         ]);
     }
 
-    public function markAsRead($id)
+    public function markAsRead($notId)
     {
         $user = auth()->user();
-        $notification = $user->unreadNotifications->find($id);
+        $notification = $user->unreadNotifications->find($notId);
 
         if ($notification) {
             $notification->markAsRead();

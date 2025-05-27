@@ -73,8 +73,12 @@ Route::get('/home/orgaEvent', [EventController::class, 'byOrganisateur']);
 
 
 
-Route::apiResource('events', EventController::class);
-Route::post('/events/{event}', [EventController::class, 'update']);
+// Route::apiResource('events', EventController::class);
+Route::get('/events', [EventController::class, 'index']);
+Route::post('/events', [EventController::class, 'store']);
+Route::post('/events/{eventId}', [EventController::class, 'show']);
+Route::post('/events/{eventId}', [EventController::class, 'destroy']);
+Route::post('/events/{eventId}', [EventController::class, 'update']);
 
 
 
@@ -103,10 +107,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 // });
 //    *****  commentaire  *****
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
-    Route::get('/evenements/{event}/commentaires', [CommentaireController::class, 'index']);
-    Route::post('/evenements/{event}/commentaires', [CommentaireController::class, 'store']);
-    Route::post('/evenements/{commenT}/modifier', [CommentaireController::class, 'update']);
-    Route::delete('/evenements/commentaires/{id}', [CommentaireController::class, 'destroy']);
+    Route::get('/evenements/{eventId}/commentaires', [CommentaireController::class, 'index']);
+    Route::post('/evenements/{eventId}/commentaires', [CommentaireController::class, 'store']);
+    Route::post('/evenements/{commentId}/modifier', [CommentaireController::class, 'update']);
+    Route::delete('/evenements/commentaires/{commentId}', [CommentaireController::class, 'destroy']);
 });
 
 
@@ -126,7 +130,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
      Route::middleware('auth:sanctum')->group(function () {
     Route::get('notifications', [NotificationController::class, 'index']);
-    Route::post('notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead']);
+    Route::post('notifications/{notId}/mark-as-read', [NotificationController::class, 'markAsRead']);
     }); 
     // Route::middleware('auth:sanctum')->group(function () {
     //     Route::get('/notifications', function () {
@@ -140,8 +144,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     // });
     Route::middleware('auth:sanctum')->prefix('suivis')->group(function () {
     Route::get('/', [SuiviController::class, 'index']);
-    Route::post('/suivre/{id}', [SuiviController::class, 'suivre']);
-    Route::delete('/ne-plus-suivre/{id}', [SuiviController::class, 'nePlusSuivre']);
+    Route::post('/suivre/{userId}', [SuiviController::class, 'suivre']);
+    Route::delete('/ne-plus-suivre/{userId}', [SuiviController::class, 'nePlusSuivre']);
 });
 
     // Route::middleware('auth:sanctum')->group(function () {
@@ -172,7 +176,8 @@ Route::prefix('organisateur')->middleware(['auth:sanctum', 'organisateur', 'sous
         // Événements
         Route::get('/events', [OrganisateurEventController::class, 'index']); 
         Route::get('/ticket', [OrganisateurTicketsController::class, 'index']);
-        Route::get('/events/{id}', [OrganisateurEventController::class, 'show']);
+        Route::get('/events/{eventId}', [OrganisateurEventController::class, 'show']);
+        
 
             
     
@@ -180,17 +185,17 @@ Route::prefix('organisateur')->middleware(['auth:sanctum', 'organisateur', 'sous
         Route::middleware( 'souscription.active')->group(function(){
             // Événements
             Route::post('/events', [OrganisateurEventController::class, 'store']); //
-            Route::post('/events/{id}', [OrganisateurEventController::class, 'update']); //
-            Route::delete('/events/{id}', [OrganisateurEventController::class, 'destroy']); //
+            Route::post('/events/{eventId}', [OrganisateurEventController::class, 'update']); //
+            Route::delete('/events/{eventId}', [OrganisateurEventController::class, 'destroy']); //
 
             // tikets
             Route::post('/events/{eventId}/ticket', [OrganisateurTicketsController::class, 'addTicket']); //
-            Route::post('/events/ticket/{id}', [OrganisateurTicketsController::class, 'updateTicket']); //
-            Route::delete('/events/ticket/{id}', [OrganisateurTicketsController::class, 'destroyTicket']); //
+            Route::post('/events/ticket/{ticketId}', [OrganisateurTicketsController::class, 'updateTicket']); //
+            Route::delete('/events/ticket/{ticketId}', [OrganisateurTicketsController::class, 'destroyTicket']); //
 
             // Billets & Participants
-            Route::get('/events/{id}/billets', [BilleterieController::class, 'eventBillets']); //
-            Route::get('/events/{id}/participants', [BilleterieController::class, 'eventParticipants']); //
+            Route::get('/events/{eventId}/billets', [BilleterieController::class, 'eventBillets']); //
+            Route::get('/events/{eventId}/participants', [BilleterieController::class, 'eventParticipants']); //
         });
 
     
@@ -218,17 +223,17 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'verified', 'admin'])->group
 
          // Utilisateurs
     Route::get('/users', [AdminController::class, 'indexUsers']);
-    Route::get('/users/{id}', [AdminController::class, 'showUser']);
-    Route::post('/users/{id}/ban', [AdminController::class, 'banUser']);
-    Route::post('/users/{id}/unban', [AdminController::class, 'unbanUser']);
-    Route::delete('/users/{id}', [AdminController::class, 'destroyUser']);
+    Route::get('/users/{userId}', [AdminController::class, 'showUser']);
+    Route::post('/users/{userId}/ban', [AdminController::class, 'banUser']);
+    Route::post('/users/{userId}/unban', [AdminController::class, 'unbanUser']);
+    Route::delete('/users/{userId}', [AdminController::class, 'destroyUser']);
 
     // // Événements
     Route::get('/evenements', [AdminController::class, 'allEvents']);
-    Route::get('/evenements/{id}', [AdminController::class, 'showEvent']);
-    // Route::post('/evenements/{id}/valider', [AdminController::class, 'validateEvent']);
-    // Route::post('/evenements/{id}/rejeter', [AdminController::class, 'rejectEvent']);
-    Route::delete('/evenements/{id}', [AdminController::class, 'deleteEvent']);
+    Route::get('/evenements/{eventId}', [AdminController::class, 'showEvent']);
+    // Route::post('/evenements/{eventId}/valider', [AdminController::class, 'validateEvent']);
+    // Route::post('/evenements/{eventId}/rejeter', [AdminController::class, 'rejectEvent']);
+    Route::delete('/evenements/{eventId}', [AdminController::class, 'deleteEvent']);
 
     // // Souscriptions
     Route::get('/souscriptions', [AdminController::class, 'allSouscriptions']);
@@ -236,8 +241,8 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'verified', 'admin'])->group
 
     // // Plans Souscriptions
     Route::post('/souscriptions/plan', [PlansSouscriptionsController::class, 'addPlan']);
-    Route::post('/souscriptions/plan/{id}', [PlansSouscriptionsController::class, 'updatePlan']);
-    Route::delete('/souscriptions/plan/{id}', [PlansSouscriptionsController::class, 'deletePlan']);
+    Route::post('/souscriptions/plan/{planId}', [PlansSouscriptionsController::class, 'updatePlan']);
+    Route::delete('/souscriptions/plan/{planId}', [PlansSouscriptionsController::class, 'deletePlan']);
 
     // Route::put('/souscriptions/{id}/valider', [AdminController::class, 'validateSouscription']);
 

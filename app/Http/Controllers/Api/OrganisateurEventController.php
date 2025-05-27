@@ -66,8 +66,9 @@ class OrganisateurEventController extends Controller
         return new EventResource($event->load('photos'));
     }
 
-    public function show(Event $event)
+    public function show($eventId)
     {
+        $event = Event::find($eventId);
         $organisateur = auth()->user();
 
         if ($event->utilisateur_id !== $organisateur->id) {
@@ -77,9 +78,11 @@ class OrganisateurEventController extends Controller
         return new EventResource($event);
     }
 
-    public function update(Request $request, Event $event)
+    public function update(Request $request, $eventId)
     {
         $organisateur = auth()->user();
+
+        $event = Event::find($eventId);
 
         if ($event->utilisateur_id !== $organisateur->id) {
             return response()->json(['message' => 'Non autorisé.'], 403);
@@ -126,9 +129,12 @@ class OrganisateurEventController extends Controller
      * @param \App\Models\Event $event
      * @return mixed|\Illuminate\Http\JsonResponse
      */
-    public function destroy(Event $event)
+    public function destroy($eventId)
     {
-        $organisateur = auth()->user();
+        $organisateur = Auth::user();
+        $event = Event::find($eventId);
+
+        dd($event->utilisateur_id);
 
         if ($event->utilisateur_id !== $organisateur->id) {
             return response()->json(['message' => 'Non autorisé.'], 403);
@@ -147,11 +153,11 @@ class OrganisateurEventController extends Controller
      * @param mixed $event_id
      * @return mixed|\Illuminate\Http\JsonResponse
      */
-    public function eventBillets($event_id)
+    public function eventBillets($eventId)
     {
         $organisateur = auth()->user();
 
-        $event = Event::with('billets')->findOrFail($event_id);
+        $event = Event::with('billets')->findOrFail($eventId);
 
         if ($event->utilisateur_id !== $organisateur->id) {
             return response()->json(['message' => 'Non autorisé.'], 403);
@@ -166,11 +172,11 @@ class OrganisateurEventController extends Controller
      * @param mixed $event_id
      * @return mixed|\Illuminate\Http\JsonResponse
      */
-    public function eventParticipants($event_id)
+    public function eventParticipants($eventId)
     {
         $organisateur = auth()->user();
 
-        $event = Event::with(['billets.utilisateur'])->findOrFail($event_id);
+        $event = Event::with(['billets.utilisateur'])->findOrFail($eventId);
 
         if ($event->utilisateur_id !== $organisateur->id) {
             return response()->json(['message' => 'Non autorisé.'], 403);

@@ -27,18 +27,18 @@ class SuiviController extends Controller
     ]);
 }
 
-public function suivre($id)
+public function suivre($userId)
 {
     $user = Auth::user();
 
     // Ne pas se suivre soi-même
-    if ($user->id == $id) {
+    if ($user->id == $userId) {
         return response()->json(['message' => 'Vous ne pouvez pas vous suivre vous-même.'], 400);
     }
 
     // Vérifier si déjà suivi
     $existe = Suivi::where('utilisateur_id', $user->id)
-                   ->where('suivi_id', $id)
+                   ->where('suivi_id', $userId)
                    ->exists();
 
     if ($existe) {
@@ -47,22 +47,22 @@ public function suivre($id)
 
     Suivi::create([
         'utilisateur_id' => $user->id,
-        'suivi_id' => $id,
+        'suivi_id' => $userId,
     ]);
 
     // Notification
-    $suivi = Utilisateur::findOrFail($id);
+    $suivi = Utilisateur::findOrFail($userId);
     $suivi->notify(new OrganisateurSuiviNot($user));
 
     return response()->json(['message' => 'Utilisateur suivi avec succès.']);
 }
 
-public function nePlusSuivre($id)
+public function nePlusSuivre($userId)
 {
     $user = Auth::user();
 
     Suivi::where('utilisateur_id', $user->id)
-         ->where('suivi_id', $id)
+         ->where('suivi_id', $userId)
          ->delete();
 
     return response()->json(['message' => 'Utilisateur désuivi avec succès.']);
