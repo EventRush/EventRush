@@ -76,8 +76,8 @@ Route::get('/home/orgaEvent', [EventController::class, 'byOrganisateur']);
 // Route::apiResource('events', EventController::class);
 Route::get('/events', [EventController::class, 'index']);
 Route::post('/events', [EventController::class, 'store']);
-Route::post('/events/{eventId}', [EventController::class, 'show']);
-Route::post('/events/{eventId}', [EventController::class, 'destroy']);
+Route::get('/events/{eventId}', [EventController::class, 'show']);
+Route::delete('/events/{eventId}', [EventController::class, 'destroy']);
 Route::post('/events/{eventId}', [EventController::class, 'update']);
 
 

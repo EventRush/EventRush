@@ -63,6 +63,12 @@ class EventController extends Controller
 
         // return new EventResource($event->load('photos', 'organisateur') );
     }
+    
+    /**
+     * Summary of show
+     * @param mixed $eventId
+     * @return EventResource
+     */
 
     public function show($eventId)
     {
