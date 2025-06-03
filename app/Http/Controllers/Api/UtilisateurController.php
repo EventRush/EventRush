@@ -58,7 +58,7 @@ class UtilisateurController extends Controller
      public function update(Request $request)
      {
          $user = Auth::user(); 
-         if (!$user instanceof Utilisateur) {
+         if (!$user) {
              return response()->json(['message' => 'Utilisateur non authentifié'], 401);
          }
  
