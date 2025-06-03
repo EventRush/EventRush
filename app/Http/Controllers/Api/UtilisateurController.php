@@ -79,11 +79,11 @@ class UtilisateurController extends Controller
         //  dd($validated);
         // return response()->json($validated);
 
-        // if ($request->has('nom')) $user->nom = $request->nom;
-        // if ($request->has('email')) $user->email = $request->email;
+        if ($request->has('nom')) $user->nom = $request->nom;
+        if ($request->has('email')) $user->email = $request->email;
         
         //  $user->update($validated);
-        $user->fill($validated)->save();
+        // $user->fill($validated)->save();
  
          return response()->json([
             'message' => 'Profil mis à jour avec succès.',

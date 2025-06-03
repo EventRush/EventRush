@@ -41,7 +41,6 @@ Route::get('auth/google/manuel', [AuthGoogleController::class, 'manuelredirectTo
 Route::get('auth/google/callback', [AuthGoogleController::class, 'handleGoogleCallback']);
 Route::post('auth/google/callback/manuel', [AuthGoogleController::class, 'GoogleCallbackmanuel']);
 
-Route::get('/auth/me', [UtilisateurController::class, 'connectedUser'])->name('user.connected');
 
 //    *****  email et modifications/validations  *****
 
