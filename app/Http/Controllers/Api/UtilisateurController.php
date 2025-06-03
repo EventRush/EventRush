@@ -63,9 +63,9 @@ class UtilisateurController extends Controller
          }
  
          $validated = $request->validate([
-             'nom' => 'string|max:255',
-             'email' => 'email|unique:utilisateurs,email,' ,
-             'avatar' => 'image|mimes:jpg,jpeg,png|max:2048',
+             'nom' => '|nullable|string|max:255',
+             'email' => '|nullable|email|unique:utilisateurs,email,' ,
+             'avatar' => '|nullable|image|mimes:jpg,jpeg,png|max:2048',
          ]);
  
          if ($request->hasFile('avatar')) {
@@ -78,8 +78,12 @@ class UtilisateurController extends Controller
          }
         //  dd($validated);
         // return response()->json($validated);
+
+        // if ($request->has('nom')) $user->nom = $request->nom;
+        // if ($request->has('email')) $user->email = $request->email;
         
-         $user->update($validated);
+        //  $user->update($validated);
+        $user->fill($validated)->save();
  
          return response()->json([
             'message' => 'Profil mis à jour avec succès.',
