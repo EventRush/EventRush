@@ -237,6 +237,22 @@ class EventController extends Controller
         return response()->json($events);
     }
 
+
+    public function popular(Request $request)
+    {
+    // seuil facultatif, par défaut à 50 points
+    // $minPoints = $request->query('min', 50);
+    $minPoints = 0;
+
+    $events = Event::where('points', '>=', $minPoints)
+        ->with('organisateur')
+        ->orderByDesc('points')
+        ->limit(10)
+        ->get();
+
+    return EventResource::collection($events);
+    }
+
     // Récupérer les événements d’un organisateur (profil public)
     public function byOrganisateur($id)
     {

@@ -66,6 +66,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 Route::get('/home/events', [EventController::class, 'search_2']);
 Route::get('/home/featured', [EventController::class, 'featured']);
 Route::get('/home/upcoming', [EventController::class, 'upcoming']);
+Route::get('/home/popular', [EventController::class, 'popular']);
 Route::get('/home/categories', [EventController::class, 'search'])->name('search');
 Route::get('/home/stats', [EventController::class, 'stat']);// pas encore fait
 Route::get('/home/orgaEvent', [EventController::class, 'byOrganisateur']);
