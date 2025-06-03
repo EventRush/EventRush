@@ -241,8 +241,8 @@ class EventController extends Controller
     public function popular(Request $request)
     {
     // seuil facultatif, par défaut à 50 points
-    // $minPoints = $request->query('min', 50);
-    $minPoints = 0;
+    $minPoints = $request->query('min', 50);
+    // $minPoints = 0;
 
     $events = Event::where('points', '>=', $minPoints)
         ->with('organisateur')
