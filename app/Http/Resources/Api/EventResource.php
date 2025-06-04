@@ -25,6 +25,8 @@ class EventResource extends JsonResource
             'lieu' => $this->lieu,
             'statut' => $this->statut,
             'affiche_url' => $this->affiche ? asset('storage/app/public/' . $this->affiche) : null,
+            'points' => $this->points,
+            'nbr_achat' => $this->nbr_achat,
             'photos' => $this->photos->map(function ($photo) {
                 return asset('storage//app/public/' . $photo->image_path);
             }),

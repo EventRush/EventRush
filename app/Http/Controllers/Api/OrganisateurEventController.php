@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\EventResource;
 use App\Models\Event;
 use App\Models\Utilisateur;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -50,14 +51,16 @@ class OrganisateurEventController extends Controller
         $validated['utilisateur_id'] = $organisateur->id;
 
         if ($request->hasFile('affiche')) {
-            $validated['affiche'] = $request->file('affiche')->store('events/affiches', 'public');   
+            
+            $validated['affiche'] = Cloudinary::upload($request->file('affiche')->getRealPath())->getSecurePath();   
         }
 
         $event = Event::create($validated);
 
         if ($request->hasFile('photos')) {
             foreach ($request->file('photos') as $photo) {
-                $photoPath = $photo->store('events/photos', 'public');
+                $photoPath = Cloudinary::upload($photo->getRealPath())->getSecurePath();
+                // $photo->store('events/photos', 'public');
                 $event->photos()->create(['image_path' => $photoPath]);
             }
         }
@@ -100,13 +103,20 @@ class OrganisateurEventController extends Controller
         ]);
 
         if ($request->hasFile('affiche')) {
-            $event->affiche = $request->file('affiche')->store('events/affiches', 'public');
+            $event->affiche = Cloudinary::upload($request->file('affiche')->getRealPath())->getSecurePath();   
+
+            // $event->affiche = $request->file('affiche')->store('events/affiches', 'public');
         }
 
+
         if ($request->hasFile('photos')) {
+        // Cloudinary::destroy('nom_de_l\'image_sans_extention');
             $event->photos()->delete();
             foreach ($request->file('photos') as $photo) {
-                $photoPath = $photo->store('events/photos', 'public');
+                $photoPath = Cloudinary::upload($photo->getRealPath())->getSecurePath();
+
+                // $photoPath = $photo->store('events/photos', 'public');
+
                 $event->photos()->create(['image_path' => $photoPath]); 
             }
         }

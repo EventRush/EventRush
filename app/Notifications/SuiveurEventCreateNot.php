@@ -2,24 +2,28 @@
 
 namespace App\Notifications;
 
+use App\Models\Event;
+use App\Models\Utilisateur;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class EventFavoriNot extends Notification
+class SuiveurEventCreateNot extends Notification
 {
     use Queueable;
 
-    public $event;
+    protected $event;
+    protected $orga;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct($event)
+    public function __construct(Utilisateur $orga, Event $event)
     {
         //
         $this->event = $event;
+        $this->orga = $orga;
     }
 
     /**
@@ -29,7 +33,7 @@ class EventFavoriNot extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['database']; // stocké dan la bd
+        return ['database'];
     }
 
     /**
@@ -38,10 +42,11 @@ class EventFavoriNot extends Notification
     public function toDatabase(object $notifiable)
     {
         return [
-            'message' => "Un événement que vous avez publié a été ajouté en favori : {$this->event->titre}",
-            'event_id' => $this->event->id,
-        ];
+            'titre' => "Evènement - {$this->event->titre}" ,
+            'message' => "Votre organisateur {$this->orga} vient de publier un nouvel evenement" ,
+            'date' => $this->event->date_debut ,
 
+        ];
     }
 
     /**

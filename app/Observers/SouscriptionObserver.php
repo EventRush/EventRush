@@ -15,6 +15,7 @@ class SouscriptionObserver
         //
         $utilisateur = $souscription->utilisateur;
         $plan = $souscription->plan;
+        $pt = 0;
 
         if($plan->id == 1){
             $pt = 0;

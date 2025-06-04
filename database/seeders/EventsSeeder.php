@@ -18,7 +18,7 @@ class EventsSeeder extends Seeder
     {
         //
 
-        DB::statement("SELECT setval(pg_get_serial_sequence('events','id'), (SELECT MAX(id) FROM events))");
+        // DB::statement("SELECT setval(pg_get_serial_sequence('events','id'), (SELECT MAX(id) FROM events))");
         $faker = Faker::create();
         $user = Utilisateur::where('role', 'organisateur')->get();
 

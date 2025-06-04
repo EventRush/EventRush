@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
+use App\Models\Utilisateur;
 use App\Notifications\EventFavoriNot;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,13 +23,30 @@ class FavoriController extends Controller
              $user->favoris()->attach($eventId);
  
              // Envoyer notification
-             $user->notify(new EventFavoriNot($event));
+             $orga = Utilisateur::findOrFail($event->utilisateur_id);
+             $orga->notify(new EventFavoriNot($event));
  
              return response()->json(['message' => 'Événement ajouté aux favoris avec succès.']);
          }
  
          return response()->json(['message' => 'Événement déjà dans vos favoris.'], 409);
      }
+    //  public function store($eventId)
+    //  {
+    //      $user = Auth::user();
+    //      $event = Event::findOrFail($eventId);
+ 
+    //      if (!$user->favoris->contains($eventId)) {
+    //          $user->favoris()->attach($eventId);
+ 
+    //          // Envoyer notification
+    //          $user->notify(new EventFavoriNot($event));
+ 
+    //          return response()->json(['message' => 'Événement ajouté aux favoris avec succès.']);
+    //      }
+ 
+    //      return response()->json(['message' => 'Événement déjà dans vos favoris.'], 409);
+    //  }
 
       // Retirer un événement des favoris
     public function destroy($eventId)

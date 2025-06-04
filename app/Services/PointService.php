@@ -30,4 +30,26 @@ class PointService
             'points' => 1,
         ]);
     }
+
+     public static function suivreEvenement(Utilisateur $utilisateur, Event $event)
+    {
+        if (EventVue::where('utilisateur_id', $utilisateur->id)->where('event_id', $event->id)->exists()) {
+            return;
+        }
+
+        EventVue::create([
+            'utilisateur_id' => $utilisateur->id,
+            'event_id' => $event->id,
+        ]);
+
+        $event->increment('points', 1);
+
+        PointLog::firstOrCreate([
+            'utilisateur_id' => $utilisateur->id,
+            'event_id' => $event->id,
+            'type' => 'vue_evenement'
+        ], [
+            'points' => 1,
+        ]);
+    }
 }

@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
+        "cloudinary-labs/cloudinary-laravel": "^2.3",
         "dedoc/scramble": "^0.12.17",
         "fedapay/fedapay-php": "^0.4.5",
         "guzzlehttp/guzzle": "^7.9",
