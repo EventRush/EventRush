@@ -2,7 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\Billet;
+use App\Models\Event;
 use App\Models\Souscription;
+use App\Observers\BilletObserver;
+use App\Observers\EventObserver;
 use App\Observers\SouscriptionObserver;
 use Dedoc\Scramble\Scramble;
 use Dedoc\Scramble\Support\Generator\OpenApi;
@@ -39,6 +43,8 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Souscription::observe(SouscriptionObserver::class);
+        Billet::observe(BilletObserver::class);
+        Event::observe(EventObserver::class); 
     }
     // public function boot(): void
     // {

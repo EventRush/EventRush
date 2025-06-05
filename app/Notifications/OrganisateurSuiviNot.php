@@ -40,7 +40,9 @@ class OrganisateurSuiviNot extends Notification
     {
         return [
             'message' => $this->utilisateur->nom . ' a commencé à vous suivre.',
-            'utilisateur_id' => $this->utilisateur->id,
+            'role' => $this->utilisateur->role,
+            'link' => route('users.show', $this->utilisateur->id),
+
         ];
 
     }

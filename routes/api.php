@@ -64,6 +64,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
 // Evenements
 Route::get('/home/events', [EventController::class, 'search_2']);
+Route::get('/home/search/tire', [EventController::class, 'searchTire']);
+Route::get('/home/search/description', [EventController::class, 'searchDesc']);
+Route::get('/home/search/lieu', [EventController::class, 'searchLieu']);
+Route::get('/home/search/date', [EventController::class, 'searchDate']);
 Route::get('/home/featured', [EventController::class, 'featured']);
 Route::get('/home/upcoming', [EventController::class, 'upcoming']);
 Route::get('/home/popular', [EventController::class, 'popular']);
@@ -96,6 +100,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
 //    *****  utilisateur  *****
 
+    Route::get('/users/{userId}', [UtilisateurController::class, 'showUser'])->name('users.show');
 
 
 

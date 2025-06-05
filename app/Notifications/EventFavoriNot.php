@@ -2,6 +2,8 @@
 
 namespace App\Notifications;
 
+use App\Models\Event;
+use App\Models\Utilisateur;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -12,14 +14,16 @@ class EventFavoriNot extends Notification
     use Queueable;
 
     public $event;
+    protected $user; // user qui a favorisé l'évènement
 
     /**
      * Create a new notification instance.
      */
-    public function __construct($event)
+    public function __construct(Utilisateur $user, Event $event)
     {
         //
         $this->event = $event;
+        $this->user = $user;
     }
 
     /**
@@ -39,7 +43,7 @@ class EventFavoriNot extends Notification
     {
         return [
             'message' => "Un événement que vous avez publié a été ajouté en favori : {$this->event->titre}",
-            'event_id' => $this->event->id,
+            'utilisateur' => $this->user->nom,
         ];
 
     }

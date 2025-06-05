@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Commentaire;
 use App\Notifications\NouvCommentaireEvent;
+use App\Services\PointService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -24,12 +25,29 @@ class CommentaireController extends Controller
             'note' => 'nullable|integer|min:1|max:5',
         ]);
 
-        $commentaire = Commentaire::create([
-            'event_id' => $eventId,
-            'utilisateur_id' => Auth::id(),
-            'contenu' => $request->contenu,
-            'note' => $request->note,
-        ]);
+        $utilisateur = Auth::user();
+
+        // Chercher un ancien commentaire avec une note
+        $ancienCommentaireAvecNote = Commentaire::where('utilisateur_id', $utilisateur->id)
+                                                ->where('event_id', $eventId)
+                                                ->whereNotNull('note')
+                                                ->first();
+
+        $oldnote = 0;
+        if ($ancienCommentaireAvecNote) {
+            // Si il y a un ancien commentaire avec une note, on récupère sa note
+            $oldnote = $ancienCommentaireAvecNote->note;
+            // Mettre à jour la note précédente :
+            $ancienCommentaireAvecNote->update(['note' => $request->note]);
+        } else {
+            // Sinon tu crées un nouveau commentaire avec note
+            $commentaire = Commentaire::create([
+                'utilisateur_id' => $utilisateur,
+                'event_id' => $eventId,
+                'contenu' => $request->contenu,
+                'note' => $request->note,
+            ]);
+        }
 
         // Notifier l'organisateur
     $event = $commentaire->event; // Relation event dans Commentaire
@@ -37,6 +55,8 @@ class CommentaireController extends Controller
         $event->utilisateur->notify(new NouvCommentaireEvent($commentaire));
     }
 
+
+    PointService::ajouterNoteEvenement($utilisateur, $event, $oldnote);
 
         return response()->json([
             'message' => 'Commentaire ajouté avec succès.',

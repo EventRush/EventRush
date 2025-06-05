@@ -7,6 +7,7 @@ use App\Models\PlansSouscription;
 use App\Models\PointLog;
 use App\Models\Utilisateur;
 use App\Notifications\SuiveurEventCreateNot;
+use App\Notifications\SuiveurEventModifyOrDeleteNot;
 
 class EventObserver
 {
@@ -63,6 +64,15 @@ class EventObserver
     public function updated(Event $event): void
     {
         //
+        $action = 'Modifier';
+        $orga = $event->utilisateur;
+        $destinataires = $orga->suiveurs->merge($event->favorisePar)->unique('id');
+
+        foreach ($destinataires as $suiveur) {
+            $suiveur->notify(new SuiveurEventModifyOrDeleteNot($orga, $event, $action));
+        }
+
+
     }
 
     /**
@@ -71,6 +81,14 @@ class EventObserver
     public function deleted(Event $event): void
     {
         //
+
+        $action = 'Suprimer';
+        $orga = $event->utilisateur;
+        $destinataires = $orga->suiveurs->merge($event->favorisePar)->unique('id');
+
+        foreach ($destinataires as $suiveur)  {
+            $suiveur->notify(new SuiveurEventModifyOrDeleteNot($orga, $event, $action));
+        }
     }
 
     /**

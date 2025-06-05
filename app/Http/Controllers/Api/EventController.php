@@ -76,7 +76,7 @@ class EventController extends Controller
         $utilisateur = Auth::user();
 
         if ($utilisateur) {
-        PointService::enregistrerVueEvenement($utilisateur, $event);
+        PointService::ajouterVueEvenement($utilisateur, $event);
     }
 
         // return new EventResource($event->load('organisateur'));
@@ -176,6 +176,92 @@ class EventController extends Controller
             'organisateurs' => $organizers,
         ]);
     }
+
+    public function searchTire(Request $request)
+    {
+        $query = $request->input('query');
+
+        if (!$query) {
+            return response()->json([
+                'message' => 'Veuillez fournir un terme de recherche.'
+            ], 400);
+        }
+
+        // Recherche d'événements
+        $events = Event::where('titre', 'like', "%$query%")
+            // ->with('organisateur') // pour retourner l'organisateur avec l'événement
+            ->get();
+
+
+        return response()->json([
+            'events' => $events,
+        ]);
+    }
+
+    public function searchDesc(Request $request)
+    {
+        $query = $request->input('query');
+
+        if (!$query) {
+            return response()->json([
+                'message' => 'Veuillez fournir un terme de recherche.'
+            ], 400);
+        }
+
+        // Recherche d'événements
+        $events = Event::where('descrption', 'like', "%$query%")
+            // ->with('organisateur') // pour retourner l'organisateur avec l'événement
+            ->get();
+
+
+        return response()->json([
+            'events' => $events,
+        ]);
+    }
+
+    public function searchLieu(Request $request)
+    {
+        $query = $request->input('query');
+
+        if (!$query) {
+            return response()->json([
+                'message' => 'Veuillez fournir un terme de recherche.'
+            ], 400);
+        }
+
+        // Recherche d'événements
+        $events = Event::where('lieu', 'like', "%$query%")
+            // ->with('organisateur') // pour retourner l'organisateur avec l'événement
+            ->get();
+
+
+        return response()->json([
+            'events' => $events,
+        ]);
+    }
+
+    public function searchDate(Request $request)
+    {
+        $date = $request->input('date');
+
+        if (!$date) {
+            return response()->json([
+                'message' => 'Veuillez fournir uneme de recherche.'
+            ], 400);
+        }
+
+        // Recherche d'événements
+        $events = Event::whereDate('date', $date)
+            // ->with('organisateur') // pour retourner l'organisateur avec l'événement
+            ->get();
+
+
+        return response()->json([
+            'events' => $events,
+        ]);
+    }
+
+    
      // Liste des événements filtrables
     public function search_2(Request $request)
     {

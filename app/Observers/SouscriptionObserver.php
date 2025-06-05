@@ -27,7 +27,7 @@ class SouscriptionObserver
             $pt = 5;
         }
 
-        // Exemple : 10 points à chaque souscription
+        //  10 + celui de la souscription points à chaque souscription
         PointLog::create([
             'utilisateur_id' => $utilisateur->id,
             'type' => 'souscription_à_plan' . $plan->nom,

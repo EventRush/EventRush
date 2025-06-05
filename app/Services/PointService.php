@@ -9,7 +9,7 @@ use App\Models\Utilisateur;
 
 class PointService
 {
-    public static function enregistrerVueEvenement(Utilisateur $utilisateur, Event $event)
+    public static function ajouterVueEvenement(Utilisateur $utilisateur, Event $event)
     {
         if (EventVue::where('utilisateur_id', $utilisateur->id)->where('event_id', $event->id)->exists()) {
             return;
@@ -31,25 +31,31 @@ class PointService
         ]);
     }
 
-     public static function suivreEvenement(Utilisateur $utilisateur, Event $event)
+     public static function ajouterFavoriEvenement(Utilisateur $utilisateur, Event $event)
     {
-        if (EventVue::where('utilisateur_id', $utilisateur->id)->where('event_id', $event->id)->exists()) {
-            return;
-        }
 
-        EventVue::create([
+        $event->increment('points', 2);
+
+        PointLog::firstOrCreate([
             'utilisateur_id' => $utilisateur->id,
             'event_id' => $event->id,
+            'type' => 'evenement_favorise'
+        ], [
+            'points' => 2,
         ]);
+    }
 
+    public static function ajouterNoteEvenement(Utilisateur $utilisateur,Event $event, $oldnote)
+    {   
+        
         $event->increment('points', 1);
 
         PointLog::firstOrCreate([
             'utilisateur_id' => $utilisateur->id,
             'event_id' => $event->id,
-            'type' => 'vue_evenement'
+            'type' => 'evenement_note'
         ], [
-            'points' => 1,
+            'points' => 2,
         ]);
     }
 }

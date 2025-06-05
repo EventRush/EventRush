@@ -9,21 +9,23 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class SuiveurEventCreateNot extends Notification
+class SuiveurEventModifyOrDeleteNot extends Notification
 {
     use Queueable;
-
     protected $event;
     protected $orga;
+    protected $action;
+
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(Utilisateur $orga, Event $event)
+    public function __construct(Utilisateur $orga, Event $event, $action)
     {
-        //
         $this->event = $event;
         $this->orga = $orga;
+        $this->action = $action;
+        //
     }
 
     /**
@@ -43,10 +45,8 @@ class SuiveurEventCreateNot extends Notification
     {
         return [
             'titre' => "Evènement - {$this->event->titre}" ,
-            'message' => "Votre organisateur {$this->orga->nom} vient de publier un nouvel evenement" ,
-            'date' => $this->event->date_debut ,
-            'lien' => route('event.show', $this->event->id) ,
-
+            'message' => "Votre organisateur {$this->orga->nom} vient de {$this->action} cet evenement",
+            'link' => route('event.show', $this->event->id)
         ];
     }
 
