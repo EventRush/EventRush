@@ -15,6 +15,7 @@ use FedaPay\Webhook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Intervention\Image\ImageManager;
 
 
 class BilleterieController extends Controller
@@ -339,6 +340,87 @@ public function callback(Request $request)
             ]
         ]);
     }
+    // public function afficherBillet(Request $request)
+    // {
+    //     $request->validate([
+    //         'qr_code' => 'required|string',
+    //     ]);
+        
+    // }
+
+    public function userIndexbillets(Request $request)
+{
+    // Récupérer l'utilisateur authentifié
+    $user = Auth::user();
+
+    // Récupérer la page pour la pagination
+    $page = $request->input('page', 1);
+    $perPage = 10; // Nombre de billets par page, ajustable
+
+    // Billets pour les événements à venir
+    $comingEventsTickets = Billet::with('event')
+        ->where('utilisateur_id', $user->id)
+        ->whereHas('event', function($query) {
+            $query->where('date_fin', '>=', now()); // Filtrer les événements à venir
+        })
+        ->paginate($perPage, ['*'], 'coming_page', $page);
+
+    // Billets pour les événements passés
+    $pastEventsTickets = Billet::with('event')
+        ->where('utilisateur_id', $user->id)
+        ->whereHas('event', function($query) {
+            $query->where('date_fin', '<', now()); // Filtrer les événements passés
+        })
+        ->paginate($perPage, ['*'], 'past_page', $page);
+
+    return response()->json([
+        'passee' => $pastEventsTickets,
+        'a_venir' => $comingEventsTickets
+    ]);
+    }
+    // 
+
+    public function generateBilletImage($billetId)
+    {
+        $billet = Billet::with('event', 'ticket', 'utilisateur')->findOrFail($billetId);
+        $event = $billet->event;
+        $ticket = $billet->ticket;
+
+        $qrCodePath = storage_path('app/qrcodes/' . $billet->qr_code . '.png');
+        $ticketImagePath = storage_path('app/public/tickets/' . $ticket->image); // image du type de ticket
+
+        // Créer le gestionnaire
+        $manager = new ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+
+        // Charger les images
+        $ticketImg = $manager->read($ticketImagePath);
+        $qrCodeImg = $manager->read($qrCodePath)->resize(200, 200); // Ajuste selon besoin
+
+        // Coller le QR code sur l’image du ticket (à droite)
+        $ticketImg->place($qrCodeImg, 'top-right', 20, 20);
+
+        // Ajouter du texte : nom de l'utilisateur, événement, etc.
+        $ticketImg->text($event->titre, 20, 240, function ($font) {
+            $font->size(24);
+            $font->color('#000000');
+        });
+
+        $ticketImg->text('Acheteur: ' . $billet->utilisateur->nom, 20, 270, function ($font) {
+            $font->size(20);
+            $font->color('#000000');
+        });
+
+        $ticketImg->text('Montant: ' . $billet->montant . ' FCFA', 20, 300, function ($font) {
+            $font->size(20);
+            $font->color('#000000');
+        });
+
+        $savePath = storage_path('app/public/billets/billet_' . $billet->id . '.png');
+        $ticketImg->save($savePath);
+
+        return response()->download($savePath)->deleteFileAfterSend(true);
+    }
+
 
 
 }

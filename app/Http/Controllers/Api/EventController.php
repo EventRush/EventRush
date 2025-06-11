@@ -209,7 +209,7 @@ class EventController extends Controller
         }
 
         // Recherche d'événements
-        $events = Event::where('descrption', 'like', "%$query%")
+        $events = Event::where('description', 'like', "%$query%")
             // ->with('organisateur') // pour retourner l'organisateur avec l'événement
             ->get();
 
@@ -251,7 +251,7 @@ class EventController extends Controller
         }
 
         // Recherche d'événements
-        $events = Event::whereDate('date', $date)
+        $events = Event::whereDate('date_debut', $date)
             // ->with('organisateur') // pour retourner l'organisateur avec l'événement
             ->get();
 

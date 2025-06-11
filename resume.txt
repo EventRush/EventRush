@@ -113,3 +113,6 @@ finalisation des fonctions update
 
 systeme de point : 
 
+migration pour un seul seeder :
+php artisan db:seed --class=TicketSeeder
+

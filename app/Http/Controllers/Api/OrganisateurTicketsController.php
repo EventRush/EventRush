@@ -7,6 +7,7 @@ use App\Http\Resources\Api\TicketRessource;
 use App\Models\Event;
 use App\Models\OrganisateurProfile;
 use App\Models\Ticket;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -92,9 +93,15 @@ class OrganisateurTicketsController extends Controller
         ]);
         $imagePath = null;
 
-        if($request->hasFile('image')){
-            $imagePath = $request->file('image')->store('events/tickets', 'public');
+        // if($request->hasFile('image')){
+        //     $imagePath = $request->file('image')->store('events/tickets', 'public');
+        // }
+
+        if ($request->hasFile('image')) {
+            
+            $imagePath = Cloudinary::upload($request->file('image')->getRealPath())->getSecurePath();   
         }
+
 
         $ticket = Ticket::create([
             'event_id' => $eventId,
@@ -135,9 +142,16 @@ class OrganisateurTicketsController extends Controller
         ]);
         $imagePath = null;
 
-        if($request->hasFile('image')){
-            $imagePath = $request->file('image')->store('events/tickets', 'public');
+        // if($request->hasFile('image')){
+        //     $imagePath = $request->file('image')->store('events/tickets', 'public');
+        //     $ticket->image = $imagePath;
+        // }
+
+        if ($request->hasFile('image')) {
+            
+            $imagePath = Cloudinary::upload($request->file('image')->getRealPath())->getSecurePath();   
             $ticket->image = $imagePath;
+
         }
 
 

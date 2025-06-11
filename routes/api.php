@@ -87,12 +87,13 @@ Route::post('/events/{eventId}', [EventController::class, 'update']);
 
 
 
-
+//     *****  billeterie  *****
 // Route::get('/paiement/callback', [BilleterieController::class, 'callback'])->name('paiement.callback');
 Route::post('/billet/webhook', [BilleterieController::class, 'webhookBillet']);
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         //billet/payer
     Route::post('/billet/payer', [BilleterieController::class, 'payer']);
+    Route::get('/billet/userIndex', [BilleterieController::class, 'userIndexbillets']);
 
     Route::get('/welcome', function () { return view('welcome');
     });

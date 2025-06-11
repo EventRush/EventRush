@@ -10,6 +10,7 @@
         "dedoc/scramble": "^0.12.17",
         "fedapay/fedapay-php": "^0.4.5",
         "guzzlehttp/guzzle": "^7.9",
+        "intervention/image": "^3.11",
         "laravel/framework": "^10.0",
         "laravel/sanctum": "^3.3",
         "laravel/socialite": "^5.20",
