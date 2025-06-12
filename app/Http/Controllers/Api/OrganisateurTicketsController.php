@@ -10,6 +10,7 @@ use App\Models\Ticket;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class OrganisateurTicketsController extends Controller
 {
@@ -97,9 +98,14 @@ class OrganisateurTicketsController extends Controller
         //     $imagePath = $request->file('image')->store('events/tickets', 'public');
         // }
 
+        
         if ($request->hasFile('image')) {
-            
-            $imagePath = Cloudinary::upload($request->file('image')->getRealPath())->getSecurePath();   
+            try {
+                $imagePath = Cloudinary::upload($request->file('image')->getRealPath())->getSecurePath();
+            } catch (\Exception $e) {
+                Log::error('Erreur lors de l\'upload Cloudinary : ' . $e->getMessage());
+                return response()->json(['message' => 'Erreur lors de l\'upload de l\'image.'], 500);
+            }
         }
 
 
