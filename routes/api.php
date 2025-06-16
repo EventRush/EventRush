@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\PlansSouscriptionsController;
 use App\Http\Controllers\Api\QrCodeController;
 use App\Http\Controllers\Api\SouscriptionController;
 use App\Http\Controllers\Api\SuiviController;
+use App\Http\Controllers\Api\TestController;
 use App\Http\Controllers\Api\UtilisateurController;
 use App\Http\Controllers\Api\VerifyEmailController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -32,6 +33,9 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
+Route::post('/test-upload', [TestController::class, 'testcloudinary']);
+
 
 
 Route::post('/auth/register', [AuthController::class, 'register']);
@@ -262,12 +266,16 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'verified', 'admin'])->group
 
 
 
-Route::middleware(['auth:sanctum', 'verified'])->get('/test-auth', function (Request $request) {
-    return response()->json([
-        'message' => 'Vous êtes connecté !',
-        'user' => $request->user()
-    ]);
-});
+// Route::middleware(['auth:sanctum', 'verified'])->get('/test-auth', function (Request $request) {
+//     return response()->json([
+//         'message' => 'Vous êtes connecté !',
+//         'user' => $request->user()
+//     ]);
+// });
+// Route::post('testcloudinary', [TestController::class, 'testcloudinary']);
+
+
+
 
 
 
