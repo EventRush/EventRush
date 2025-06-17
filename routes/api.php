@@ -156,6 +156,12 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/', [SuiviController::class, 'index']);
     Route::post('/suivre/{userId}', [SuiviController::class, 'suivre']);
     Route::delete('/ne-plus-suivre/{userId}', [SuiviController::class, 'nePlusSuivre']);
+    
+
+    //   ***** billeterie  *****
+    Route::get('/events/billets/{billetId}', [BilleterieController::class, 'generateBilletImage']);
+
+
 });
 
     // Route::middleware('auth:sanctum')->group(function () {
@@ -206,6 +212,8 @@ Route::prefix('organisateur')->middleware(['auth:sanctum', 'organisateur', 'sous
             // Billets & Participants
             Route::get('/events/{eventId}/billets', [BilleterieController::class, 'eventBillets']); //
             Route::get('/events/{eventId}/participants', [BilleterieController::class, 'eventParticipants']); //
+            Route::get('/events/{eventId}/billets/scan', [BilleterieController::class, 'verifierBillet']); //
+
         });
 
     

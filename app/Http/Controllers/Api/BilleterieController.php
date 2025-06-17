@@ -299,7 +299,7 @@ public function callback(Request $request)
     ]);
 }
 
-    public function verifierBillet(Request $request)
+    public function verifierBillet($eventId, Request $request)
     {
         $request->validate([
             'qr_code' => 'required|string',
@@ -314,6 +314,13 @@ public function callback(Request $request)
                 'success' => false,
                 'message' => 'Billet invalide ou non trouvé.'
             ], 404);
+        }
+
+        if ($billet->event_id !== $eventId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ce billet ne correspond pas à cet evenement.'
+            ], 405);
         }
 
         // Vérifier si le billet a déjà été scanné
