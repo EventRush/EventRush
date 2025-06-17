@@ -24,16 +24,16 @@ class EventResource extends JsonResource
             'date_fin' => $this->date_fin,
             'lieu' => $this->lieu,
             'statut' => $this->statut,
-            'affiche_url' => $this->affiche ? asset('storage/app/public/' . $this->affiche) : null,
+            'affiche_url' => $this->affiche ?  : null,
             'points' => $this->points,
             'nbr_achat' => $this->nbr_achat,
             'photos' => $this->photos->map(function ($photo) {
-                return asset('storage//app/public/' . $photo->image_path);
+                return $photo->image_path;
             }),
             'organisateur' =>  $organisateur ? [
                 'id' => $organisateur->id,
                 'nom_entreprise' => $organisateur->nom_entreprise,
-                'logo' => $organisateur->logo ? asset('storage/' . $organisateur->logo) : null,
+                'logo' => $organisateur->logo ?  : null,
             ]: null,
         ];
     }

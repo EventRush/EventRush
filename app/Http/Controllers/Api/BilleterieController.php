@@ -14,9 +14,10 @@ use FedaPay\Transaction;
 use FedaPay\Webhook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\ImageManager;
-
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class BilleterieController extends Controller
 {
@@ -380,45 +381,93 @@ public function callback(Request $request)
     }
     // 
 
+
+
+    // public function afficherImageBillet($billetId)
+    // {
+    //     $billet = Billet::with(['event', 'ticket', 'utilisateur'])->findOrFail($billetId);
+
+    //     $qrCodeText = $billet->qr_code;
+    //     $backgroundPath = $billet->ticket->image; // ex: 'tickets/bg_ticket1.png'
+
+    //     // Générer le QR code
+    //     $qrImage = QrCode::format('png')->size(200)->generate($qrCodeText);
+
+    //     // Charger l’image de fond
+    //     $imageManager = new ImageManager();
+    //     $background = $imageManager->make($backgroundPath);
+
+    //     // Insérer le QR code dans l'image
+    //     $background->insert($imageManager->make($qrImage), 'bottom-right', 30, 30);
+
+    //     // Ajouter du texte (infos billet)
+    //     $background->text("Événement : " . $billet->event->titre, 50, 30, function ($font) {
+    //         $font->size(28);
+    //         $font->color('#000000');
+    //         $font->align('left');
+    //         $font->valign('top');
+    //     });
+
+    //     $background->text("Montant : " . $billet->montant . ' FCFA', 50, 70, function ($font) {
+    //         $font->size(22);
+    //         $font->color('#000000');
+    //     });
+
+    //     $background->text("Nom : " . $billet->utilisateur->nom, 50, 110, function ($font) {
+    //         $font->size(22);
+    //         $font->color('#000000');
+    //     });
+
+    //     $background->text("Référence : " . $billet->reference, 50, 150, function ($font) {
+    //         $font->size(18);
+    //         $font->color('#333333');
+    //     });
+
+    //     // Retourner l'image générée
+    //     return $background->response('png');
+    // }
+
+
+
     public function generateBilletImage($billetId)
     {
-        $billet = Billet::with('event', 'ticket', 'utilisateur')->findOrFail($billetId);
-        $event = $billet->event;
-        $ticket = $billet->ticket;
+        $billet = Billet::with(['event', 'ticket', 'utilisateur'])->findOrFail($billetId);
 
-        $qrCodePath = storage_path('app/qrcodes/' . $billet->qr_code . '.png');
-        $ticketImagePath = storage_path('app/public/tickets/' . $ticket->image); // image du type de ticket
+        // URL de l'image du type du ticket (ex: Cloudinary)
+        $ticketImageUrl = $billet->ticket->image; 
 
-        // Créer le gestionnaire
-        $manager = new ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+        // Créer manager
+        $manager = ImageManager::gd(); // ou ::imagick() selon ton serveur
 
-        // Charger les images
-        $ticketImg = $manager->read($ticketImagePath);
-        $qrCodeImg = $manager->read($qrCodePath)->resize(200, 200); // Ajuste selon besoin
+        // Charger l'image principale
+        $ticketImage = $manager->read($ticketImageUrl);
 
-        // Coller le QR code sur l’image du ticket (à droite)
-        $ticketImg->place($qrCodeImg, 'top-right', 20, 20);
+        // Générer le QR code en image
+        $qrData = $billet->qr_code;
 
-        // Ajouter du texte : nom de l'utilisateur, événement, etc.
-        $ticketImg->text($event->titre, 20, 240, function ($font) {
-            $font->size(24);
-            $font->color('#000000');
-        });
+        // Tu peux générer le QR code sous forme de binaire PNG
+        $qrCodePng = QrCode::format('png')->size(200)->generate($qrData);
 
-        $ticketImg->text('Acheteur: ' . $billet->utilisateur->nom, 20, 270, function ($font) {
-            $font->size(20);
-            $font->color('#000000');
-        });
+        // Lire le QR code comme image Intervention
+        $qrImage = $manager->read($qrCodePng);
 
-        $ticketImg->text('Montant: ' . $billet->montant . ' FCFA', 20, 300, function ($font) {
-            $font->size(20);
-            $font->color('#000000');
-        });
+        // Fusionner le QR code dans le ticket (en bas à droite par exemple)
+        $ticketImage->place($qrImage, 'bottom-right', 10, 10);
 
-        $savePath = storage_path('app/public/billets/billet_' . $billet->id . '.png');
-        $ticketImg->save($savePath);
+        // // Ajouter texte éventuel
+        // $ticketImage->text("Évènement : " . $billet->event->titre, 20, 20, function ($font) {
+        //     $font->size(24);
+        //     $font->color('#000000');
+        // });
 
-        return response()->download($savePath)->deleteFileAfterSend(true);
+        // $ticketImage->text("Référence : " . $billet->reference, 20, 60, function ($font) {
+        //     $font->size(20);
+        //     $font->color('#000000');
+        // });
+
+        // Retourner l'image au navigateur
+        return response($ticketImage->toJpeg(85))
+                ->header('Content-Type', 'image/jpeg');
     }
 
 
