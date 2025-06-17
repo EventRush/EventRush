@@ -34,7 +34,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/test-upload', [TestController::class, 'testcloudinary']);
+// Route::post('/test-upload', [TestController::class, 'testcloudinary']);
 
 
 
@@ -256,10 +256,15 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'verified', 'admin'])->group
 
     // Route::put('/souscriptions/{id}/valider', [AdminController::class, 'validateSouscription']);
 
+
+
     // // Dashboard
     // Route::get('/statistiques', [StatController::class, 'adminStats']);
 
     });
+
+Route::post('/test_upload', [TestController::class, 'testcloudinary']);
+
     
                             
     

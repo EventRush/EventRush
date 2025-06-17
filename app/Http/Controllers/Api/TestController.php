@@ -13,6 +13,10 @@ class TestController extends Controller
         'image' => 'required|image|mimes:jpg,jpeg,png|max:4096' 
 
         ]);
+    //     dd(
+    //   $request->hasFile('image'),      // doit renvoyer true
+    //         $request->file('image')          // ne doit pas être null
+    //     );
        if (!$request->hasFile('image')) {
         return response()->json(['error' => 'No file provided'], 400);
     }
