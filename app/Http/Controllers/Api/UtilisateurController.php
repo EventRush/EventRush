@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Utilisateur;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Dedoc\Scramble\Support\Generator\SecurityScheme;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
@@ -62,25 +63,24 @@ class UtilisateurController extends Controller
              return response()->json(['message' => 'Utilisateur non authentifié'], 401);
          }
  
-         $validated = $request->validate([
+        $request->validate([
              'nom' => 'nullable|string|max:255',
              'email' => 'nullable|email|unique:utilisateurs,email,' . $user->id,
              'avatar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
          ]);
  
-         if ($request->hasFile('avatar')) {
-             if ($user->avatar) {
-                 Storage::disk('public')->delete($user->avatar);
-             }
- 
-             $path = $request->file('avatar')->store('avatars', 'public');
-             $validated['avatar'] = $path;
-         }
+          if ($request->hasFile('avatar')) {
+            $user->avatar = Cloudinary::upload($request->file('affiche')->getRealPath())->getSecurePath();   
+
+        }
+         
         //  dd($validated);
         // return response()->json($validated);
 
         if ($request->has('nom')) $user->nom = $request->nom;
         if ($request->has('email')) $user->email = $request->email;
+        if ($request->has('avatar')) $user->avatar = $request->avatar;
+
         $user->save();
         //  $user->update($validated);
         // $user->fill($validated)->save();
