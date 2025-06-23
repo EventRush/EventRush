@@ -79,7 +79,6 @@ class UtilisateurController extends Controller
 
         if ($request->has('nom')) $user->nom = $request->nom;
         if ($request->has('email')) $user->email = $request->email;
-        if ($request->has('avatar')) $user->avatar = $request->avatar;
 
         $user->save();
         //  $user->update($validated);
