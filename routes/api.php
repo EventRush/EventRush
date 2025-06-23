@@ -141,7 +141,11 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
      Route::middleware('auth:sanctum')->group(function () {
     Route::get('notifications', [NotificationController::class, 'index']);
     Route::post('notifications/{notId}/mark-as-read', [NotificationController::class, 'markAsRead']);
-    }); 
+    
+        Route::get('/events/billets/{billetId}', [BilleterieController::class, 'generateBilletImage']);
+
+
+}); 
     // Route::middleware('auth:sanctum')->group(function () {
     //     Route::get('/notifications', function () {
     //         return response()->json(auth()->user()->unreadNotifications);
@@ -159,7 +163,6 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     
 
     //   ***** billeterie  *****
-    Route::get('/events/billets/{billetId}', [BilleterieController::class, 'generateBilletImage']);
 
 
 });

@@ -381,6 +381,17 @@ public function callback(Request $request)
         })
         ->paginate($perPage, ['*'], 'past_page', $page);
 
+        $pastEventsTickets->getCollection()->transform(function ($billet) {
+        $billet->type_ticket = $billet->ticket ? $billet->ticket->type : null;
+        return $billet;
+    });
+
+        $comingEventsTickets->getCollection()->transform(function ($billet) {
+        $billet->type_ticket = $billet->ticket ? $billet->ticket->type : null;
+        return $billet;
+    });
+
+
     return response()->json([
         'passee' => $pastEventsTickets,
         'a_venir' => $comingEventsTickets
