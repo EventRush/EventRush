@@ -40,11 +40,11 @@ class AppServiceProvider extends ServiceProvider
             $openApi->secure(
                 SecurityScheme::http('bearer')
             );
-            $openApi->servers = [
-            new Server(
-                url: 'https://b251-129-224-205-180.ngrok-free.app/api',
-            ),
-            ];
+            // $openApi->servers = [
+            // new Server(
+            //     url: 'https://b251-129-224-205-180.ngrok-free.app/api',
+            // ),
+            // ];
         });
 
         Souscription::observe(SouscriptionObserver::class);
