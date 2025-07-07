@@ -116,3 +116,85 @@ systeme de point :
 migration pour un seul seeder :
 php artisan db:seed --class=TicketSeeder
 
+
+
+
+
+
+
+
+
+
+
+\chapter{Déroulement du stage}
+
+\section{Introduction}
+
+Dans le cadre de la validation de mon parcours académique, j’ai effectué un stage pratique au sein de l’entreprise \textbf{DIGIT Consults Sarl}. Ce stage s’inscrit dans une dynamique de mise en application des connaissances théoriques acquises durant la formation, tout en me confrontant à la réalité du monde professionnel. Ce chapitre présente le cadre général du stage, à travers une brève introduction de la structure d’accueil, son fonctionnement, les missions réalisées, ainsi qu’un bilan des compétences acquises et des difficultés rencontrées.
+
+\section{Présentation de l’entreprise d’accueil}
+
+\subsection*{Historique, mission et vision}
+
+Fondée en 2019 à Cotonou par M. Gilles et M. Faraj, \textbf{DIGIT-CONSULTS Sarl} s’est rapidement imposée comme un 
+acteur majeur du développement digital au Bénin. L’entreprise est née de la volonté de créer des solutions numériques 
+innovantes, utiles et adaptées aux réalités locales. Elle s’appuie sur une équipe jeune, dynamique et passionnée par 
+la technologie.
+
+DIGIT-CONSULTS a déjà à son actif plusieurs projets réussis, notamment l’application mobile 
+\textbf{ADDB (À la découverte du Bénin)} qui vise à promouvoir le tourisme local. Sa mission est d’accompagner les 
+entreprises béninoises dans leur transformation digitale à travers une offre complète : conseil en stratégie numérique, 
+développement web et mobile, design UI/UX et gestion intelligente des données. Son ambition est de devenir un leader 
+du numérique en Afrique de l’Ouest et de contribuer activement au développement économique et culturel du continent.
+
+\subsection*{Structure organisationnelle et fonctionnement}
+
+DIGIT-CONSULTS possède une organisation souple, axée sur l’agilité et la collaboration. Elle fonctionne autour de projets portés par des équipes transversales où chaque membre apporte son expertise technique ou stratégique. L’organigramme de l’entreprise est relativement horizontal, favorisant la communication directe entre collaborateurs et une réactivité accrue.
+
+\begin{center}
+\textit{(Insérer ici l'organigramme : Figure 1 — Organigramme de DIGIT-CONSULTS)}
+\end{center}
+
+Le fonctionnement de DIGIT-CONSULTS repose sur une approche pragmatique orientée vers la satisfaction client, l’innovation continue et la veille technologique. Les projets sont pilotés de manière agile, en intégrant régulièrement les retours des clients et des utilisateurs finaux.
+
+\section{Travaux effectués}
+
+Durant ce stage, j’ai été pleinement intégré aux activités de développement de l’entreprise. J’ai participé à un projet de création d’une application web basée sur le framework Laravel. Cela m’a permis de me familiariser avec la configuration d’un environnement de développement, l’architecture MVC, l’interaction avec les bases de données, ainsi que l’utilisation des API REST.
+
+J’ai également été impliqué dans un projet client nécessitant le développement du front-end d’une application avec \textbf{React}. Cela a représenté un défi stimulant, où j’ai dû concevoir des interfaces modernes, dynamiques et adaptatives, tout en respectant les besoins fonctionnels définis. J’ai également eu l’occasion de travailler ponctuellement avec \textbf{Flutter} pour explorer la partie mobile du projet.
+
+Parallèlement à ces missions techniques, j’ai bénéficié d’un accompagnement personnalisé de la part de l’équipe, notamment pour la structuration et l’avancement de mon mémoire de fin d’études. Cet encadrement m’a permis d’évoluer dans un environnement de travail motivant, soutenant et très professionnel.
+
+\section{Acquis du stage}
+
+Ce stage m’a permis de consolider plusieurs compétences techniques et personnelles.
+
+Sur le plan technique :
+\begin{itemize}
+  \item J’ai renforcé mes bases en développement web backend avec Laravel ;
+  \item J’ai approfondi ma maîtrise de React et acquis des notions avancées en React Native ;
+  \item J’ai mieux compris les principes d’architecture logicielle et de structuration de projets ;
+  \item J’ai appris à collaborer efficacement au sein d’une équipe agile et à participer à des revues de code et discussions techniques.
+\end{itemize}
+
+Sur le plan personnel :
+\begin{itemize}
+  \item J’ai développé ma capacité à m’auto-former et à m’adapter à un nouveau cadre de travail ;
+  \item J’ai appris à mieux gérer mon temps entre les tâches de développement et la rédaction du mémoire ;
+  \item J’ai bénéficié d’un environnement de travail bienveillant, qui m’a encouragé à progresser et à prendre des initiatives.
+\end{itemize}
+
+\section{Difficultés rencontrées et suggestions}
+
+Comme tout apprentissage, ce stage a comporté des défis. La prise en main de Laravel a été particulièrement exigeante au départ, notamment à cause de la richesse du framework et du manque d’expérience initiale. Grâce à la documentation officielle, aux ressources partagées et à l’accompagnement de l’équipe, j’ai pu progressivement surmonter cette difficulté.
+
+L’intégration dans les projets en cours a aussi nécessité un effort d’adaptation, tant sur le plan technique qu’organisationnel. Les réunions régulières et la communication ouverte ont largement contribué à faciliter cette intégration.
+
+Enfin, la conciliation entre les exigences du stage et celles du mémoire a parfois été un frein à l’efficacité. L’utilisation d’outils comme Trello et une meilleure planification m’ont permis de mieux organiser mon emploi du temps.
+
+Pour améliorer encore l’expérience des futurs stagiaires, il serait intéressant de mettre en place :
+\begin{itemize}
+  \item Une documentation interne plus accessible pour faciliter l’onboarding ;
+  \item Un point de suivi hebdomadaire entre tuteur et stagiaire ;
+  \item Une formation rapide sur les outils utilisés dès les premiers jours du stage.
+\end{itemize}

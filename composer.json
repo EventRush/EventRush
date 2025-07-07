@@ -8,6 +8,7 @@
         "php": "^8.1",
         "cloudinary-labs/cloudinary-laravel": "^2.3",
         "dedoc/scramble": "^0.12.17",
+        "doctrine/dbal": "^3.9",
         "fedapay/fedapay-php": "^0.4.5",
         "guzzlehttp/guzzle": "^7.9",
         "intervention/image": "^3.11",

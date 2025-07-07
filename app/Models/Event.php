@@ -44,6 +44,10 @@ class Event extends Model
             return $this->hasMany(Billet::class);
         }
 
+        public function tests()
+        {
+            return $this->hasMany(Test::class);
+        }
     
     public function tickets()
         {

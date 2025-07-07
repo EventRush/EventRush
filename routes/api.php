@@ -80,6 +80,25 @@ Route::get('/home/stats', [EventController::class, 'stat']);// pas encore fait
 Route::get('/home/orgaEvent', [EventController::class, 'byOrganisateur']);
 
 
+//     ***** test ***** 
+// Route::post('/events/{eventId}/scan', [BilleterieController::class, 'verifierBillet']); //
+Route::post('/events/{eventId}/scan', [TestController::class, 'testScann']);
+
+Route::prefix('test') ->group(function () {
+Route::post('/coudinary/upload', [TestController::class, 'storeImage']);
+Route::get('/coudinary/{id}/image-qr', [TestController::class, 'showImageWithQR']);
+// Route::get('/coudinary/{id}/image-qr', [TestController::class, 'showImageWithQR']);   //   showImageWithQR
+Route::post('/events/ticket/{ticketId}', [TestController::class, 'update_Ticket']); //
+Route::get('/events/billet/{billetId}', [TestController::class, 'getTicketData']); //  
+Route::post('/public/upload', [TestController::class, 'storeImageinPublic']); //  storeImageinPublic
+Route::get('/public/billet/{billetId}', [TestController::class, 'getTicketPublic']); //  
+
+
+Route::post('/store', [TestController::class, 'store']);
+Route::get('/{id}/show', [TestController::class, 'show']);
+
+});
+
 
 // Route::apiResource('events', EventController::class);
 Route::get('/events', [EventController::class, 'index']);
@@ -215,7 +234,8 @@ Route::prefix('organisateur')->middleware(['auth:sanctum', 'organisateur', 'sous
             // Billets & Participants
             Route::get('/events/{eventId}/billets', [BilleterieController::class, 'eventBillets']); //
             Route::get('/events/{eventId}/participants', [BilleterieController::class, 'eventParticipants']); //
-            Route::get('/events/{eventId}/billets/scan', [BilleterieController::class, 'verifierBillet']); //
+            // Route::get('/events/{eventId}/billets/scan', [BilleterieController::class, 'verifierBillet']); //
+            Route::post('/events/{eventId}/billets/scan', [BilleterieController::class, 'verifierBillet']); //
 
         });
 
