@@ -10,3 +10,9 @@ application:
 
     (modification dans une nouvelle migration)
     $table->string('etat')->change();
+
+###     authentification
+
+Il existe 2 type de token sanctum :
+    - token frontend (spa, blade) : à ignorer (transienttoken)
+    - Api mobile (token en header) : à expirer

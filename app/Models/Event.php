@@ -54,5 +54,10 @@ class Event extends Model
             return $this->hasMany(Ticket::class);
         }
 
+    public function scanneurs()
+        {
+            return $this->belongsToMany(Utilisateur::class, 'event_scanneurs', 'event_id', 'utilisateur_id')->where('role', 'scanneur');
+        }
+
 }
 

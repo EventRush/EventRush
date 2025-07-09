@@ -53,6 +53,7 @@ class Kernel extends HttpKernel
         'admin' => \App\Http\Middleware\CheckAdminRole::class,
         'organisateur' => \App\Http\Middleware\CheckOrganisateurRole::class,
         'scanneur' => \App\Http\Middleware\EnsureScanneur::class,
+        'token.expiry' => \App\Http\Middleware\CheckTokenExpiry::class,
         // 'web.auth' => \App\Http\Middleware\WebAuth::class,
     ];
     /**

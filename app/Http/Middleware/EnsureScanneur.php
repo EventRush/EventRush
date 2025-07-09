@@ -17,6 +17,6 @@ class EnsureScanneur
     public function handle(Request $request, Closure $next): Response
     {
         if (Auth::check() && Auth::user()->role === 'scanneur') { return $next($request); }
-        abort(403, 'Access denied.');
+        abort(403, 'Access denied, vous n\'êtes pas scanneur.');
     }
 }

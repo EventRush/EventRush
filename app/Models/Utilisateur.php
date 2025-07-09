@@ -62,6 +62,10 @@ implements MustVerifyEmail
     {
         return $this->hasMany(Billet::class);
     }
+    public function eventforScanneur()
+    {
+        return $this->belongsToMany(Event::class,'event_scanneurs', 'utilisateur_id', 'event_id' );
+    }
 
 
 }

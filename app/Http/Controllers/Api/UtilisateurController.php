@@ -66,11 +66,11 @@ class UtilisateurController extends Controller
         $request->validate([
              'nom' => 'nullable|string|max:255',
              'email' => 'nullable|email|unique:utilisateurs,email,' . $user->id,
-             'avatar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+             'avatar' => 'nullable|image|mimes:jpg,jpeg,png|max:6192',
          ]);
  
           if ($request->hasFile('avatar')) {
-            $user->avatar = Cloudinary::upload($request->file('affiche')->getRealPath())->getSecurePath();   
+            $user->avatar = Cloudinary::upload($request->file('avatar')->getRealPath())->getSecurePath();   
 
         }
          
@@ -81,8 +81,6 @@ class UtilisateurController extends Controller
         if ($request->has('email')) $user->email = $request->email;
 
         $user->save();
-        //  $user->update($validated);
-        // $user->fill($validated)->save();
  
          return response()->json([
             'message' => 'Profil mis à jour avec succès.',

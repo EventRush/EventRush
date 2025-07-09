@@ -13,8 +13,12 @@ return new class extends Migration
     public function up(): void
     {
             //
-            DB::statement("ALTER TABLE utilisateurs MODIFY COLUMN role ENUM('client', 'organisateur', 'scanneur', 'admin') NOT NULL");
+            // DB::statement("ALTER TABLE utilisateurs MODIFY COLUMN role ENUM('client', 'organisateur', 'scanneur', 'admin') NOT NULL");
        
+            Schema::table('utilisateurs', function (Blueprint $table) {
+            $table->string('role')->default('client')->change();
+        });
+
     }
 
     /**
