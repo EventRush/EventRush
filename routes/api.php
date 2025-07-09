@@ -45,14 +45,14 @@ Route::get('auth/google', [AuthGoogleController::class, 'redirectToGoogle']);
 Route::get('auth/google/manuel', [AuthGoogleController::class, 'manuelredirectToGoogle']);
 Route::get('auth/google/callback', [AuthGoogleController::class, 'handleGoogleCallback']);
 Route::post('auth/google/callback/manuel', [AuthGoogleController::class, 'GoogleCallbackmanuel']);
-
+Route::post('/auth/login/otp', [AuthController::class, 'connexionByOtp']);
 
 //    *****  email et modifications/validations  *****
 
 Route::post('/auth/verifyotp', [VerifyEmailController::class, 'verifyOtp']);
 Route::post('/auth/resendotp', [VerifyEmailController::class, 'resendOtp']);
 
-//    *****  email et modifications/validations  *****
+//    *****  email et update password/validations  *****
 Route::post('/auth/password/sendotp', [PasswordResetController::class, 'sendResetOtp']);
 Route::post('/auth/password/resetotp', [PasswordResetController::class, 'ResetOtp']);
 

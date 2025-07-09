@@ -1,13 +1,16 @@
+// migrations
 Schema::create('utilisateurs', function (Blueprint $table) {
             $table->id();
             $table->string('nom');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('google_id')->nullable();
             $table->string('avatar')->nullable();
             $table->string('otp')->nullable();
             $table->timestamp('otp_expires_at')->nullable();
-            $table->enum('role', ['client', 'organisateur', 'admin'])->default('client');
+            $table->enum('role', ['client', 'scanneur' 'organisateur', 'admin'])->default('client');
+            $table->integer('points')->default(0);
             $table->timestamp('last_seen_at')->nullable();
             $table->timestamps();
         });
@@ -24,7 +27,6 @@ Schema::create('utilisateurs', function (Blueprint $table) {
             $table->foreignId('organisateur_id')->constrained('organisateur_profiles')->onDelete('cascade');
             $table->foreignId('utilisateur_id')->Constrained('utilisateurs')->onDelete('cascade');
             $table->foreignId('plans_souscription_id')->constrained('plans_souscriptions')->onDelete('cascade');
-            $table->enum('type', ['gratuit', 'standard', 'premium'])->default('gratuit');
             $table->date('date_debut');
             $table->date('date_fin');
             $table->enum('statut', ['actif', 'expiré', 'annulé'])->default('actif');
@@ -43,19 +45,29 @@ Schema::create('utilisateurs', function (Blueprint $table) {
             $table->date('date_debut');
             $table->date('date_fin');
             $table->string('lieu');
+            $table->integer('nbr_achat')->default(0);
+            $table->integer('points')->default(0);
             $table->enum('statut', ['brouillon', 'publié', 'annulé'])->default('brouillon');
             $table->string('affiche')->nullable();
+            $table->decimal('latitude', 10, 8)->nullable()->after('lieu');    
+            $table->decimal('longitude', 11, 8)->nullable()->after('latitude');
             $table->timestamps();
         });
         Schema::create('tickets', function (Blueprint $table) {
             $table->id();
             $table->foreignId('event_id')->constrained()->onDelete('cascade');
-            $table->enum('type', ['standart', 'vip1', 'vip2'])->default('standart');
+            $table->string('type');
             $table->decimal('prix', 8,2);
             $table->string('image')->nullable();
             $table->integer('quantité_disponible');
             $table->timestamp('date_limite_vente')->nullable();
             $table->integer('quantite_restante')->default(0);
+            $table->timestamps();
+        });
+        Schema::create('event_photos', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('event_id')->constrained()->onDelete('cascade');
+            $table->string('image_path');       
             $table->timestamps();
         });
         Schema::create('billets', function (Blueprint $table) {
@@ -70,6 +82,8 @@ Schema::create('utilisateurs', function (Blueprint $table) {
             $table->decimal('montant', 10, 2);
             $table->uuid('qr_code')->unique()->nullable();
             $table->string('reference')->unique();  // Référence unique de la transaction MoMo
+            $table->unsignedBigInteger('scanned_by')->nullable()->after('scanned_at');
+            $table->foreign('scanned_by')->references('id')->on('utilisateurs')->onDelete('set null');
             $table->unsignedBigInteger('billet_fedapay_id')->nullable();
             $table->timestamps();
         });
@@ -108,6 +122,147 @@ Schema::create('utilisateurs', function (Blueprint $table) {
         Schema::create('suivis', function (Blueprint $table) {
             $table->id();
             $table->foreignId('utilisateur_id')->constrained('utilisateurs')->onDelete('cascade');
-            $table->foreignId('organisateur_id')->constrained('organisateur_profiles')->onDelete('cascade');
+            $table->foreignId('suivi_id')->constrained('utilisateurs')->onDelete('cascade');
             $table->timestamps();
         });
+        Schema::create('point_logs', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('utilisateur_id')->nullable()->constrained('utilisateurs')->onDelete('cascade');
+            $table->foreignId('event_id')->nullable()->constrained('events')->onDelete('cascade');
+            $table->string('type'); // ex: 'billet_achete', 'suivi_evenement', 'vue_evenement'
+            $table->integer('points');
+            $table->timestamps();
+            $table->unique(['utilisateur_id', 'event_id', 'type']); // évite les doublons
+
+        });
+        Schema::create('event_vues', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('utilisateur_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('event_id')->constrained('events')->onDelete('cascade');
+            $table->timestamps();
+            $table->unique(['utilisateur_id', 'event_id']);
+
+        });
+        Schema::create('event_scanneurs', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('event_id')->constrained()->onDelete('cascade'); 
+            $table->foreignId('utilisateur_id')->constrained()->onDelete('cascade'); 
+            $table->timestamps();
+        });
+
+        // models 
+        
+    class Billet extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'event_id', 'utilisateur_id', 'ticket_id', 'qr_code', 'montant',
+        'methode', 'status', 'reference', 'billet_fedapay_id', 'status_scan', 'scanned_at', 'scanned_by',
+    ];
+    
+    public function utilisateur(){
+        return $this->belongsTo(Utilisateur::class);
+    }
+    public function event(){
+        return $this->belongsTo(Event::class);
+    }
+
+    public function ticket(){
+        return $this->belongsTo(Ticket::class);
+    }
+    
+    public function scanneur()
+    {
+        return $this->belongsTo(Utilisateur::class, 'scanned_by');
+    }
+    public function scanner(Utilisateur $scanneur)
+    {
+        if ($this->status_scan === 'scanné') {
+            throw new \Exception("Ce billet a déjà été scanné.");
+        }
+
+        $this->update([
+            'status_scan' => 'scanné',
+            'scanned_at' => now(),
+            'scanned_by' => $scanneur->id,
+        ]);
+    }
+
+    public function isScanned()
+    {
+        return $this->status_scan === 'scanné';
+    }
+}
+
+    class Commentaire extends Model
+{
+    use HasFactory;
+    protected $fillable = [
+        'event_id', 'utilisateur_id', 'contenu', 'note'
+    ];
+    public function event()
+    {
+        return $this->belongsTo(Event::class);
+    }
+
+    public function utilisateur()
+    {
+        return $this->belongsTo(Utilisateur::class);
+    }
+}
+
+class Event extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'utilisateur_id',
+         'titre', 'description',
+        'date_debut', 'date_fin', 'lieu', 'statut', 'affiche', 'points'
+    ];
+
+    
+
+    public function photos()
+    {
+        return $this->hasMany(EventPhoto::class);
+    }
+    
+        public function favorisePar()
+    {
+        return $this->belongsToMany(Utilisateur::class, 'favoris', 'event_id', 'utilisateur_id')->withTimestamps();
+    }
+
+    public function organisateur()
+        {
+            return $this->belongsTo(OrganisateurProfile::class);
+        }
+
+    
+    public function utilisateur()
+        {
+            return $this->belongsTo(Utilisateur::class, 'utilisateur_id');
+        }
+
+        public function billets()
+        {
+            return $this->hasMany(Billet::class);
+        }
+
+        public function tests()
+        {
+            return $this->hasMany(Test::class);
+        }
+    
+    public function tickets()
+        {
+            return $this->hasMany(Ticket::class);
+        }
+
+    public function scanneurs()
+        {
+            return $this->belongsToMany(Utilisateur::class, 'event_scanneurs', 'event_id', 'utilisateur_id')->where('role', 'scanneur');
+        }
+
+}

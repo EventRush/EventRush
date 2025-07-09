@@ -66,11 +66,43 @@ class AuthController extends Controller
             'message'=> 'Utilisateur connecté',
             'role' => $utilisateur->role, 
 
-        ]);
-    
-        
-            
+        ]);        
        
+    }
+    public function connexionByOtp(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'otp' => 'required|digits:6',
+        ]);
+
+        $utilisateur = Utilisateur::where('email', $request->email)
+            ->where('otp', $request->otp)
+            ->first();
+
+        if (!$utilisateur) {
+            return response()->json(['message' => 'Code OTP ou email invalide.'], 401);
+        }
+
+        if (Carbon::now()->gt($utilisateur->otp_expires_at)) {
+            return response()->json(['message' => 'Code OTP expiré.'], 401);
+        }
+
+        // Invalider l’OTP après utilisation
+        $utilisateur->update([
+            'otp' => null,
+            'otp_expires_at' => null,
+            'email_verified_at' => $utilisateur->email_verified_at ?? Carbon::now(),
+        ]);
+
+        // Connexion + génération du token
+        $token = $utilisateur->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Connexion réussie 🎉',
+            'utilisateur' => $utilisateur,
+            'token' => $token
+        ]);
     }
     /**
      *  logout

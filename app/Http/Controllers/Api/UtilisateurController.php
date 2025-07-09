@@ -9,6 +9,7 @@ use Dedoc\Scramble\Support\Generator\SecurityScheme;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class UtilisateurController extends Controller
 {
@@ -66,6 +67,7 @@ class UtilisateurController extends Controller
         $request->validate([
              'nom' => 'nullable|string|max:255',
              'email' => 'nullable|email|unique:utilisateurs,email,' . $user->id,
+             'password'=>'nullable|string|min:6|',
              'avatar' => 'nullable|image|mimes:jpg,jpeg,png|max:6192',
          ]);
  
@@ -79,6 +81,7 @@ class UtilisateurController extends Controller
 
         if ($request->has('nom')) $user->nom = $request->nom;
         if ($request->has('email')) $user->email = $request->email;
+        if ($request->has('password')) $user->password = Hash::make($request->passwprd);
 
         $user->save();
  
