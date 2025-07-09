@@ -30,6 +30,8 @@ $organisateur = Auth::user();
 
     if(!$souscription) return response()->json(['error' => "Veuillez réactiver votre souscription"]);
 
+    if ($event->date_fin < now()) return response()->json(['error' => "L'événement est terminé."], 403);
+
     if($event->utilisateur_id != $organisateur->id) return response()->json(['error' => "Vous ne pouvez pas créer de scanneur(s) pour cet événement."], 403);
 
         $plan = $souscription->plan;

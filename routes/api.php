@@ -56,7 +56,7 @@ Route::post('/auth/resendotp', [VerifyEmailController::class, 'resendOtp']);
 Route::post('/auth/password/sendotp', [PasswordResetController::class, 'sendResetOtp']);
 Route::post('/auth/password/resetotp', [PasswordResetController::class, 'ResetOtp']);
 
-Route::middleware(['auth:sanctum', 'token.expiry', 'verified'])->group(function () {
+Route::middleware(['auth:sanctum',  'verified'])->group(function () {
     Route::post('/logout', [AuthController::class,'logout']);
    
     Route::get('/me', [UtilisateurController::class,'me']);
@@ -136,7 +136,7 @@ Route::middleware(['auth:sanctum', 'token.expiry', 'verified'])->group(function 
  
 // });
 //    *****  commentaire  *****
-Route::middleware(['auth:sanctum', 'token.expiry', 'verified'])->group(function () {
+Route::middleware(['auth:sanctum',  'verified'])->group(function () {
     Route::get('/evenements/{eventId}/commentaires', [CommentaireController::class, 'index']);
     Route::post('/evenements/{eventId}/commentaires', [CommentaireController::class, 'store']);
     Route::post('/evenements/{commentId}/modifier', [CommentaireController::class, 'update']);
@@ -150,7 +150,7 @@ Route::middleware(['auth:sanctum', 'token.expiry', 'verified'])->group(function 
     
     
     //    *****  abonnement  *****
-    Route::middleware(['auth:sanctum', 'token.expiry'])->group(function () {
+    Route::middleware(['auth:sanctum', ])->group(function () {
         Route::get('/favoris', [FavoriController::class, 'index']);
         Route::post('/favoris/{eventId}', [FavoriController::class, 'store']);
         Route::delete('/favoris/{eventId}', [FavoriController::class, 'destroy']);
@@ -158,7 +158,7 @@ Route::middleware(['auth:sanctum', 'token.expiry', 'verified'])->group(function 
 
     //    *****  notifications  *****
 
-     Route::middleware(['auth:sanctum', 'token.expiry'])->group(function () {
+     Route::middleware(['auth:sanctum', ])->group(function () {
     Route::get('notifications', [NotificationController::class, 'index']);
     Route::post('notifications/{notId}/mark-as-read', [NotificationController::class, 'markAsRead']);
     
@@ -176,7 +176,7 @@ Route::middleware(['auth:sanctum', 'token.expiry', 'verified'])->group(function 
     //     return response()->json(['message' => 'Notifications marquées comme lues.']);
     // });
     // });
-    Route::middleware(['auth:sanctum', 'token.expiry'])->prefix('suivis')->group(function () {
+    Route::middleware(['auth:sanctum', ])->prefix('suivis')->group(function () {
     Route::get('/', [SuiviController::class, 'index']);
     Route::post('/suivre/{userId}', [SuiviController::class, 'suivre']);
     Route::delete('/ne-plus-suivre/{userId}', [SuiviController::class, 'nePlusSuivre']);
@@ -197,7 +197,7 @@ Route::middleware(['auth:sanctum', 'token.expiry', 'verified'])->group(function 
     //    *****  abonnement  *****
     Route::post('/souscriptions/webhook', [SouscriptionController::class, 'souscriptionWebhook']);
 
-    Route::middleware(['auth:sanctum', 'token.expiry', 'verified'])->prefix('souscriptions')->group(function () {
+    Route::middleware(['auth:sanctum',  'verified'])->prefix('souscriptions')->group(function () {
         Route::get('/profil/mon_abonnement', [SouscriptionController::class, 'monAbonnement']);
         Route::get('/plans', [SouscriptionController::class, 'plans']);
         Route::post('/', [SouscriptionController::class, 'paiementsouscrire']);
@@ -210,7 +210,7 @@ Route::get('/organisateur/{organisateurId}/events', [OrganisateurEventController
 Route::get('/events/{eventId}/ticket', [OrganisateurTicketsController::class, 'indexTicketsEvent']);
 Route::get('/events/ticket/{ticketId}', [OrganisateurTicketsController::class, 'showTicket']);
 
-Route::prefix('organisateur')->middleware(['auth:sanctum', 'token.expiry', 'organisateur', 'souscription.active'])->group(function(){
+Route::prefix('organisateur')->middleware(['auth:sanctum',  'organisateur', 'souscription.active'])->group(function(){
 
         // Événements
         Route::get('/events', [OrganisateurEventController::class, 'index']); 
@@ -265,7 +265,7 @@ Route::prefix('organisateur')->middleware(['auth:sanctum', 'token.expiry', 'orga
 
 });
 // ***** groupe pour les scanneurs uniquement *****
-Route::middleware(['auth:sanctum', 'token.expiry', 'scanneur'])->prefix('scanneur')->group(function () {
+Route::middleware(['auth:sanctum',  'scanneur'])->prefix('scanneur')->group(function () {
     
     Route::get('/billets', [ScannerController::class, 'listBilletsScanneur']);
     Route::post('/scan-billet/{eventId}', [ScannerController::class, 'scannerBillet']);
@@ -274,7 +274,7 @@ Route::middleware(['auth:sanctum', 'token.expiry', 'scanneur'])->prefix('scanneu
 
 
  //  ***** admin
-Route::prefix('admin')->middleware(['auth:sanctum', 'token.expiry', 'verified', 'admin'])->group(function () {
+Route::prefix('admin')->middleware(['auth:sanctum',  'verified', 'admin'])->group(function () {
         Route::get('/user/index', [AuthController::class, 'index'])->name('user.index');
         Route::get('/user/actifs', [AuthController::class, 'usersActifs']);
 

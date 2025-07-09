@@ -10,6 +10,7 @@ application:
 
     (modification dans une nouvelle migration)
     $table->string('etat')->change();
+    laravel ne permet pas la modification d'une colonne enum de manière à y ajouter un autre variable d'enumeration (pour postgresql) il faudra passer de enum à string en utilisant change()
 
 ###     authentification
 
