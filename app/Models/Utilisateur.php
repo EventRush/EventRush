@@ -15,24 +15,28 @@ implements MustVerifyEmail
     use HasFactory, HasApiTokens, Notifiable;
 
     protected $utilisateur    =   "utilisateurs";
+    
+    protected $table    =   'utilisateurs';
+
 
     protected $fillable = [
         'nom', 'email', 'email_verified_at', 'password', 
-        'avatar', 'role', 'otp', 'otp_espires_at', 'google_id', 'points'
+        'avatar', 'role', 'otp', 'otp_expires_at', 'google_id', 'points'
+    ];
+    
+    protected $hidden = [
+        'password',
     ];
 
     public function organisateurProfil(){
         return $this->hasOne(OrganisateurProfile::class);
     }
 
-    public function order()
-    {
-        return $this->hasMany(Order::class);
-    }
+    // public function order()
+    // {
+    //     return $this->hasMany(Order::class);
+    // }
 
-    protected $hidden = [
-        'password',
-    ];
     public function souscription(){
         return $this->hasMany(Souscription::class, 'utilisateur_id');
     }

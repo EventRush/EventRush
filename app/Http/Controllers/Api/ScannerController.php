@@ -17,13 +17,12 @@ class ScannerController extends Controller
     //
     
     // // generation auth
-     public function generateScanneurs(Request $request) { 
+     public function generateScanneurs(Request $request, $eventId) { 
         $request->validate([ 
-            'event_id' => 'required|exists:events,id', 
             'nombre' => 'required|integer|min:1' ]);
 
 $organisateur = Auth::user();
-    $event = Event::findOrFail($request->event_id);
+    $event = Event::findOrFail($eventId);
 
     // $limite = $organisateur->abonnement?->scanneur_limit ?? 5;
     $souscription = $organisateur->souscriptionActive();

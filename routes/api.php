@@ -242,7 +242,7 @@ Route::prefix('organisateur')->middleware(['auth:sanctum',  'organisateur', 'sou
             Route::prefix('scanneurs')->group(function(){
                 
             Route::get('/{scanneurId}', [ScannerController::class, 'showScanneur']); 
-            Route::post('/', [ScannerController::class, 'generateScanneurs']);
+            Route::post('/{eventId}', [ScannerController::class, 'generateScanneurs']);
             Route::put('/{scanneurId}', [ScannerController::class, 'updateScanneurs']);
             // 📋 Liste des scanneurs d’un événement (optionnel si tu veux)
             Route::get('/{eventId}', [ScannerController::class, 'indexScanneurs']);

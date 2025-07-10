@@ -1,5 +1,5 @@
 // migrations
-Schema::create('utilisateurs', function (Blueprint $table) {
+        Schema::create('utilisateurs', function (Blueprint $table) {
             $table->id();
             $table->string('nom');
             $table->string('email')->unique();
@@ -9,7 +9,7 @@ Schema::create('utilisateurs', function (Blueprint $table) {
             $table->string('avatar')->nullable();
             $table->string('otp')->nullable();
             $table->timestamp('otp_expires_at')->nullable();
-            $table->enum('role', ['client', 'scanneur' 'organisateur', 'admin'])->default('client');
+            $table->enum('role', ['client', 'scanneur', 'organisateur', 'admin'])->default('client');
             $table->integer('points')->default(0);
             $table->timestamp('last_seen_at')->nullable();
             $table->timestamps();
@@ -266,3 +266,476 @@ class Event extends Model
         }
 
 }
+
+class EventPhoto extends Model
+{
+    use HasFactory;
+
+    protected $fillable = ['event_id', 'image_path'];
+
+    public function event()
+    {
+        return $this->belongsTo(Event::class);
+    }
+
+}
+class EventScanneur extends Model
+{
+    use HasFactory;
+    
+    protected $fillable = ['event_id', 'user_id']; 
+
+    public function Utilisateur()
+    {
+        return $this->belongsTo(Event::class);;
+    }
+
+    public function Event()
+    {
+        return $this->belongsTo(Utilisateur::class);
+    }
+}
+
+class EventVue extends Model
+{
+    use HasFactory;
+        
+    protected $fillable = ['utilisateur_id', 'event_id'];
+
+}
+
+class Favori extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'utilisateur_id',
+        'event_id',
+    ];
+
+    public function utilisateur()
+    {
+        return $this->belongsTo(Utilisateur::class);
+    }
+
+    public function event()
+    {
+        return $this->belongsTo(Event::class);
+    }
+
+}
+
+class OrganisateurProfile extends Model
+{
+    use HasFactory;
+
+    protected $fillable = ['utilisateur_id', 'nom_entreprise', 'descrption', 'logo'];
+
+    public function utilisateur()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+
+    public function souscription()
+    {
+        return $this->hasOne(Souscription::class);
+    }
+
+    public function suiveurs()
+    {
+        return $this->belongsToMany(Utilisateur::class, 'suivis', 'organisateur_id', 'utilisateur_id');
+    }
+
+
+}
+
+class PlansSouscription extends Model
+{
+    use HasFactory;
+
+    protected $fillable = ['nom', 'description', 'prix', 'duree_jours'];
+    protected $casts = [ 'prix' => 'float',
+];
+
+    public function souscriptions()
+    {
+        return $this->hasMany(Souscription::class);
+    }
+
+}
+
+class PointLog extends Model
+{
+    use HasFactory;
+
+    protected $fillable = ['utilisateur_id', 'event_id', 'type', 'points'];
+
+}
+
+class Souscription extends Model
+{
+    use HasFactory;
+
+    protected $fillable = ['organisateur_id', 'utilisateur_id', 'plans_souscription_id', 'date_debut', 'date_fin', 'statut', 'montant',
+        'methode', 'statut_paiement', 'reference', 'souscription_fedapay_id'];
+
+
+    protected $casts = [
+    'date_debut' => 'datetime',
+    'date_fin' => 'datetime',
+    ];
+
+    public function utilisateur()  {
+        return $this->belongsTo(Utilisateur::class);        
+    }
+
+    public function plan()
+    {
+        return $this->belongsTo(PlansSouscription::class);
+    }
+
+    public function estActive(){
+        if ($this->statut === 'actif' && 
+            $this->date_fin->isPast()){
+                $this->statut = 'expiré';
+                $this->save();
+            }
+
+        return $this->statut === 'actif' &&
+               $this->date_fin->isFuture();
+    }
+}
+
+class Suivi extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'utilisateur_id',
+        'suivi_id',
+    ];
+
+    public function utilisateur()
+    {
+        return $this->belongsTo(Utilisateur::class);
+    }
+
+    public function suivi()
+    {
+        return $this->belongsTo(Utilisateur::class);
+    }
+
+}
+
+
+class Ticket extends Model
+{
+    use HasFactory;
+    protected $fillable = ['event_id', 'type',  'prix', 'image', 'quantité_disponible', 'quantite_restante', 'date_limite_vente'];
+
+    protected $casts = [ 'prix' => 'float',
+];
+
+    public function event()
+    {
+        return $this->belongsTo(Event::class, 'event_id');
+    }
+
+    public function utilisateur()  {
+        return $this->belongsTo(Utilisateur::class);        
+    }
+
+    public function billets()
+    {
+        return $this->hasMany(Billet::class);
+    }
+}
+
+
+class Transaction extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'utilisateur_id', 'order_id', 'souscription_id', 'montant',
+        'methode', 'statut', 'reference',
+    ];
+
+    public function utilisateur()
+    {
+        return $this->belongsTo(Utilisateur::class);
+    }
+
+    public function souscription()
+    {
+        return $this->belongsTo(Souscription::class);
+    }
+
+
+}
+
+
+class Utilisateur extends Authenticatable
+implements MustVerifyEmail
+{
+    use HasFactory, HasApiTokens, Notifiable;
+
+    protected $utilisateur    =   "utilisateurs";
+
+    protected $fillable = [
+        'nom', 'email', 'email_verified_at', 'password', 
+        'avatar', 'role', 'otp', 'otp_espires_at', 'google_id', 'points'
+    ];
+
+    public function organisateurProfil(){
+        return $this->hasOne(OrganisateurProfile::class);
+    }
+
+    public function order()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    protected $hidden = [
+        'password',
+    ];
+    public function souscription(){
+        return $this->hasMany(Souscription::class, 'utilisateur_id');
+    }
+    public function souscriptionActive(){
+        return $this->souscription()
+        ->where('statut', 'actif')
+        ->where('date_fin', '>', now())
+        ->latest('date_fin')
+        ->first();
+    }
+    public function favoris()
+    {
+        return $this->belongsToMany(Event::class, 'favoris', 'utilisateur_id', 'event_id')->withTimestamps();
+    }
+
+    public function suiveurs()
+    {
+        return $this->belongsToMany(Suivi::class, 'suivis', 'suivi_id', 'utilisateur_id');
+    }
+
+    public function utilisateurSuivis()
+    {
+        return $this->belongsToMany(Suivi::class, 'suivis',   'utilisateur_id', 'suivi_id');
+    }
+
+    public function billets()
+    {
+        return $this->hasMany(Billet::class);
+    }
+    public function eventforScanneur()
+    {
+        return $this->belongsToMany(Event::class,'event_scanneurs', 'utilisateur_id', 'event_id' );
+    }
+
+
+}
+
+
+
+//
+
+    classDiagram
+    class Utilisateur {
+        +id: PK int
+        +nom: string
+        +email: string
+        +password: string
+        +google_id: string?
+        +avatar: string?
+        +otp: string?
+        +otp_expires_at: timestamp?
+        +role: enum
+        +points: int
+        +last_seen_at: timestamp?
+        +created_at: timestamp
+        +updated_at: timestamp
+    }
+
+    class OrganisateurProfile {
+        +id: PK int
+        +utilisateur_id: FK int
+        +nom_entreprise: string?
+        +description: text?
+        +logo: string?
+        +created_at: timestamp
+        +updated_at: timestamp
+    }
+
+    class PlanSouscription {
+        +id: PK int
+        +nom: string
+        +description: text?
+        +prix: decimal
+        +duree_jours: int
+        +created_at: timestamp
+        +updated_at: timestamp
+    }
+
+    class Souscription {
+        +id: PK int
+        +organisateur_id: FK int
+        +utilisateur_id: FK int
+        +plans_souscription_id: FK int
+        +date_debut: date
+        +date_fin: date
+        +statut: enum
+        +methode: enum
+        +statut_paiement: enum
+        +montant: decimal
+        +reference: string
+        +souscription_fedapay_id: int?
+        +created_at: timestamp
+        +updated_at: timestamp
+    }
+
+    class Event {
+        +id: PK int
+        +utilisateur_id: FK int
+        +titre: string
+        +description: text
+        +date_debut: date
+        +date_fin: date
+        +lieu: string
+        +latitude: decimal?
+        +longitude: decimal?
+        +nbr_achat: int
+        +points: int
+        +statut: enum
+        +affiche: string?
+        +created_at: timestamp
+        +updated_at: timestamp
+    }
+
+    class Ticket {
+        +id: PK int
+        +event_id: FK int
+        +type: string
+        +prix: decimal
+        +image: string?
+        +quantité_disponible: int
+        +quantite_restante: int
+        +date_limite_vente: timestamp?
+        +created_at: timestamp
+        +updated_at: timestamp
+    }
+
+    class EventPhoto {
+        +id: PK int
+        +event_id: FK int
+        +image_path: string
+        +created_at: timestamp
+        +updated_at: timestamp
+    }
+
+    class Billet {
+        +id: PK int
+        +event_id: FK int
+        +utilisateur_id: FK int
+        +ticket_id: FK int
+        +methode: enum
+        +status: enum
+        +status_scan: enum
+        +scanned_at: date?
+        +scanned_by: int?
+        +montant: decimal
+        +qr_code: uuid?
+        +reference: string
+        +billet_fedapay_id: int?
+        +created_at: timestamp
+        +updated_at: timestamp
+    }
+
+    class Commentaire {
+        +id: PK int
+        +event_id: FK int
+        +utilisateur_id: FK int
+        +contenu: text?
+        +note: tinyint?
+        +created_at: timestamp
+        +updated_at: timestamp
+    }
+
+    class Favori {
+        +id: PK int
+        +utilisateur_id: FK int
+        +event_id: FK int
+        +created_at: timestamp
+        +updated_at: timestamp
+    }
+
+    class Suivi {
+        +id: PK int
+        +utilisateur_id: FK int
+        +suivi_id: FK int
+        +created_at: timestamp
+        +updated_at: timestamp
+    }
+
+    class PointLog {
+        +id: PK int
+        +utilisateur_id: FK int?
+        +event_id: FK int?
+        +type: string
+        +points: int
+        +created_at: timestamp
+        +updated_at: timestamp
+    }
+
+    class EventVue {
+        +id: PK int
+        +utilisateur_id: FK int
+        +event_id: FK int
+        +created_at: timestamp
+        +updated_at: timestamp
+    }
+
+    class EventScanneur {
+        +id: PK int
+        +event_id: FK int
+        +utilisateur_id: FK int
+        +created_at: timestamp
+        +updated_at: timestamp
+    }
+
+    class Notification {
+        +id: PK uuid
+        +type: string
+        +notifiable_id: int
+        +notifiable_type: string
+        +data: text
+        +read_at: timestamp?
+        +created_at: timestamp
+        +updated_at: timestamp
+    }
+
+    %% Associations
+    Utilisateur "1" -- "0..1" OrganisateurProfile : hasProfile
+    Utilisateur "1" o-- "*" Souscription : subscriptions
+    OrganisateurProfile "1" o-- "*" Souscription : manages
+    PlanSouscription "1" o-- "*" Souscription
+    Utilisateur "1" o-- "*" Event : creates
+    Event "1" o-- "*" Ticket : offers
+    Event "1" o-- "*" EventPhoto : photos
+    Event "1" o-- "*" Billet : soldTickets
+    Utilisateur "1" o-- "*" Billet : purchases
+    Ticket "1" o-- "*" Billet : items
+    Event "1" o-- "*" Commentaire : comments
+    Utilisateur "1" o-- "*" Commentaire : writes
+    Utilisateur "1" o-- "*" Favori : favorites
+    Event "1" o-- "*" Favori : favoredBy
+    Utilisateur "1" o-- "*" Suivi : following
+    Utilisateur "1" o-- "*" Suivi : followers
+    Utilisateur "1" o-- "*" PointLog : pointLogs
+    Event "1" o-- "*" PointLog : eventLogs
+    Utilisateur "1" o-- "*" EventVue : views
+    Event "1" o-- "*" EventVue : viewedBy
+    Utilisateur "1" o-- "*" EventScanneur : scanners
+    Event "1" o-- "*" EventScanneur : scannedBy
+    Notification <|.. Utilisateur : notifiable

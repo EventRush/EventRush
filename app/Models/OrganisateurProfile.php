@@ -9,11 +9,11 @@ class OrganisateurProfile extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['utilisateur_id', 'nom_entreprise', 'descrption', 'logo'];
+    protected $fillable = ['utilisateur_id', 'nom_entreprise', 'description', 'logo'];
 
     public function utilisateur()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Utilisateur::class);
     }
 
     // public function events()
