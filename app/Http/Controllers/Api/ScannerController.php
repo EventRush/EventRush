@@ -74,6 +74,7 @@ class ScannerController extends Controller
             'email' => $username . '@scan.local',
             'password' => Hash::make($password),
             'role' => 'scanneur',
+            'statut_compte' => 'actif',
         ]);
 
     EventScanneur::create([
