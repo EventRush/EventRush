@@ -24,7 +24,7 @@ class Souscription extends Model
 
     public function plan()
     {
-        return $this->belongsTo(PlansSouscription::class);
+        return $this->belongsTo(PlansSouscription::class, 'plans_souscription_id');
     }
 
     public function estActive(){

@@ -18,7 +18,7 @@ class TicketRessource extends JsonResource
             'id' => $this->id,
             'type' => $this->type,
             'prix' => $this->prix,
-            'quantite_disponible' => $this->quantite_disponible,
+            'quantite_disponible' => $this->quantité_disponible,
             'quantite_restante' => $this->quantite_restante,
             'date_limite_vente' => $this->date_limite_vente,
             'image_url' => $this->image ? asset('storage/' . $this->image) : null,

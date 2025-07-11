@@ -8,6 +8,7 @@ use App\Models\Event;
 use App\Models\Souscription;
 use App\Models\Utilisateur;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
@@ -84,6 +85,34 @@ class AdminController extends Controller
             'message' => 'Liste des souscriptions.',
             'souscriptions' => $souscriptions
         ]);
+    }
+
+    public function usersupdate(Request $request, $userId)
+    {
+        
+        $utilisateur = Utilisateur::findOrFail($userId);
+        $request->validate([
+            'nom' => 'nullable|string|max:255',
+            'email' => 'nullable|email|unique:utilisateurs,email,' . $utilisateur->id,
+            'password' => 'nullable|string|min:6|confirmed',
+        ]); 
+
+
+        // if(!$utilisateur){
+        //     return response()->json(['message' => 'Utilisateur non trouvé'], 404);
+        // }
+
+    // dd($request->all());
+
+    if ($request->has('nom'))  $utilisateur->nom = $request->nom;
+    if ($request->has('email'))    $utilisateur->email = $request->email;
+    if ($request->filled('password'))    $utilisateur->password = Hash::make($request->password);
+        
+    $utilisateur->save();
+
+    dd($utilisateur);
+    return response()->json(['message' => 'Utilisateur mis à jour avec succès.',
+                                    'user' => $utilisateur->fresh()], 200);
     }
 
 }

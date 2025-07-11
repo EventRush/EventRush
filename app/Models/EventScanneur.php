@@ -10,7 +10,7 @@ class EventScanneur extends Model
 {
     use HasFactory;
     
-    protected $fillable = ['event_id', 'user_id']; 
+    protected $fillable = ['event_id', 'utilisateur_id']; 
 
     public function Utilisateur()
     {

@@ -16,7 +16,7 @@ implements MustVerifyEmail
 
     protected $utilisateur    =   "utilisateurs";
     
-    protected $table    =   'utilisateurs';
+    // protected $table    =   'utilisateurs';
 
 
     protected $fillable = [

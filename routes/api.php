@@ -246,6 +246,9 @@ Route::prefix('organisateur')->middleware(['auth:sanctum',  'organisateur', 'sou
             Route::put('/{scanneurId}', [ScannerController::class, 'updateScanneurs']);
             // 📋 Liste des scanneurs d’un événement (optionnel si tu veux)
             Route::get('/{eventId}', [ScannerController::class, 'indexScanneurs']);
+            Route::delete('/{scanneurId}', [ScannerController::class, 'deleteScanneur']);
+
+
         });
         });
 
@@ -276,12 +279,15 @@ Route::middleware(['auth:sanctum',  'scanneur'])->prefix('scanneur')->group(func
  //  ***** admin
 Route::prefix('admin')->middleware(['auth:sanctum',  'verified', 'admin'])->group(function () {
         Route::get('/user/index', [AuthController::class, 'index'])->name('user.index');
-        Route::get('/user/actifs', [AuthController::class, 'usersActifs']);
+        Route::get('/user/actifs', [AuthController::class, 'usersActifs']);        
+
 
 
          // Utilisateurs
     Route::get('/users', [AdminController::class, 'indexUsers']);
     Route::get('/users/{userId}', [AdminController::class, 'showUser']);
+    Route::post('/user/{userId}/update', [AdminController::class, 'usersupdate']);
+
     Route::post('/users/{userId}/ban', [AdminController::class, 'banUser']);
     Route::post('/users/{userId}/unban', [AdminController::class, 'unbanUser']);
     Route::delete('/users/{userId}', [AdminController::class, 'destroyUser']);

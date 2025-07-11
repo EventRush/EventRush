@@ -17,11 +17,11 @@ class ScannerController extends Controller
     //
     
     // // generation auth
-     public function generateScanneurs(Request $request, $eventId) { 
+    public function generateScanneurs(Request $request, $eventId) { 
         $request->validate([ 
             'nombre' => 'required|integer|min:1' ]);
 
-$organisateur = Auth::user();
+    $organisateur = Auth::user();
     $event = Event::findOrFail($eventId);
 
     // $limite = $organisateur->abonnement?->scanneur_limit ?? 5;
@@ -35,7 +35,7 @@ $organisateur = Auth::user();
 
         $plan = $souscription->plan;
 
-
+            // dd($plan);
         $pointPlan = [1 => 3,2 => 7,3 => 12];
         $limite = $pointPlan[$plan->id] ?? 0; 
 
@@ -47,7 +47,7 @@ $organisateur = Auth::user();
     }
 
     $created = [];
-    $prefix = strtoupper(substr($organisateur->name, 0, 3)) .
+    $prefix = strtoupper(substr($organisateur->nom, 0, 3)) .
           strtoupper(substr($event->titre, 0, 3));
 
     // Récupère les utilisateurs existants avec ce préfixe
@@ -70,7 +70,7 @@ $organisateur = Auth::user();
         $password = Str::random(8);
 
         $user = Utilisateur::create([
-            'name' => $username,
+            'nom' => $username,
             'email' => $username . '@scan.local',
             'password' => Hash::make($password),
             'role' => 'scanneur',
@@ -337,6 +337,41 @@ $organisateur = Auth::user();
         ]);
     }
 
+    public function deleteScanneur($scanneurId)
+{
+    $organisateur = Auth::user();
+    $scanneur = Utilisateur::findOrFail($scanneurId);
+    $scanneur = Utilisateur::where('id', $scanneurId)
+        ->where('role', 'scanneur')
+        ->first();
+    if (!$scanneur) {
+        return response()->json(['error' => "Scanneur introuvable."], 404);
+    }
+    // if($scanneur->role != 'scanneur') return response()->json(['error' => "Vous ne pouvez pas modifier ce utilisateur."], 403);
+
+    $event = $scanneur->eventforScanneur()->first();
+
+    // $event = Event::findOrFail($eventId);
+
+    // Vérifie que l'organisateur est bien propriétaire de l'événement
+    if ($event->utilisateur_id !== $organisateur->id) {
+        return response()->json(['error' => "Accès refusé, vous n\'êtes pas l\'organisateur de ce scanneur."], 403);
+    }
+
+    
+
+    
+
+    // Supprime la liaison scanneur <=> événement
+    // EventScanneur::where('event_id', $eventId)
+    //     ->where('utilisateur_id', $scanneurId)
+    //     ->delete();
+
+    // Supprime l'utilisateur scanneur lui-même
+    $scanneur->delete();
+
+    return response()->json(['message' => "Scanneur supprimé avec succès."]);
+    }
 
 
 }

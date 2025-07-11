@@ -81,7 +81,7 @@ class UtilisateurController extends Controller
 
         if ($request->has('nom')) $user->nom = $request->nom;
         if ($request->has('email')) $user->email = $request->email;
-        if ($request->has('password')) $user->password = Hash::make($request->passwprd);
+        if ($request->has('password')) $user->password = Hash::make($request->password);
 
         $user->save();
  
