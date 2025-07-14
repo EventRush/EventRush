@@ -20,8 +20,9 @@ jobs:
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
-          cat "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+          cat ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
       - name: Copie file to EC2
