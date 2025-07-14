@@ -31,7 +31,7 @@ jobs:
 
       - name: Deploy to EC2
         run: |
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -t ${{ env.EC2_NAME }} << 'EOF'
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -t ${{ env.EC2_USER}}@${{ secrets.EC2_HOST }} << 'EOF'
             cd ~/apps || mkdir ~/apps && cd ~/apps
             sudo docker compose down -rmi || true
             sudo docker compose up -d || true
