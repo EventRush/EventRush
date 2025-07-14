@@ -22,12 +22,10 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          cat ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
       - name: Copie file to EC2
         run: |
-          cat ~/.ssh/id_rsa
           scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -r . ${{ env.EC2_NAME}}:~/apps/${{env.APP_NAME}}
 
       - name: Deploy to EC2
