@@ -124,7 +124,7 @@ class OrganisateurTicketsController extends Controller
 
     public function showTicket($ticketId){
         $ticket = Ticket::findOrFail($ticketId);
-        $image = $ticket->image ? asset('storage/app/public/' . $ticket->image) : null;
+        $image = $ticket->image ?  : null;
 
         return response()->json([$ticket, $image]);
     }

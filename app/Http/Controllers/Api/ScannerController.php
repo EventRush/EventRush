@@ -373,6 +373,30 @@ $organisateur = Auth::user();
 
     return response()->json(['message' => "Scanneur supprimé avec succès."]);
     }
+    public function indexorganisateurScanneurs()
+    {
+    $organisateur = Auth::user();
+
+    $events = Event::where('utilisateur_id', $organisateur->id)
+                   ->with(['scanneurs'])
+                   ->get();
+
+    $result = $events->map(function ($event) {
+        return [
+            'event_id' => $event->id,
+            'titre' => $event->titre,
+            'scanneurs' => $event->scanneurs->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->nom,
+                    'email' => $user->email,
+                ];
+            }),
+        ];
+    });
+
+    return response()->json($result);
+    }
 
 
 }

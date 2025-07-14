@@ -85,12 +85,12 @@ implements MustVerifyEmail
 
     public function suiveurs()
     {
-        return $this->belongsToMany(Suivi::class, 'suivis', 'suivi_id', 'utilisateur_id');
+        return $this->belongsToMany(Utilisateur::class, 'suivis', 'suivi_id', 'utilisateur_id');
     }
 
-    public function utilisateurSuivis()
+    public function suivis()
     {
-        return $this->belongsToMany(Suivi::class, 'suivis',   'utilisateur_id', 'suivi_id');
+        return $this->belongsToMany( Utilisateur::class, 'suivis',   'utilisateur_id', 'suivi_id');
     }
 
     public function billets()

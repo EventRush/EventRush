@@ -26,10 +26,10 @@ class OrganisateurProfile extends Model
         return $this->hasOne(Souscription::class);
     }
 
-    public function suiveurs()
-    {
-        return $this->belongsToMany(Utilisateur::class, 'suivis', 'organisateur_id', 'utilisateur_id');
-    }
+    // public function suiveurs()
+    // {
+    //     return $this->belongsToMany(Utilisateur::class, 'suivis', 'organisateur_id', 'utilisateur_id');
+    // }
 
 
 }

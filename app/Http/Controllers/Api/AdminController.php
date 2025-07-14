@@ -110,9 +110,34 @@ class AdminController extends Controller
         
     $utilisateur->save();
 
-    dd($utilisateur);
+    // dd($utilisateur);
     return response()->json(['message' => 'Utilisateur mis à jour avec succès.',
                                     'user' => $utilisateur->fresh()], 200);
+    }
+
+    public function organisateurScanneurs($orgaId)
+    {
+    $organisateur = Utilisateur::findOrFail($orgaId);
+
+    $events = Event::where('utilisateur_id', $organisateur->id)
+                   ->with(['scanneurs'])
+                   ->get();
+
+    $result = $events->map(function ($event) {
+        return [
+            'event_id' => $event->id,
+            'titre' => $event->titre,
+            'scanneurs' => $event->scanneurs->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                ];
+            }),
+        ];
+    });
+
+    return response()->json($result);
     }
 
 }

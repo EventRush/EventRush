@@ -34,34 +34,58 @@ class CommentaireController extends Controller
                                                 ->first();
 
         $oldnote = 0;
+        $commentaire = null;
         if ($ancienCommentaireAvecNote) {
             // Si il y a un ancien commentaire avec une note, on récupère sa note
             $oldnote = $ancienCommentaireAvecNote->note;
             // Mettre à jour la note précédente :
             $ancienCommentaireAvecNote->update(['note' => $request->note]);
-        } else {
+
+            if ($request->has('contenu')) {
+            $commentaire = Commentaire::create([
+                'utilisateur_id' => $utilisateur->id,
+                'event_id' => $eventId,
+                'contenu' => $request->contenu,
+            ]);
+        }
+        }  else {
             // Sinon tu crées un nouveau commentaire avec note
             $commentaire = Commentaire::create([
-                'utilisateur_id' => $utilisateur,
+                'utilisateur_id' => $utilisateur->id,
                 'event_id' => $eventId,
                 'contenu' => $request->contenu,
                 'note' => $request->note,
             ]);
         }
-
+            // dd($commentaire );
         // Notifier l'organisateur
-    $event = $commentaire->event; // Relation event dans Commentaire
+    if ($commentaire) {
+            $event = $commentaire->event;
+            
+            // dd($event );
+    
     if ($event && $event->utilisateur) {
         $event->utilisateur->notify(new NouvCommentaireEvent($commentaire));
+    
+         
     }
-
-
     PointService::ajouterNoteEvenement($utilisateur, $event, $oldnote);
+
+                // dd($utilisateur );
+
 
         return response()->json([
             'message' => 'Commentaire ajouté avec succès.',
             'commentaire' => $commentaire
         ], 201);
+
+    } else {
+    return response()->json([
+        'message' => 'Aucun commentaire n\'a été créé.',
+    ], 400);
+    }
+
+    
     }
     public function update(Request $request, $commentId)
 {

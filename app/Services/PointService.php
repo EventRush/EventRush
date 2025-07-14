@@ -45,10 +45,13 @@ class PointService
         ]);
     }
 
-    public static function ajouterNoteEvenement(Utilisateur $utilisateur,Event $event, $oldnote)
+    public static function ajouterNoteEvenement(Utilisateur $utilisateur, Event $event, $oldnote)
     {   
+        // dd($event);
         
         $event->increment('points', 1);
+
+        //  dd($event);
 
         PointLog::firstOrCreate([
             'utilisateur_id' => $utilisateur->id,

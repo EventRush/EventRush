@@ -246,6 +246,7 @@ Route::prefix('organisateur')->middleware(['auth:sanctum',  'organisateur', 'sou
             Route::put('/{scanneurId}', [ScannerController::class, 'updateScanneurs']);
             // 📋 Liste des scanneurs d’un événement (optionnel si tu veux)
             Route::get('/{eventId}', [ScannerController::class, 'indexScanneurs']);
+            Route::get('/index', [ScannerController::class, 'indexorganisateurScanneurs']); 
             Route::delete('/{scanneurId}', [ScannerController::class, 'deleteScanneur']);
 
 
@@ -309,6 +310,8 @@ Route::prefix('admin')->middleware(['auth:sanctum',  'verified', 'admin'])->grou
     Route::delete('/souscriptions/plan/{planId}', [PlansSouscriptionsController::class, 'deletePlan']);
 
     // Route::put('/souscriptions/{id}/valider', [AdminController::class, 'validateSouscription']);
+    // // scanneur
+    Route::get('/organisateur/{orgaId}/scanneurs', [ScannerController::class, 'indexorganisateurScanneurs']); 
 
 
 
