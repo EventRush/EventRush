@@ -35,6 +35,6 @@ jobs:
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -t ${{ env.EC2_USER}}@${{ secrets.EC2_HOST }} << 'EOF'
             cd ~/apps || mkdir ~/apps && cd ~/apps
             cd ${{env.APP_NAME}}
-            sudo docker compose down  || true
+            sudo docker compose down --rmi  || true
             sudo docker compose up -d || true
           EOF
