@@ -28,6 +28,7 @@ jobs:
       - name: Copie file to EC2
         run: |
           echo  ${{secrets.ENV}} > .env
+          ls .env
           scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -r . ${{ env.EC2_USER}}@${{ secrets.EC2_HOST }}:~/apps/${{env.APP_NAME}}
 
       - name: Deploy to EC2
