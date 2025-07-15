@@ -79,7 +79,7 @@ Route::get('/home/popular', [EventController::class, 'popular']);
 Route::get('/home/categories', [EventController::class, 'search'])->name('search');
 Route::get('/home/stats', [EventController::class, 'stat']);// pas encore fait
 Route::get('/home/orgaEvent', [EventController::class, 'byOrganisateur']);
-
+Route::get('/home/nearEvents', [EventController::class, 'getEventsNear']); // getEventsNear
 
 //     ***** test ***** 
 // Route::post('/events/{eventId}/scan', [BilleterieController::class, 'verifierBillet']); //

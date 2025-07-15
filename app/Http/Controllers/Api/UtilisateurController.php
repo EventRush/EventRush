@@ -76,9 +76,6 @@ class UtilisateurController extends Controller
 
         }
          
-        //  dd($validated);
-        // return response()->json($validated);
-
         if ($request->has('nom')) $user->nom = $request->nom;
         if ($request->has('email')) $user->email = $request->email;
         if ($request->has('password')) $user->password = Hash::make($request->password);

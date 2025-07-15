@@ -350,6 +350,36 @@ class EventController extends Controller
         return response()->json($events);
     }
 
+
+    // utilisateurs functions 
+
+    public function getEventsNear(Request $request)
+    {
+        $request->validate([
+            'latitude' => 'required|numeric|between:-90,90',
+            'longitude' => 'required|numeric|between:-180,180',
+            'distance' => 'nullable|numeric|min:0', // en kilomètres
+        ]);
+
+        $latitude = $request->latitude;
+        $longitude = $request->longitude;
+        $distance = $request->distance ?? 10; // distance par défaut = 10 km
+
+        $events = Event::selectRaw("*,
+            (6371 * acos(cos(radians(?)) *
+            cos(radians(latitude)) *
+            cos(radians(longitude) - radians(?)) +
+            sin(radians(?)) *
+            sin(radians(latitude)))) AS distance", [
+                $latitude, $longitude, $latitude
+            ])
+            ->having("distance", "<=", $distance)
+            ->orderBy("distance", 'asc')
+            ->get();
+
+        return EventResource::collection($events);
+    }
+
     
  
 
