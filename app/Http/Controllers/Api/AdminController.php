@@ -18,7 +18,7 @@ class AdminController extends Controller
      * @return mixed|\Illuminate\Http\JsonResponse
      */
     public function indexUsers(){
-        $users = Utilisateur::class;
+        $users = Utilisateur::all();
         return response()->json([
             'message' => 'Voici les utilisateurs ',
             'utilisateurs' => $users
@@ -69,7 +69,7 @@ class AdminController extends Controller
 
     public function allSouscriptions()
     {
-        $souscriptions = Souscription::class;
+        $souscriptions = Souscription::all();
         
         return response()->json([
             'message' => 'Liste des souscriptions.',
@@ -79,8 +79,8 @@ class AdminController extends Controller
 
     public function souscris()
     {
-        $souscriptions = Souscription::where('statut', 'actif');
-        
+        $souscriptions = Souscription::where('statut', 'actif')
+                                     ->get();
         return response()->json([
             'message' => 'Liste des souscriptions.',
             'souscriptions' => $souscriptions
@@ -130,7 +130,7 @@ class AdminController extends Controller
             'scanneurs' => $event->scanneurs->map(function ($user) {
                 return [
                     'id' => $user->id,
-                    'name' => $user->name,
+                    'name' => $user->nom,
                     'email' => $user->email,
                 ];
             }),
