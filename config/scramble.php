@@ -91,7 +91,7 @@ return [
      */
     'servers' => [
          'Live' => 'api',
-         'Prod' => 'http://digitstage.online/api',
+         'Prod' => 'https://digitstage.online/api',
      ],
 
     /**
