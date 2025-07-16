@@ -1,0 +1,48 @@
+Yes bro 🔥 Tu touches maintenant à l’essence même d’un workflow pro avec Git, souvent appelé GitFlow, et franchement c’est une super bonne pratique.
+Pas de stress, je vais t’expliquer ça en mode conversation simple + schéma logique. À la fin, tu vas gérer ça les yeux fermés 👇
+🚀 Le Contexte Actuel
+Tu travaillais sur main (pas recommandé en équipe).
+Maintenant, l’équipe veut :
+Utiliser develop pour intégrer les nouveautés (en test, pas encore déployées).
+Utiliser main uniquement pour les versions stables déjà déployées en prod.
+Toi, tu bosses sur une branche personnelle ou dédiée à une fonctionnalité, par exemple feature/scan-ticket.
+🧠 Le Workflow GitFlow résumé simplement :
+main ← en production (stable) │
+ └── develop ← version en cours (préparation de la prochaine mise à jour) │
+     └── feature/scan-ticket ← ta branche pour développer une fonctionnalité 
+✅ Étapes claires à suivre (très simple en pratique)
+💡 1. Créer ta branche à partir de develop
+git checkout develop # tu passes sur la branche develop 
+git pull origin develop # tu récupères la dernière version à jour 
+git checkout -b feature/ma-fonctionnalite 
+
+Exemple : feature/qrcode-scan ou feature/ajout-dashboard.
+
+💡 2. Tu bosses sur ta branche normalement
+Ajoute/modifie tes fichiers, puis :
+git add . git commit -m "Ajout du scan de QR code" git push origin feature/ma-fonctionnalite 
+💡 3. Ouvre une Pull Request sur GitHub vers develop
+Sur GitHub :
+Va dans l’onglet "Pull Requests"
+Clique sur "New Pull Request"
+Base : develop
+Compare : feature/ma-fonctionnalite
+Tu écris une petite description (ce que tu as fait)
+Et tu cliques sur "Create Pull Request"
+👉 Quelqu’un (ou toi-même) pourra ensuite le valider et le fusionner (merge).
+💡 4. Une fois la PR fusionnée :
+La branche develop contiendra ton code.
+Ton main reste propre, prêt à être déployé quand tout est testé.
+🧼 Bonus : Nettoyage après merge
+Tu peux supprimer ta branche (optionnel) :
+git branch -d feature/ma-fonctionnalite # en local git push origin --delete feature/ma-fonctionnalite # sur GitHub 
+🧠 Exemple réel
+Tu veux développer l’envoi d’e-mails :
+git checkout develop git pull origin develop git checkout -b feature/email-confirmation # ... tu codes ... git add . git commit -m "Ajout de l'envoi d'email de confirmation" git push origin feature/email-confirmation 
+Puis tu fais une PR de feature/email-confirmation → develop.
+⚙️ Résumé English
+You're now using a professional Git workflow (GitFlow):
+main: stable production code
+develop: integration of features
+You create a feature branch from develop, push changes, and merge back to develop via a Pull Request
+Tu veux que je te génère une fiche résumé visuelle ou un script Git automatique pour créer/merger proprement ? 😎
