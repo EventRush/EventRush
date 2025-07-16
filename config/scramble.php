@@ -89,10 +89,11 @@ return [
      * ],
      * ```
      */
-    'servers' => [
-         'Live' => 'api',
-         'Prod' => 'http://digitstage.online/api',
-     ],
+    'servers' => null,
+    // [
+    //      'Live' => 'api',
+    //      'Prod' => 'http://digitstage.online/api',
+    //  ],
 
     /**
      * Determines how Scramble stores the descriptions of enum cases.
