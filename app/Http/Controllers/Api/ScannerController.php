@@ -121,11 +121,13 @@ $organisateur = Auth::user();
     public function loginScanneur(Request $request)
     {
          $request->validate([
-            'nom'=>'required|string|nom',     
+            'nom'=>'required|string',     
             'password'=>'required|string|min:6|',
         ]);
         $scanneur =  Utilisateur::where('role', 'scanneur')
                                 ->where('nom', $request->nom)->first();
+
+        // dd($scanneur);
         if (!$scanneur || !Hash::check($request->password, $scanneur->password)) {
             return response()->json(['message' => 'Identifiants incorrects'], 401);
         }
