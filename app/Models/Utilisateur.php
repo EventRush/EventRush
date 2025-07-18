@@ -102,5 +102,11 @@ implements MustVerifyEmail
         return $this->belongsToMany(Event::class,'event_scanneurs', 'utilisateur_id', 'event_id' );
     }
 
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'utilisateur_tag', 'utilisateur_id', 'tag_id');
+    }
+
+
 
 }

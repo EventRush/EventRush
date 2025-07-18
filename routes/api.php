@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\ScannerController;
 use App\Http\Controllers\Api\SouscriptionController;
 use App\Http\Controllers\Api\SuiviController;
 use App\Http\Controllers\Api\TestController;
+use App\Http\Controllers\Api\utilisateur\TagController;
 use App\Http\Controllers\Api\UtilisateurController;
 use App\Http\Controllers\Api\VerifyEmailController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -41,6 +42,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/login', [AuthController::class, 'login'])->name('login');  //api/auth/google/callback
+Route::post('/auth/login/scanneurs', [ScannerController::class, 'loginScanneur']); 
 Route::get('auth/google', [AuthGoogleController::class, 'redirectToGoogle']);
 Route::get('auth/google/manuel', [AuthGoogleController::class, 'manuelredirectToGoogle']);
 Route::get('auth/google/callback', [AuthGoogleController::class, 'handleGoogleCallback']);
@@ -58,11 +60,12 @@ Route::post('/auth/password/resetotp', [PasswordResetController::class, 'ResetOt
 
 Route::middleware(['auth:sanctum',  'verified'])->group(function () {
     Route::post('/logout', [AuthController::class,'logout']);
-   
     Route::get('/me', [UtilisateurController::class,'me']);
     Route::post('/me/update', [UtilisateurController::class,'update']); 
-    
     Route::get('/auth/me', [UtilisateurController::class, 'connectedUser'])->name('user.connected');
+    Route::get('/home/nearEvents', [EventController::class, 'getEventsNear']); // getEventsNear
+    Route::get('/home/nearEvents/date', [EventController::class, 'getNearbyEventsWithDate']);
+    Route::get('/home/sugestions/tag', [TagController::class, 'getRecommendedEvents']);
 
 }); 
 // ****  home page  *****
@@ -79,7 +82,6 @@ Route::get('/home/popular', [EventController::class, 'popular']);
 Route::get('/home/categories', [EventController::class, 'search'])->name('search');
 Route::get('/home/stats', [EventController::class, 'stat']);// pas encore fait
 Route::get('/home/orgaEvent', [EventController::class, 'byOrganisateur']);
-Route::get('/home/nearEvents', [EventController::class, 'getEventsNear']); // getEventsNear
 
 //     ***** test ***** 
 // Route::post('/events/{eventId}/scan', [BilleterieController::class, 'verifierBillet']); //
@@ -270,7 +272,6 @@ Route::prefix('organisateur')->middleware(['auth:sanctum',  'organisateur', 'sou
 });
 // ***** groupe pour les scanneurs uniquement *****
 Route::middleware(['auth:sanctum',  'scanneur'])->prefix('scanneur')->group(function () {
-    
     Route::get('/billets', [ScannerController::class, 'listBilletsScanneur']);
     Route::post('/scan-billet/{eventId}', [ScannerController::class, 'scannerBillet']);
     Route::get('/mes-billets-scannes', [ScannerController::class, 'mesbilletsScannés']);

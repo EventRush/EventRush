@@ -1,0 +1,8 @@
+Ce jeudi 17/07
+        J'ai décidé que l'organisateur ne passera plus par une validation de l'administrateur
+        
+    Je pense finalement à instorer un système de badge en plus de celui des points pour permetre
+augmenter la surté. L'organisateur pourra creer se evenements comme il l'entends mais l'utilisateur 
+scanné devra valider qu'il s'agit bien de lui avant validation. Lorsque l'évènement sera terminé, 
+l'organisateur sera payé. Mais celà n'empèche pas qu'il puisse avoir une liste de ses ventes 
+par évènement avant meme la tenu de ces dernier.
