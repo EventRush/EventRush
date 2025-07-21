@@ -164,8 +164,12 @@ $organisateur = Auth::user();
     $billets = Billet::where('event_id', $event->id)->get();
 
     // Séparation
-    $scannes = $billets->where('scanne', true)->values();
-    $non_scannes = $billets->where('scanne', false)->values();
+    // $scannes = $billets->where('scanne', true)->values();
+    // $non_scannes = $billets->where('scanne', false)->values();
+
+    $scannes = $billets->where('scanne', true)->values()->makeHidden('qr_code');
+    $non_scannes = $billets->where('scanne', false)->values()->makeHidden('qr_code');
+
 
     return response()->json([
         'evenement' => $event->titre,
