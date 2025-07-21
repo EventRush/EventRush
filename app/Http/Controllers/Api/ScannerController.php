@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Billet;
 use App\Models\Event;
 use App\Models\EventScanneur;
+use App\Models\Ticket;
 use App\Models\Utilisateur;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -203,6 +204,9 @@ $organisateur = Auth::user();
                         // ->where('event_id', $eventId)
                         ->first();
 
+        $event = Event::findOrFail($billet->event_id);
+        $ticket =  Ticket::findOrFail($billet->ticket_id);
+
         if (!$billet) {
             return response()->json([
                 'success' => false,
@@ -233,9 +237,12 @@ $organisateur = Auth::user();
                     'nom' => $billet->utilisateur->nom,
                     'email' => $billet->utilisateur->email,
                 ],
+                'event' =>  $event->titre,
                 'scanned_at' => $billet->scanned_at,
                 'scanned_by' => $scanneur->nom,
-            ]
+                'ticket_type' =>  $ticket->type,
+            ],
+            
         ]);
     }
 
