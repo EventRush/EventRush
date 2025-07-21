@@ -89,4 +89,5 @@ public function ResetOtp(Request $request)
         ? response()->json(['message' => 'Mot de passe réinitialisé avec succès.'])
         : response()->json(['message' => 'Erreur lors de la réinitialisation.'],400);
 }
+
 }

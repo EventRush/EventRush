@@ -274,7 +274,8 @@ Route::prefix('organisateur')->middleware(['auth:sanctum',  'organisateur', 'sou
 Route::middleware(['auth:sanctum',  'scanneur'])->prefix('scanneur')->group(function () {
     Route::get('/billets', [ScannerController::class, 'listBilletsScanneur']);
     Route::get('/event/', [ScannerController::class, 'listEventsScanneur']);
-    Route::post('/scan-billet/{eventId}', [ScannerController::class, 'scannerBillet']);
+    // Route::post('/scan-billet/{eventId}', [ScannerController::class, 'scannerBillet']); 
+    Route::post('/scan-billet/', [ScannerController::class, 'scannerBillet']);
     Route::get('/mes-billets-scannes', [ScannerController::class, 'mesbilletsScannés']);
 });
 

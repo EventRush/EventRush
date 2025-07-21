@@ -182,7 +182,7 @@ $organisateur = Auth::user();
     ]);
  
     }
-        public function scannerBillet($eventId, Request $request)
+        public function scannerBillet( Request $request)
     {
         $request->validate([
             'qr_code' => 'required|string',
@@ -200,7 +200,7 @@ $organisateur = Auth::user();
         // je recupère le billet correspondant à l'event + QR code
         $billet = Billet::with(['utilisateur'])
                         ->where('qr_code', $request->qr_code)
-                        ->where('event_id', $eventId)
+                        // ->where('event_id', $eventId)
                         ->first();
 
         if (!$billet) {
