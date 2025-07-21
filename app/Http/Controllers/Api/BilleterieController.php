@@ -402,9 +402,9 @@ public function callback(Request $request)
     public function generateBilletImage($billetId)
     {
         $billet = Billet::with(['event'])->findOrFail($billetId);
-
+        $ticket = Ticket::findOrFail($billet->ticket_id);
         return response()->json([
-            'image' => $billet->image, // image Cloudinary
+            'image' => $ticket->image, // image Cloudinary
             'qr_code' => $billet->qr_code,
             'event' => $billet->event->titre,
         ]);
