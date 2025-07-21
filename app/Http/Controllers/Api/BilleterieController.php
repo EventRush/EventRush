@@ -397,6 +397,18 @@ public function callback(Request $request)
         'a_venir' => $comingEventsTickets
     ]);
     }
+
+
+    public function generateBilletImage($billetId)
+    {
+        $billet = Billet::with(['event'])->findOrFail($billetId);
+
+        return response()->json([
+            'image' => $billet->image, // image Cloudinary
+            'qr_code' => $billet->qr_code,
+            'event' => $billet->event->titre,
+        ]);
+    }
     // 
 
 
@@ -447,46 +459,47 @@ public function callback(Request $request)
 
 
 
-    public function generateBilletImage($billetId)
-    {
-        $billet = Billet::with(['event', 'ticket', 'utilisateur'])->findOrFail($billetId);
+    
+    // public function generateBilletImage($billetId)
+    // {
+    //     $billet = Billet::with(['event', 'ticket', 'utilisateur'])->findOrFail($billetId);
 
-        // URL de l'image du type du ticket (ex: Cloudinary)
-        $ticketImageUrl = $billet->ticket->image; 
+    //     // URL de l'image du type du ticket (ex: Cloudinary)
+    //     $ticketImageUrl = $billet->ticket->image; 
 
-        // Créer manager
-        $manager = ImageManager::gd(); // ou ::imagick() selon ton serveur
+    //     // Créer manager
+    //     $manager = ImageManager::gd(); // ou ::imagick() selon ton serveur
 
-        // Charger l'image principale
-        $ticketImage = $manager->read($ticketImageUrl);
+    //     // Charger l'image principale
+    //     $ticketImage = $manager->read($ticketImageUrl);
 
-        // Générer le QR code en image
-        $qrData = $billet->qr_code;
+    //     // Générer le QR code en image
+    //     $qrData = $billet->qr_code;
 
-        // Tu peux générer le QR code sous forme de binaire PNG
-        $qrCodePng = QrCode::format('png')->size(200)->generate($qrData);
+    //     // Tu peux générer le QR code sous forme de binaire PNG
+    //     $qrCodePng = QrCode::format('png')->size(200)->generate($qrData);
 
-        // Lire le QR code comme image Intervention
-        $qrImage = $manager->read($qrCodePng);
+    //     // Lire le QR code comme image Intervention
+    //     $qrImage = $manager->read($qrCodePng);
 
-        // Fusionner le QR code dans le ticket (en bas à droite par exemple)
-        $ticketImage->place($qrImage, 'bottom-right', 10, 10);
+    //     // Fusionner le QR code dans le ticket (en bas à droite par exemple)
+    //     $ticketImage->place($qrImage, 'bottom-right', 10, 10);
 
-        // // Ajouter texte éventuel
-        // $ticketImage->text("Évènement : " . $billet->event->titre, 20, 20, function ($font) {
-        //     $font->size(24);
-        //     $font->color('#000000');
-        // });
+    //     // // Ajouter texte éventuel
+    //     // $ticketImage->text("Évènement : " . $billet->event->titre, 20, 20, function ($font) {
+    //     //     $font->size(24);
+    //     //     $font->color('#000000');
+    //     // });
 
-        // $ticketImage->text("Référence : " . $billet->reference, 20, 60, function ($font) {
-        //     $font->size(20);
-        //     $font->color('#000000');
-        // });
+    //     // $ticketImage->text("Référence : " . $billet->reference, 20, 60, function ($font) {
+    //     //     $font->size(20);
+    //     //     $font->color('#000000');
+    //     // });
 
-        // Retourner l'image au navigateur
-        return response($ticketImage->toJpeg(85))
-                ->header('Content-Type', 'image/jpeg');
-    }
+    //     // Retourner l'image au navigateur
+    //     return response($ticketImage->toJpeg(85))
+    //             ->header('Content-Type', 'image/jpeg');
+    // }
 
 
 
