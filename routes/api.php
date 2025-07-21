@@ -164,7 +164,7 @@ Route::middleware(['auth:sanctum',  'verified'])->group(function () {
     Route::get('notifications', [NotificationController::class, 'index']);
     Route::post('notifications/{notId}/mark-as-read', [NotificationController::class, 'markAsRead']);
     
-        Route::get('/events/billets/{billetId}', [BilleterieController::class, 'generateBilletImage']);
+    Route::get('/events/billets/{billetId}', [BilleterieController::class, 'generateBilletImage']);
 
 
 }); 
@@ -273,6 +273,7 @@ Route::prefix('organisateur')->middleware(['auth:sanctum',  'organisateur', 'sou
 // ***** groupe pour les scanneurs uniquement *****
 Route::middleware(['auth:sanctum',  'scanneur'])->prefix('scanneur')->group(function () {
     Route::get('/billets', [ScannerController::class, 'listBilletsScanneur']);
+    Route::get('/event/', [ScannerController::class, 'listEventsScanneur']);
     Route::post('/scan-billet/{eventId}', [ScannerController::class, 'scannerBillet']);
     Route::get('/mes-billets-scannes', [ScannerController::class, 'mesbilletsScannés']);
 });

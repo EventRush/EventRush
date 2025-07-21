@@ -325,6 +325,8 @@ $organisateur = Auth::user();
 
     return response()->json(['message' => "Scanneur supprimé avec succès."]);
     }
+
+
     public function indexorganisateurScanneurs()
     {
     $organisateur = Auth::user();
@@ -348,6 +350,34 @@ $organisateur = Auth::user();
     });
 
     return response()->json($result);
+    }
+
+    //listEventsScanneur
+
+    public function listEventsScanneur() {
+        
+    
+       $scanneur = Auth::user();
+
+    if ($scanneur->role !== 'scanneur') {
+        return response()->json(['error' => 'Accès réservé aux scanneurs.'], 403);
+    }
+
+    // je récupère les evenements du scanneur 
+    $event = $scanneur->eventforScanneur()->get();
+
+    if ($event->isEmpty()) {
+        return response()->json(['error' => 'Aucun événement lié à ce scanneur.'], 404);
+    }
+
+    return response()->json([
+        'evenement' => $event,
+        'total_event' => $event->count(),
+    ]);
+ 
+    
+    
+    
     }
 
 
