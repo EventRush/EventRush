@@ -81,7 +81,9 @@ Route::get('/home/upcoming', [EventController::class, 'upcoming']);
 Route::get('/home/popular', [EventController::class, 'popular']);
 Route::get('/home/categories', [EventController::class, 'search'])->name('search');
 Route::get('/home/stats', [EventController::class, 'stat']);// pas encore fait
-Route::get('/home/orgaEvent', [EventController::class, 'byOrganisateur']);
+Route::get('/home/orgaEvent/{orgaId}', [EventController::class, 'byOrganisateur']);
+Route::get('/home/orga', [EventController::class, 'organisateurEvent']);
+Route::get('/home/orga/{orgaId}', [EventController::class, 'listOrga']);
 
 //     ***** test ***** 
 // Route::post('/events/{eventId}/scan', [BilleterieController::class, 'verifierBillet']); //

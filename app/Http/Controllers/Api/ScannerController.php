@@ -106,7 +106,7 @@ $organisateur = Auth::user();
     // $limite = $organisateur->abonnement?->scanneur_limit ?? 5;
     $souscription = $organisateur->souscriptionActive();
 
-    if(!$souscription) return response()->json(['error' => "Veuillez réactiver votre souscription"]);
+    if(!$souscription) return response()->json(['error' => "Veuillez réactiver votre souscription"], 403);
 
     if($event->utilisateur_id != $organisateur->id) return response()->json(['error' => "Le scanneur indexé n'est pas le votre."], 403);
 

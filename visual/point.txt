@@ -1,0 +1,53 @@
+Sujet : Plateforme événementielle EventRush
+
+Backend
+Parfait, faisons un point d’étape clair, structuré et 100% à jour sur l’état actuel de ton projet EventRush, 
+la plateforme de gestion et de billetterie pour événements culturels.
+    Vision du projet
+Une plateforme en ligne dédiée aux événements culturels (concerts, soirées, spectacles, etc.) excluant les événements familiaux, professionnels ou personnels. Elle permet la découverte, la gestion, la billetterie et la participation aux événements via un système multi-utilisateurs.
+    Architecture technique actuelle
+Backend : Laravel 10
+Base de données : Supabase (PostgreSQL)
+Déploiement : Amazone aws
+Paiement : FedaPay
+QR Code : UUID généré backend, rendu frontend avec Vue.js
+    Gestion des utilisateurs
+Utilisateurs : utilisateurs (roles : admin, organisateur, client, scanneur)
+Authentification classique + Google OAuth
+Vérification email via OTP
+    Fonctionnalités développées
+        - Authentification & Sécurité
+        - Inscription / Connexion / Déconnexion
+        - Confirmation email (OTP)
+        - Authentification Google sans modification de données existantes
+        - Rôles utilisateurs + middleware de sécurité
+
+        - Gestion des événements
+        - CRUD complet des événements côté organisateur
+        - Backoffice admin pour tous les événements
+        - Filtrage des événements selon rôles
+        - Contrôles avancés à venir : badging, événements à la une, etc.
+
+        - Souscriptions (Organisateurs)
+        - Table souscriptions centralisée
+        - Paiement FedaPay intégré
+        - Durée en jours, vérification de validité à la volée
+
+        - Billetterie
+        - Table billets
+        - Achat de billet : génération UUID unique + sauvegarde en BDD
+        - Contrôle de stock (quantité_disponible)
+        - Date limite de vente (avec heure & minute)
+
+        - Scan QR Code
+        - Contrôleur Laravel
+        - Vérification du qr_code scanné 
+
+        - Dashboards client gestion de son profil, gestion de ses billets, paiement, etc.
+        - Dashboard organisateur : gestion de ses événements uniquement
+        - Dashboard admin : vue globale + gestion utilisateur, événements, stats (en cours d'amélioration)
+
+        - Modélisation & Structure en base
+        - Tables principales : 
+            utilisateurs, events, billets, tickets, souscriptions, PointLogs
+

@@ -85,7 +85,8 @@ class OrganisateurTicketsController extends Controller
             return response()->json(['message' => 'Non autorisé.'], 403);
         }
         $request->validate([
-            'type' => 'required|in:standart,vip1,vip2',
+            // 'type' => 'required|in:standart,vip1,vip2',
+            'type' => 'required',
             'prix' => 'required|numeric' ,
             'quantite' => 'required|integer|min:1' ,
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:6144' ,
@@ -141,7 +142,7 @@ class OrganisateurTicketsController extends Controller
         }
 
         $request->validate([
-            'type' => 'in:standart,vip1,vip2',
+            'type' => 'nullable|string',
             'prix' => 'nullable|numeric' ,
             'quantite_disponible' => 'nullable|integer' ,
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:6144'          

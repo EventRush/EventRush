@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             EventsSeeder::class,
             TicketsSeeder::class,
             CommentairesSeeder::class,
+            photoEventSeeder::class,
         ]);
     }
 }

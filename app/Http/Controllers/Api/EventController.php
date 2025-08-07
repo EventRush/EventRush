@@ -340,14 +340,33 @@ class EventController extends Controller
     }
 
     // Récupérer les événements d’un organisateur (profil public)
-    public function byOrganisateur($id)
+    public function byOrganisateur($orgaId)
     {
-        $events = Event::where('organisateur_id', $id)
-            ->where('date', '>=', now())
-            ->latest()
-            ->get();
+        $events = Event::where('utilisateur_id', $orgaId)
+                        ->with('organisateur')
+                        ->orderByDesc('points')
+                        ->latest()
+                        ->get();
 
-        return response()->json($events);
+        return EventResource::collection($events);
+    }
+
+    public function organisateurEvent($orgaId)
+    {
+        $events = Event::where('utilisateur_id', $orgaId)
+                        ->orderByDesc('points')
+                        ->latest()
+                        ->get();
+
+        return EventResource::collection($events);
+    }
+    public function listOrga()
+    {
+        $orga = Utilisateur::where('role', 'organisateur')
+                           ->orderByDesc('points')
+                           ->get();
+
+        return response()->json(['Organisateurs' => $orga], 200);
     }
 
 
