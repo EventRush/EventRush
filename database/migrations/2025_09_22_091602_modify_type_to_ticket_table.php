@@ -13,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tickets', function (Blueprint $table) {
-            DB::statement('ALTER TABLE tickets DROP CONSTRAINT IF EXISTS tickets_type_check');
+            // DB::statement('ALTER TABLE tickets DROP CONSTRAINT IF EXISTS tickets_type_check');
             $table->string('type')->default('standart')->change();
         });
 

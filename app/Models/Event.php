@@ -66,6 +66,20 @@ class Event extends Model
         return $this->belongsToMany(Tag::class, 'event_tag');
     }
 
+    public function scopeWithDistance($query, $latitude, $longitude)
+    {
+        return $query->selectRaw("events.*, (
+            6371 * acos(
+                cos(radians(?)) *
+                cos(radians(latitude)) *
+                cos(radians(longitude) - radians(?)) +
+                sin(radians(?)) *
+                sin(radians(latitude))
+            )
+        ) as distance", [$latitude, $longitude, $latitude]);
+    }
+
+
 
 }
 

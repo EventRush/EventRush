@@ -194,9 +194,7 @@ class EventController extends Controller
             ->get();
 
 
-        return response()->json([
-            'events' => $events,
-        ]);
+        return EventResource::collection($events);
     }
 
     public function searchDesc(Request $request)
@@ -215,9 +213,7 @@ class EventController extends Controller
             ->get();
 
 
-        return response()->json([
-            'events' => $events,
-        ]);
+        return EventResource::collection($events);
     }
 
     public function searchLieu(Request $request)
@@ -236,9 +232,7 @@ class EventController extends Controller
             ->get();
 
 
-        return response()->json([
-            'events' => $events,
-        ]);
+        return EventResource::collection($events);
     }
 
     public function searchDate(Request $request)
@@ -257,9 +251,7 @@ class EventController extends Controller
             ->get();
 
 
-        return response()->json([
-            'events' => $events,
-        ]);
+        return EventResource::collection($events);
     }
 
     
@@ -310,7 +302,7 @@ class EventController extends Controller
             ->take(5)
             ->get();
 
-        return response()->json($events);
+        return EventResource::collection($events);
     }
 
     // Récupérer les événements à venir (accueil)
@@ -321,7 +313,7 @@ class EventController extends Controller
             ->take(5)
             ->get();
 
-        return response()->json($events);
+        return EventResource::collection($events);
     }
 
 
@@ -384,26 +376,101 @@ class EventController extends Controller
         $latitude = $request->latitude;
         $longitude = $request->longitude;
         $distance = $request->distance ?? 10;
+        $events = Event::with(['tickets', 'photos'])
 
-        $events = Event::selectRaw("*, (
-            6371 * acos(
-                cos(radians(?)) *
-                cos(radians(latitude)) *
-                cos(radians(longitude) - radians(?)) +
-                sin(radians(?)) *
-                sin(radians(latitude))
-            )
-        ) AS distance", [$latitude, $longitude, $latitude])
-        ->toBase(); // convert to base query builder to allow subquery
-
-        $nearbyEvents = DB::table(DB::raw("({$events->toSql()}) as sub"))
-            ->mergeBindings($events) // important to pass bindings
-            ->where('distance', '<=', $distance)
-            ->orderBy('distance')
-            ->get();
-
-        return EventResource::collection($nearbyEvents);
+        ->withDistance($latitude, $longitude)
+        ->get()
+        ->filter(fn ($event) => $event->distance <= $distance)
+        ->sortBy('distance')
+        ->values();
+        
+        return EventResource::collection($events); 
     }
+
+    //     $events = Event::selectRaw("events.*, (
+    //         6371 * acos(
+    //             cos(radians(?)) *
+    //             cos(radians(latitude)) *
+    //             cos(radians(longitude) - radians(?)) +
+    //             sin(radians(?)) *
+    //             sin(radians(latitude))
+    //         )
+    //     ) AS distance", [$latitude, $longitude, $latitude])
+    //     ->having('distance', '<=', $distance)
+    //     ->orderBy('distance')
+    //     ->get();
+    //     // $events = Event::selectRaw("*, (
+    //     //     6371 * acos(
+    //     //         cos(radians(?)) *
+    //     //         cos(radians(latitude)) *
+    //     //         cos(radians(longitude) - radians(?)) +
+    //     //         sin(radians(?)) *
+    //     //         sin(radians(latitude))
+    //     //     )
+    //     // ) AS distance", [$latitude, $longitude, $latitude])
+    //     // ->toBase(); // convert to base query builder to allow subquery
+
+    //     // $nearbyEvents = DB::table(DB::raw("({$events->toSql()}) as sub"))
+    //     //     ->mergeBindings($events) // important to pass bindings
+    //     //     ->where('distance', '<=', $distance)
+    //     //     ->orderBy('distance')
+    //     //     ->get();
+
+    //     // return EventResource::collection($nearbyEvents);
+    //     return EventResource::collection($events);
+    // }
+    // public function getEventsNear(Request $request)
+    // {
+    //     $request->validate([
+    //         'latitude' => 'required|numeric|between:-90,90',
+    //         'longitude' => 'required|numeric|between:-180,180',
+    //         'distance' => 'nullable|numeric|min:0',
+    //     ]);
+
+    //     $latitude = $request->latitude;
+    //     $longitude = $request->longitude;
+    //     $distance = $request->distance ?? 10;
+
+    //     // Sous-requête avec la distance
+    //     $events = Event::selectRaw("events.*, (
+    //         6371 * acos(
+    //             cos(radians(?)) *
+    //             cos(radians(latitude)) *
+    //             cos(radians(longitude) - radians(?)) +
+    //             sin(radians(?)) *
+    //             sin(radians(latitude))
+    //         )
+    //     ) AS distance", [$latitude, $longitude, $latitude]);
+
+    //     // Filtrer sur la distance dans la sous-requête
+    //     $nearbyEvents = DB::table(DB::raw("({$events->toSql()}) as sub"))
+    //         ->mergeBindings($events->getQuery())
+    //         ->where('distance', '<=', $distance)
+    //         ->orderBy('distance')
+    //         ->pluck('id') // récupère juste les IDs
+    //         ->toArray(); //
+
+    //     $eventsWithRelations = Event::with('tickets', 'photos')
+    //         ->whereIn('id', $nearbyEvents)
+    //         ->get();
+
+    //     return EventResource::collection($eventsWithRelations);
+    // }
+
+    // public function scopeWithDistance($query, $latitude, $longitude)
+    // {
+    //     return $query->selectRaw("events.*, (
+    //         6371 * acos(
+    //             cos(radians(?)) *
+    //             cos(radians(latitude)) *
+    //             cos(radians(longitude) - radians(?)) +
+    //             sin(radians(?)) *
+    //             sin(radians(latitude))
+    //         )
+    //     ) as distance", [$latitude, $longitude, $latitude]);
+    // }
+
+
 
     // public function getEventsNear(Request $request)
     // {
