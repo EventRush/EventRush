@@ -16,7 +16,7 @@ class Tag extends Model
     {
         return $this->belongsToMany(Event::class, 'event_tag');
     }
-
+    
     public function utilisateurs()
     {
         return $this->belongsToMany(Utilisateur::class, 'utilisateur_tag', 'tag_id', 'utilisateur_id');

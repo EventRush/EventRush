@@ -13,9 +13,17 @@ class EventResource extends JsonResource
      *
      * @return array<string, mixed>
      */
+
     public function toArray(Request $request): array
     {
         $organisateur = OrganisateurProfile::where('utilisateur_id', $this->utilisateur_id)->first();
+
+        // Calculs liés aux tickets
+        $tickets = $this->tickets;
+        $nombre_types_ticket = $tickets->count();
+        $nombre_places_total = $tickets->sum('quantité_disponible');
+        $nombre_places_restantes = $tickets->sum('quantite_restante');
+
         return [
             'id' => $this->id,
             'titre' => $this->titre,
@@ -26,19 +34,51 @@ class EventResource extends JsonResource
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
             'statut' => $this->statut,
-            'affiche_url' => $this->affiche ?  : null,
+            'affiche_url' => $this->affiche ?: null,
             'points' => $this->points,
             'nbr_achat' => $this->nbr_achat,
             'photos' => $this->photos->map(function ($photo) {
                 return $photo->image_path;
             }),
-            'organisateur' =>  $organisateur ? [
+            'organisateur' => $organisateur ? [
                 'id' => $organisateur->id,
                 'nom_entreprise' => $organisateur->nom_entreprise,
-                'logo' => $organisateur->logo ?  : null,
-            ]: null,
+                'logo' => $organisateur->logo ?: null,
+            ] : null,
+
+            // ✅ Nouveaux champs liés aux tickets
+            'nombre_types_ticket' => $nombre_types_ticket,
+            'nombre_places_total' => $nombre_places_total,
+            'nombre_places_restantes' => $nombre_places_restantes,
         ];
     }
+
+    // public function toArray(Request $request): array
+    // {
+    //     $organisateur = OrganisateurProfile::where('utilisateur_id', $this->utilisateur_id)->first();
+    //     return [
+    //         'id' => $this->id,
+    //         'titre' => $this->titre,
+    //         'description' => $this->description,
+    //         'date_debut' => $this->date_debut,
+    //         'date_fin' => $this->date_fin,
+    //         'lieu' => $this->lieu,
+    //         'latitude' => $this->latitude,
+    //         'longitude' => $this->longitude,
+    //         'statut' => $this->statut,
+    //         'affiche_url' => $this->affiche ?  : null,
+    //         'points' => $this->points,
+    //         'nbr_achat' => $this->nbr_achat,
+    //         'photos' => $this->photos->map(function ($photo) {
+    //             return $photo->image_path;
+    //         }),
+    //         'organisateur' =>  $organisateur ? [
+    //             'id' => $organisateur->id,
+    //             'nom_entreprise' => $organisateur->nom_entreprise,
+    //             'logo' => $organisateur->logo ?  : null,
+    //         ]: null,
+    //     ];
+    // }
     //     return [
     //         'id' => $this->id,
     //         'titre' => $this->titre,

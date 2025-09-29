@@ -60,12 +60,16 @@ class OrganisateurTicketsController extends Controller
 
     public function indexTicketsEvent($eventId){
         $event = Event::findOrFail($eventId);
-        $organisateur = OrganisateurProfile::where('utilisateur_id', $event->utilisateur_id)->first();
+        // $organisateur = Utilisateur::where('id', $event->utilisateur_id)->first();
+        $organisateur = auth()->user(); //Auth::user();
+        // dd(Auth::user());
+        // dd([$event , $organisateur]);
+        // if ($event->utilisateur_id !== $organisateur->id) return response()->json('Non autorisé', 401);
         $tickets = $event->tickets()->get();
-        $tickets->transform(function($ticket){
-            $ticket->image_url = $ticket->image ? asset('storage/app/public/' . $ticket->image) : null;
-            return $ticket;
-        });
+        // $tickets->transform(function($ticket){
+        //     $ticket->image_url = $ticket->image ?? null;
+        //     return $ticket;
+        // });
         
         return response()->json([
             'message' => 'Tickets de l\'évènement',
@@ -82,6 +86,7 @@ class OrganisateurTicketsController extends Controller
 
 
         if ($event->utilisateur_id !== $organisateur->id) {
+            dd($event);
             return response()->json(['message' => 'Non autorisé.'], 403);
         }
         $request->validate([
@@ -94,10 +99,6 @@ class OrganisateurTicketsController extends Controller
 
         ]);
         $imagePath = null;
-
-        // if($request->hasFile('image')){
-        //     $imagePath = $request->file('image')->store('events/tickets', 'public');
-        // }
 
         
         if ($request->hasFile('image')) {

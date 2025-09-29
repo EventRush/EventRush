@@ -17,7 +17,7 @@ return new class extends Migration
     $table->foreignId('billet_id')->constrained()->onDelete('cascade');
     $table->foreignId('scanneur_id')->constrained('utilisateurs')->onDelete('cascade');
     $table->timestamp('initiated_at');
-    $table->string('token')->unique(); 
+    $table->string('code')->unique(); 
     $table->enum('status', ['en_attente', 'validé', 'rejeté'])->default('en_attente');
     $table->timestamp('expires_at')->nullable();
     $table->timestamps();

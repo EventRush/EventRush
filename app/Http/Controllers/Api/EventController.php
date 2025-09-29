@@ -9,6 +9,7 @@ use App\Models\Utilisateur;
 use App\Services\PointService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class EventController extends Controller
 {
@@ -382,22 +383,54 @@ class EventController extends Controller
 
         $latitude = $request->latitude;
         $longitude = $request->longitude;
-        $distance = $request->distance ?? 10; // distance par défaut = 10 km
+        $distance = $request->distance ?? 10;
 
-        $events = Event::selectRaw("*,
-            (6371 * acos(cos(radians(?)) *
-            cos(radians(latitude)) *
-            cos(radians(longitude) - radians(?)) +
-            sin(radians(?)) *
-            sin(radians(latitude)))) AS distance", [
-                $latitude, $longitude, $latitude
-            ])
-            ->having("distance", "<=", $distance)
-            ->orderBy("distance", 'asc')
+        $events = Event::selectRaw("*, (
+            6371 * acos(
+                cos(radians(?)) *
+                cos(radians(latitude)) *
+                cos(radians(longitude) - radians(?)) +
+                sin(radians(?)) *
+                sin(radians(latitude))
+            )
+        ) AS distance", [$latitude, $longitude, $latitude])
+        ->toBase(); // convert to base query builder to allow subquery
+
+        $nearbyEvents = DB::table(DB::raw("({$events->toSql()}) as sub"))
+            ->mergeBindings($events) // important to pass bindings
+            ->where('distance', '<=', $distance)
+            ->orderBy('distance')
             ->get();
 
-        return EventResource::collection($events);
+        return EventResource::collection($nearbyEvents);
     }
+
+    // public function getEventsNear(Request $request)
+    // {
+    //     $request->validate([
+    //         'latitude' => 'required|numeric|between:-90,90',
+    //         'longitude' => 'required|numeric|between:-180,180',
+    //         'distance' => 'nullable|numeric|min:0', // en kilomètres
+    //     ]);
+
+    //     $latitude = $request->latitude;
+    //     $longitude = $request->longitude;
+    //     $distance = $request->distance ?? 10; // distance par défaut = 10 km
+
+    //     $events = Event::selectRaw("*,
+    //         (6371 * acos(cos(radians(?)) *
+    //         cos(radians(latitude)) *
+    //         cos(radians(longitude) - radians(?)) +
+    //         sin(radians(?)) *
+    //         sin(radians(latitude)))) AS distance", [
+    //             $latitude, $longitude, $latitude
+    //         ])
+    //         ->having("distance", "<=", $distance)
+    //         ->orderBy("distance", 'asc')
+    //         ->get();
+
+    //     return EventResource::collection($events);
+    // }
 
     
  

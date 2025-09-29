@@ -291,6 +291,8 @@ $organisateur = Auth::user();
     {
         $organisateur = Auth::user();
         $event = Event::findOrFail($eventId);
+
+        if(!$event) return response()->json('Aucun resultat', 204);
         
         if($event->utilisateur_id !== $organisateur->id){
             return response()->json(['error' => 'Accès refusé, vous n\'êtes pas l\'organisateur de cet evennement.'], 403);
