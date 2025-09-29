@@ -194,9 +194,7 @@ class EventController extends Controller
             ->get();
 
 
-        return response()->json([
-            'events' => $events,
-        ]);
+        return EventResource::collection($events);
     }
 
     public function searchDesc(Request $request)
@@ -215,9 +213,7 @@ class EventController extends Controller
             ->get();
 
 
-        return response()->json([
-            'events' => $events,
-        ]);
+        return EventResource::collection($events);
     }
 
     public function searchLieu(Request $request)
@@ -236,9 +232,7 @@ class EventController extends Controller
             ->get();
 
 
-        return response()->json([
-            'events' => $events,
-        ]);
+        return EventResource::collection($events);
     }
 
     public function searchDate(Request $request)
@@ -257,9 +251,7 @@ class EventController extends Controller
             ->get();
 
 
-        return response()->json([
-            'events' => $events,
-        ]);
+        return EventResource::collection($events);
     }
 
     
@@ -310,7 +302,7 @@ class EventController extends Controller
             ->take(5)
             ->get();
 
-        return response()->json($events);
+        return EventResource::collection($events);
     }
 
     // Récupérer les événements à venir (accueil)
@@ -321,7 +313,7 @@ class EventController extends Controller
             ->take(5)
             ->get();
 
-        return response()->json($events);
+        return EventResource::collection($events);
     }
 
 
