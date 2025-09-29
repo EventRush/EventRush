@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Billet;
 use App\Models\Event;
 use App\Models\EventScanneur;
+use App\Models\Ticket;
 use App\Models\Utilisateur;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -67,12 +68,12 @@ class ScannerController extends Controller
 
     for ($i = 0; $i < $request->nombre; $i++) {
         $username = $prefix . str_pad($lastIndex + $i, 4, '0', STR_PAD_LEFT);
-        $password = Str::random(8);
+        // $password = Str::random(8);
 
         $user = Utilisateur::create([
             'nom' => $username,
             'email' => $username . '@scan.local',
-            'password' => Hash::make($password),
+            'password' => Hash::make($username),
             'role' => 'scanneur',
             'statut_compte' => 'actif',
         ]);
@@ -84,7 +85,7 @@ class ScannerController extends Controller
 
     $created[] = [
         'username' => $username,
-        'password' => $password,
+        'password' => $username,
     ];
     }
     
@@ -105,7 +106,7 @@ $organisateur = Auth::user();
     // $limite = $organisateur->abonnement?->scanneur_limit ?? 5;
     $souscription = $organisateur->souscriptionActive();
 
-    if(!$souscription) return response()->json(['error' => "Veuillez réactiver votre souscription"]);
+    if(!$souscription) return response()->json(['error' => "Veuillez réactiver votre souscription"], 403);
 
     if($event->utilisateur_id != $organisateur->id) return response()->json(['error' => "Le scanneur indexé n'est pas le votre."], 403);
 
@@ -121,11 +122,13 @@ $organisateur = Auth::user();
     public function loginScanneur(Request $request)
     {
          $request->validate([
-            'nom'=>'required|string|nom',     
+            'nom'=>'required|string',     
             'password'=>'required|string|min:6|',
         ]);
         $scanneur =  Utilisateur::where('role', 'scanneur')
                                 ->where('nom', $request->nom)->first();
+
+        // dd($scanneur);
         if (!$scanneur || !Hash::check($request->password, $scanneur->password)) {
             return response()->json(['message' => 'Identifiants incorrects'], 401);
         }
@@ -158,21 +161,16 @@ $organisateur = Auth::user();
         return response()->json(['error' => 'Aucun événement lié à ce scanneur.'], 404);
     }
 
-    // Filtrage par type_ticket si fourni
-    // $query = Billet::where('event_id', $event->id);
-
-    // if ($request->filled('type_ticket')) {
-    //     $query->where('type_ticket', $request->type_ticket);
-    // }
-
-    // $billets = $query->get();
-
     
     $billets = Billet::where('event_id', $event->id)->get();
 
     // Séparation
-    $scannes = $billets->where('scanne', true)->values();
-    $non_scannes = $billets->where('scanne', false)->values();
+    // $scannes = $billets->where('scanne', true)->values();
+    // $non_scannes = $billets->where('scanne', false)->values();
+
+    $scannes = $billets->where('scanne', true)->values()->makeHidden('qr_code');
+    $non_scannes = $billets->where('scanne', false)->values()->makeHidden('qr_code');
+
 
     return response()->json([
         'evenement' => $event->titre,
@@ -185,47 +183,7 @@ $organisateur = Auth::user();
     ]);
  
     }
-    // public function scannerBillet(Request $request)
-    // {
-    //     $request->validate([
-    //     'qr_code' => 'required|string',
-    // ]);
-
-    // $scanneur = Auth::user();
-
-    // if ($scanneur->role !== 'scanneur') {
-    //     return response()->json(['error' => 'Accès refusé, vous n\'êtes pas scanneur.'], 403);
-    // }
-
-    // $event = $scanneur->eventforScanneur()->first();
-    // if (!$event) {
-    //     return response()->json(['error' => 'Aucun événement lié à ce scanneur.'], 404);
-    // }
-
-    // $billet = Billet::where('qr_code', $request->qr_code)
-    //     ->where('event_id', $event->id)
-    //     ->first();
-
-    // if (!$billet) {
-    //     return response()->json(['error' => 'Billet introuvable pour cet événement.'], 404);
-    // }
-
-    // if ($billet->isScanned()) {
-    //     return response()->json(['message' => 'Ce billet a déjà été scanné.'], 409);
-    // }
-
-    // $billet->status_scan = 'scanné';
-    // $billet->scanned_by = $scanneur->id;
-    // $billet->scanned_at = now();
-    // $billet->save();
-
-    // return response()->json([
-    //     'message' => 'Billet scanné avec succès.',
-    //     'billet' => $billet->fresh(),
-    // ]);
-
-    // }
-        public function scannerBillet($eventId, Request $request)
+        public function scannerBillet( Request $request)
     {
         $request->validate([
             'qr_code' => 'required|string',
@@ -243,8 +201,11 @@ $organisateur = Auth::user();
         // je recupère le billet correspondant à l'event + QR code
         $billet = Billet::with(['utilisateur'])
                         ->where('qr_code', $request->qr_code)
-                        ->where('event_id', $eventId)
+                        // ->where('event_id', $eventId)
                         ->first();
+
+        $event = Event::findOrFail($billet->event_id);
+        $ticket =  Ticket::findOrFail($billet->ticket_id);
 
         if (!$billet) {
             return response()->json([
@@ -276,9 +237,12 @@ $organisateur = Auth::user();
                     'nom' => $billet->utilisateur->nom,
                     'email' => $billet->utilisateur->email,
                 ],
+                'event' =>  $event->titre,
                 'scanned_at' => $billet->scanned_at,
                 'scanned_by' => $scanneur->nom,
-            ]
+                'ticket_type' =>  $ticket->type,
+            ],
+            
         ]);
     }
 
@@ -327,6 +291,8 @@ $organisateur = Auth::user();
     {
         $organisateur = Auth::user();
         $event = Event::findOrFail($eventId);
+
+        if(!$event) return response()->json('Aucun resultat', 204);
         
         if($event->utilisateur_id !== $organisateur->id){
             return response()->json(['error' => 'Accès refusé, vous n\'êtes pas l\'organisateur de cet evennement.'], 403);
@@ -348,7 +314,6 @@ $organisateur = Auth::user();
     if (!$scanneur) {
         return response()->json(['error' => "Scanneur introuvable."], 404);
     }
-    // if($scanneur->role != 'scanneur') return response()->json(['error' => "Vous ne pouvez pas modifier ce utilisateur."], 403);
 
     $event = $scanneur->eventforScanneur()->first();
 
@@ -373,6 +338,8 @@ $organisateur = Auth::user();
 
     return response()->json(['message' => "Scanneur supprimé avec succès."]);
     }
+
+
     public function indexorganisateurScanneurs()
     {
     $organisateur = Auth::user();
@@ -396,6 +363,34 @@ $organisateur = Auth::user();
     });
 
     return response()->json($result);
+    }
+
+    //listEventsScanneur
+
+    public function listEventsScanneur() {
+        
+    
+       $scanneur = Auth::user();
+
+    if ($scanneur->role !== 'scanneur') {
+        return response()->json(['error' => 'Accès réservé aux scanneurs.'], 403);
+    }
+
+    // je récupère les evenements du scanneur 
+    $event = $scanneur->eventforScanneur()->get();
+
+    if ($event->isEmpty()) {
+        return response()->json(['error' => 'Aucun événement lié à ce scanneur.'], 404);
+    }
+
+    return response()->json([
+        'evenement' => $event,
+        'total_event' => $event->count(),
+    ]);
+ 
+    
+    
+    
     }
 
 

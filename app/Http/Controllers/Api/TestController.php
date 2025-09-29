@@ -252,6 +252,7 @@ class TestController extends Controller
 
 
     // Stocker l'image et le QR code
+
     public function store(Request $request)
     {
         $request->validate([

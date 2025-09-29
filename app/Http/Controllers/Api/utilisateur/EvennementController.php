@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\utilisateur;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\EventResource;
+use App\Models\Billet;
 use App\Models\Event;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -45,5 +46,19 @@ class EvennementController extends Controller
          } 
         $events = $query->get(); 
         return EventResource::collection($events); 
+    }
+
+    public function getTicketData($billetId)
+    {
+        $billet = Billet::with(['event'])->findOrFail($billetId);
+
+        return response()->json([
+            'image' => $billet->image, // image Cloudinary
+            'qr_code' => $billet->qr_code,
+            'event' => $billet->event->titre,
+            // 'type_ticket' => $billet->ticket->type,
+            // 'montant' => $billet->montant,
+            // 'reference' => $billet->reference,
+        ]);
     }
 }

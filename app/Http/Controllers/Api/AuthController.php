@@ -84,6 +84,10 @@ class AuthController extends Controller
             return response()->json(['message' => 'Code OTP ou email invalide.'], 401);
         }
 
+        if (!$utilisateur->hasVerifiedEmail()) {
+            return response()->json(['message' => 'Votre mail n\'a pas encore été vérifié '], 403);
+        }
+
         if (Carbon::now()->gt($utilisateur->otp_expires_at)) {
             return response()->json(['message' => 'Code OTP expiré.'], 401);
         }

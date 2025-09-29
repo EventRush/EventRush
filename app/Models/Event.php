@@ -15,7 +15,7 @@ class Event extends Model
         'titre', 'description',
         'date_debut', 'date_fin', 'lieu', 'statut', 'affiche', 
         'points', 
-        'latitude', 'longitude',
+        'latitude', 'longitude', 
     ];
 
     
@@ -60,6 +60,12 @@ class Event extends Model
         {
             return $this->belongsToMany(Utilisateur::class, 'event_scanneurs', 'event_id', 'utilisateur_id')->where('role', 'scanneur');
         }
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'event_tag');
+    }
+
 
 }
 
