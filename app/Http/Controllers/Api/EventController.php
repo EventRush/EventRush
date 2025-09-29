@@ -377,7 +377,7 @@ class EventController extends Controller
         $longitude = $request->longitude;
         $distance = $request->distance ?? 10;
 
-        $events = Event::selectRaw("*, (
+        $events = Event::selectRaw("events.*, (
             6371 * acos(
                 cos(radians(?)) *
                 cos(radians(latitude)) *
@@ -386,15 +386,28 @@ class EventController extends Controller
                 sin(radians(latitude))
             )
         ) AS distance", [$latitude, $longitude, $latitude])
-        ->toBase(); // convert to base query builder to allow subquery
+        ->having('distance', '<=', $distance)
+        ->orderBy('distance')
+        ->get();
+        // $events = Event::selectRaw("*, (
+        //     6371 * acos(
+        //         cos(radians(?)) *
+        //         cos(radians(latitude)) *
+        //         cos(radians(longitude) - radians(?)) +
+        //         sin(radians(?)) *
+        //         sin(radians(latitude))
+        //     )
+        // ) AS distance", [$latitude, $longitude, $latitude])
+        // ->toBase(); // convert to base query builder to allow subquery
 
-        $nearbyEvents = DB::table(DB::raw("({$events->toSql()}) as sub"))
-            ->mergeBindings($events) // important to pass bindings
-            ->where('distance', '<=', $distance)
-            ->orderBy('distance')
-            ->get();
+        // $nearbyEvents = DB::table(DB::raw("({$events->toSql()}) as sub"))
+        //     ->mergeBindings($events) // important to pass bindings
+        //     ->where('distance', '<=', $distance)
+        //     ->orderBy('distance')
+        //     ->get();
 
-        return EventResource::collection($nearbyEvents);
+        // return EventResource::collection($nearbyEvents);
+        return EventResource::collection($events);
     }
 
     // public function getEventsNear(Request $request)
