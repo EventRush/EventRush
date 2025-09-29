@@ -375,15 +375,49 @@ class EventController extends Controller
 
         $latitude = $request->latitude;
         $longitude = $request->longitude;
-        $distance = $request->distance ?? 10;
-        $events = Event::with(['tickets', 'photos'])
+        $radius = $request->distance ?? 10;
+        // $events = Event::with(['tickets', 'photos'])
 
-        ->withDistance($latitude, $longitude)
-        ->get()
-        ->filter(fn ($event) => $event->distance <= $distance)
-        ->sortBy('distance')
-        ->values();
-        
+        // ->withDistance($latitude, $longitude)
+        // ->get()
+        // ->filter(fn ($event) => $event->distance <= $distance)
+        // ->sortBy('distance')
+        // ->values();
+        // $latitude = 20;
+        // $longitude = 15;
+        // $radius = 10;
+
+        // $events = DB::table('events')
+        //     ->select('*')
+        //     ->selectRaw('(6371 * acos(
+        //         cos(radians(?)) *
+        //         cos(radians(latitude)) *
+        //         cos(radians(longitude) - radians(?)) +
+        //         sin(radians(?)) *
+        //         sin(radians(latitude))
+        //     )) as distance', [$latitude, $longitude, $latitude])
+        //     ->whereRaw('(6371 * acos(
+        //         cos(radians(?)) *
+        //         cos(radians(latitude)) *
+        //         cos(radians(longitude) - radians(?)) +
+        //         sin(radians(?)) *
+        //         sin(radians(latitude))
+        //     )) <= ?', [$latitude, $longitude, $latitude, $radius])
+        //     ->orderBy('distance', 'asc')
+        //     ->get();
+
+        // $events = Event::with(['tickets', 'photos'])
+        //     ->withDistance($latitude, $longitude)
+        //     ->having('distance', '<=', $radius)
+        //     ->orderBy('distance')
+        //     ->get();
+        $events = Event::with(['tickets', 'photos'])
+            ->withDistance($latitude, $longitude)
+            ->nearLocation($latitude, $longitude, $radius)
+            ->orderBy('distance')
+            ->get();
+
+
         return EventResource::collection($events); 
     }
 

@@ -18,6 +18,9 @@ class Event extends Model
         'latitude', 'longitude', 
     ];
 
+    protected $appends = ['distance'];
+
+
     
 
     public function photos()
@@ -66,18 +69,28 @@ class Event extends Model
         return $this->belongsToMany(Tag::class, 'event_tag');
     }
 
-    public function scopeWithDistance($query, $latitude, $longitude)
-    {
-        return $query->selectRaw("events.*, (
-            6371 * acos(
-                cos(radians(?)) *
-                cos(radians(latitude)) *
-                cos(radians(longitude) - radians(?)) +
-                sin(radians(?)) *
-                sin(radians(latitude))
-            )
-        ) as distance", [$latitude, $longitude, $latitude]);
-    }
+    public function scopeWithDistance($query, $lat, $lng)
+{
+    return $query->selectRaw("events.*, (6371 * acos(
+        cos(radians(?)) *
+        cos(radians(latitude)) *
+        cos(radians(longitude) - radians(?)) +
+        sin(radians(?)) *
+        sin(radians(latitude))
+    )) as distance", [$lat, $lng, $lat]);
+}
+
+public function scopeNearLocation($query, $lat, $lng, $radius)
+{
+    return $query->whereRaw("(6371 * acos(
+        cos(radians(?)) *
+        cos(radians(latitude)) *
+        cos(radians(longitude) - radians(?)) +
+        sin(radians(?)) *
+        sin(radians(latitude))
+    )) <= ?", [$lat, $lng, $lat, $radius]);
+}
+
 
 
 
