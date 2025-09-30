@@ -63,7 +63,6 @@ Route::middleware(['auth:sanctum',  'verified'])->group(function () {
     Route::get('/me', [UtilisateurController::class,'me']);
     Route::post('/me/update', [UtilisateurController::class,'update']); 
     Route::get('/auth/me', [UtilisateurController::class, 'connectedUser'])->name('user.connected');
-    Route::get('/home/nearEvents', [EventController::class, 'getEventsNear']); // getEventsNear
     Route::get('/home/nearEvents/date', [EventController::class, 'getNearbyEventsWithDate']);
     Route::get('/home/sugestions/tag', [TagController::class, 'getRecommendedEvents']);
 
@@ -79,6 +78,7 @@ Route::get('/home/search/date', [EventController::class, 'searchDate']);
 Route::get('/home/featured', [EventController::class, 'featured']);
 Route::get('/home/upcoming', [EventController::class, 'upcoming']);
 Route::get('/home/popular', [EventController::class, 'popular']);
+Route::get('/home/nearEvents', [EventController::class, 'getEventsNear']); // getEventsNear
 Route::get('/home/categories', [EventController::class, 'search'])->name('search');
 Route::get('/home/stats', [EventController::class, 'stat']);// pas encore fait
 Route::get('/home/orgaEvent/{orgaId}', [EventController::class, 'byOrganisateur']);
