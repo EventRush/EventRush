@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\EventResource;
+use App\Http\Resources\EventDetailResource;
 use App\Models\Event;
 use App\Models\Utilisateur;
 use App\Services\PointService;
@@ -81,7 +82,7 @@ class EventController extends Controller
     }
 
         // return new EventResource($event->load('organisateur'));
-        return new EventResource($event);
+        return new EventDetailResource($event);
 
     }
 

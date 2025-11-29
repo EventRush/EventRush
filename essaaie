@@ -9,19 +9,20 @@
             $table->string('avatar')->nullable();
             $table->string('otp')->nullable();
             $table->timestamp('otp_expires_at')->nullable();
-            $table->enum('role', ['client', 'scanneur', 'organisateur', 'admin'])->default('client');
+            $table->string('role')->default('client');
             $table->integer('points')->default(0);
+            $table->string('statut_compte')->default('actif')->after('email');
             $table->timestamp('last_seen_at')->nullable();
             $table->timestamps();
         });
-        Schema::create('organisateur_profiles', function (Blueprint $table) {
+        <!-- Schema::create('organisateur_profiles', function (Blueprint $table) {
             $table->id();
             $table->foreignId('utilisateur_id')->constrained()->onDelete('cascade');
             $table->string('nom_entreprise')->nullable();
             $table->text('description')->nullable();
             $table->string('logo')->nullable();
             $table->timestamps();
-        });
+        }); --> 
         Schema::create('souscriptions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('organisateur_id')->constrained('organisateur_profiles')->onDelete('cascade');
@@ -120,10 +121,12 @@
             $table->timestamps();
         });
         Schema::create('suivis', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('utilisateur_id')->constrained('utilisateurs')->onDelete('cascade');
-            $table->foreignId('suivi_id')->constrained('utilisateurs')->onDelete('cascade');
+            $table->id();            
+            $table->unsignedBigInteger('utilisateur_id');
+            $table->unsignedBigInteger('suivi_id');
             $table->timestamps();
+            $table->foreign('utilisateur_id')->references('id')->on('utilisateurs')->onDelete('cascade');
+            $table->foreign('suivi_id')->references('id')->on('utilisateurs')->onDelete('cascade');
         });
         Schema::create('point_logs', function (Blueprint $table) {
             $table->id();
@@ -137,7 +140,7 @@
         });
         Schema::create('event_vues', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('utilisateur_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('utilisateur_id')->constrained('utilisateurs')->onDelete('cascade');
             $table->foreignId('event_id')->constrained('events')->onDelete('cascade');
             $table->timestamps();
             $table->unique(['utilisateur_id', 'event_id']);
@@ -148,6 +151,25 @@
             $table->foreignId('event_id')->constrained()->onDelete('cascade'); 
             $table->foreignId('utilisateur_id')->constrained()->onDelete('cascade'); 
             $table->timestamps();
+        });
+        Schema::create('tags', function (Blueprint $table) {
+            $table->id();
+            $table->string('nom')->unique();
+            $table->timestamps();
+        });
+        Schema::create('event_tag', function (Blueprint $table) {
+            // $table->id();
+            $table->foreignId('event_id')->constrained()->onDelete('cascade');
+            $table->foreignId('tag_id')->constrained()->onDelete('cascade');
+            $table->timestamps();
+            $table->primary(['event_id', 'tag_id']);
+        });
+        Schema::create('utilisateur_tag', function (Blueprint $table) {
+            // $table->id();
+            $table->foreignId('utilisateur_id')->constrained('utilisateurs')->onDelete('cascade');
+            $table->foreignId('tag_id')->constrained()->onDelete('cascade');
+            $table->timestamps();
+            $table->primary(['utilisateur_id', 'tag_id']);
         });
 
         // models 
