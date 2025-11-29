@@ -58,6 +58,11 @@ class Event extends Model
         {
             return $this->hasMany(Ticket::class);
         }
+    
+    public function commentaires()
+        {
+            return $this->hasMany(Commentaire::class);
+        }
 
     public function scanneurs()
         {

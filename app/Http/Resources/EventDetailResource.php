@@ -15,7 +15,7 @@ class EventDetailResource extends JsonResource
     public function toArray(Request $request): array
     {
         // -- ORGANISATEUR --
-        $organisateur = $this->utilisateur ? $this->utilisateur->organisateurProfile : null;
+        $organisateur = $this->utilisateur ?? null;
 
         // -- TICKETS --
         $tickets = $this->tickets;
