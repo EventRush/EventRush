@@ -7,6 +7,7 @@ use App\Http\Resources\Api\EventResource;
 use App\Http\Resources\EventDetailResource;
 use App\Models\Event;
 use App\Models\Utilisateur;
+use App\Services\EventShowService;
 use App\Services\PointService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -72,14 +73,17 @@ class EventController extends Controller
      * @return EventResource
      */
 
-    public function show($eventId)
+    public function show(Request $request, $eventId, EventShowService $eventShowService)
     {
         $event = Event::findOrFail($eventId);
         $utilisateur = Auth::user();
 
+        // Enregistrer la vue
+        $eventShowService->addView($event->id, $request);
+        
         if ($utilisateur) {
-        PointService::ajouterVueEvenement($utilisateur, $event);
-    }
+            PointService::ajouterVueEvenement($utilisateur, $event);
+        }
 
         // return new EventResource($event->load('organisateur'));
         return new EventDetailResource($event);
