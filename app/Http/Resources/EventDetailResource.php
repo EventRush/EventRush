@@ -48,17 +48,17 @@ class EventDetailResource extends JsonResource
             'distance' => $this->distance ?? null,
 
             // Média
-            'affiche_url' => $this->affiche ? asset('storage/' . $this->affiche) : null,
+            'affiche_url' => $this->affiche ?? null,
             'photos' => $this->photos->map(fn($p) => [
                 'id' => $p->id,
-                'url' => asset('storage/' . $p->image_path),
+                'url' => $p->image_path ?? null,
             ]),
 
             // Organisateur (User + OrganisateurProfile fusionnés)
             'organisateur' => $organisateur ? [
                 'id' => $organisateur->id,
                 'nom_entreprise' => $organisateur->nom_entreprise,
-                'logo' => $organisateur->logo ? asset('storage/' . $organisateur->logo) : null,
+                'logo' => $organisateur->logo ?? null,
 
                 'utilisateur' => [
                     'id' => $this->utilisateur->id,
@@ -72,7 +72,7 @@ class EventDetailResource extends JsonResource
                 'id' => $t->id,
                 'type' => $t->type,
                 'prix' => $t->prix,
-                'image' => $t->image ? asset('storage/' . $t->image) : null,
+                'image' => $t->image ?? null,
                 'quantite_disponible' => $t->quantité_disponible,
                 'quantite_restante' => $t->quantite_restante,
                 'date_limite_vente' => $t->date_limite_vente,
