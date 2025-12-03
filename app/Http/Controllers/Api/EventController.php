@@ -18,8 +18,8 @@ class EventController extends Controller
     //
     public function index()
     {
-        // $events = Event::with('organisateur')->latest()->get();
-        $events = Event::latest()->get();
+        $events = Event::with(['tickets', 'photos', 'organisateur'])->latest()->get();
+        // $events = Event::latest()->get();
         return EventResource::collection($events);
     }
 

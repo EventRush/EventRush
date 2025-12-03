@@ -16,13 +16,13 @@ class EventResource extends JsonResource
 
     public function toArray(Request $request): array
     {
-        $organisateur = OrganisateurProfile::where('utilisateur_id', $this->utilisateur_id)->first();
+        $organisateur = $this->organisateur;//OrganisateurProfile::where('utilisateur_id', $this->utilisateur_id)->first();
 
         // Calculs liés aux tickets
-        $tickets = $this->tickets;
-        $nombre_types_ticket = $tickets->count();
-        $nombre_places_total = $tickets->sum('quantité_disponible');
-        $nombre_places_restantes = $tickets->sum('quantite_restante');
+        $tickets = $this->tickets ?? collect();
+        $nombre_types_ticket = $tickets->count() ?? 0;
+        $nombre_places_total = $tickets->sum('quantité_disponible') ?? 0;
+        $nombre_places_restantes = $tickets->sum('quantite_restante') ?? 0;
 
         return [
             'id' => $this->id,
