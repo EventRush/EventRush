@@ -85,16 +85,20 @@ class Event extends Model
     )) as distance", [$lat, $lng, $lat]);
 }
 
-public function scopeNearLocation($query, $lat, $lng, $radius)
-{
-    return $query->whereRaw("(6371 * acos(
-        cos(radians(?)) *
-        cos(radians(latitude)) *
-        cos(radians(longitude) - radians(?)) +
-        sin(radians(?)) *
-        sin(radians(latitude))
-    )) <= ?", [$lat, $lng, $lat, $radius]);
-}
+    public function scopeNearLocation($query, $lat, $lng, $radius)
+    {
+        return $query->whereRaw("(6371 * acos(
+            cos(radians(?)) *
+            cos(radians(latitude)) *
+            cos(radians(longitude) - radians(?)) +
+            sin(radians(?)) *
+            sin(radians(latitude))
+        )) <= ?", [$lat, $lng, $lat, $radius]);
+    }
+    public function posts()
+    {
+        return $this->hasMany(EventPost::class);
+    }
 
 
 

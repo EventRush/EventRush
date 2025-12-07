@@ -106,7 +106,11 @@ implements MustVerifyEmail
     {
         return $this->belongsToMany(Tag::class, 'utilisateur_tag', 'utilisateur_id', 'tag_id');
     }
-
+    public function badges()
+    {
+        return $this->belongsToMany(Badge::class, 'user_badges')
+            ->withTimestamps();
+    }
 
 
 }

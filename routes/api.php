@@ -15,6 +15,11 @@ use App\Http\Controllers\Api\PasswordResetController;
 use App\Http\Controllers\Api\PlansSouscriptionsController;
 use App\Http\Controllers\Api\QrCodeController;
 use App\Http\Controllers\Api\ScannerController;
+use App\Http\Controllers\Api\Social\BadgeController;
+use App\Http\Controllers\Api\Social\EventPostController;
+use App\Http\Controllers\Api\Social\ReactionController;
+use App\Http\Controllers\Api\Social\ShareController;
+use App\Http\Controllers\Api\Social\StorieController;
 use App\Http\Controllers\Api\SouscriptionController;
 use App\Http\Controllers\Api\SuiviController;
 use App\Http\Controllers\Api\TestController;
@@ -327,7 +332,44 @@ Route::prefix('admin')->middleware(['auth:sanctum',  'verified', 'admin'])->grou
 
 Route::post('/test_upload', [TestController::class, 'testcloudinary']);
 
-    
+
+
+
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/reactions/toggle', [ReactionController::class, 'toggle']);
+    Route::get('/reactions', [ReactionController::class, 'index']);
+
+    Route::post('/shares', [ShareController::class, 'store']);
+    Route::get('/shares/count', [ShareController::class, 'count']);
+
+    Route::post('/stories', [StorieController::class, 'store']);
+    Route::delete('/stories/{id}', [StorieController::class, 'destroy']);
+    Route::get('/stories/me', [StorieController::class, 'myStories']);
+    Route::get('/stories/active', [StorieController::class, 'active']); // public
+
+    Route::post('/users/{user}/badges', [BadgeController::class, 'give']);
+    Route::delete('/users/{user}/badges/{badge}', [BadgeController::class, 'revoke']);
+    Route::get('/users/{user}/badges', [BadgeController::class, 'index']);
+});
+
+// Public routes
+Route::get('/events/{event}/posts', [BadgeController::class, 'index']);
+Route::get('/posts/{post}', [EventPostController::class, 'show']);
+Route::get('/stories/active', [StorieController::class, 'active']);
+Route::get('/badges', [BadgeController::class, 'index']);
+
+// Admin routes for badges (protect with admin middleware/policy)
+Route::middleware(['auth:sanctum', 'can:manage-badges'])->group(function () {
+    Route::apiResource('badges', BadgeController::class)->except(['index']);
+});
+
+// Event posts CRUD (auth required for store/update/delete)
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/events/{event}/posts', [EventPostController::class, 'store']);
+    Route::put('/posts/{post}', [EventPostController::class, 'update']);
+    Route::delete('/posts/{post}', [EventPostController::class, 'destroy']);
+});
                             
     
 
