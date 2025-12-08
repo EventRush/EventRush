@@ -47,12 +47,12 @@ class SouscriptionController extends Controller
                 "lastname" => $request->nom ?: $utilisateur->nom,
                 "email" => $utilisateur->email,
                 "type" => "Souscription",
-                "user_id" => $utilisateur->id,
-                "plan_id" => $plan->id,
-                "phone" => [
-                    "number" => $request->telephone ?: 64000001,
-                    "country" => 'BJ'
-                ]
+                // "user_id" => $utilisateur->id,
+                // "plan_id" => $plan->id,
+                // "phone" => [
+                //     "number" => $request->telephone ?: 64000001,
+                //     "country" => 'BJ'
+                // ]
             ],
             "custom_metadata" => [
                 "type" => "Souscription",

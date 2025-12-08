@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UtilisateurResource;
 use App\Models\Utilisateur;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Dedoc\Scramble\Support\Generator\SecurityScheme;
@@ -10,6 +11,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class UtilisateurController extends Controller
 {
@@ -21,15 +23,18 @@ class UtilisateurController extends Controller
 {
     
 
-    $user = Auth::user();
+    // $user = Auth::user()->load('souscriptionActive');
+    $user = Utilisateur::find(Auth::id())->load('souscriptionActive');
 
-    return response()->json([
-        'id' => $user->id,
-        'nom' => $user->nom,
-        'email' => $user->email,
-        'avatar' => $user->avatar,
-        'role' => $user->role, 
-    ]);
+    // return response()->json([
+    //     'id' => $user->id,
+    //     'nom' => $user->nom,
+    //     'email' => $user->email,
+    //     'avatar' => $user->avatar,
+    //     'role' => $user->role, 
+    // ]);
+    // Log::info($user->with('souscriptionActive')->get());
+    return new UtilisateurResource($user);
 }
 
 // /**

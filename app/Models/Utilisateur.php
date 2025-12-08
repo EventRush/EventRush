@@ -71,12 +71,19 @@ implements MustVerifyEmail
     public function souscription(){
         return $this->hasMany(Souscription::class, 'utilisateur_id');
     }
-    public function souscriptionActive(){
-        return $this->souscription()
-        ->where('statut', 'actif')
-        ->where('date_fin', '>', now())
-        ->latest('date_fin')
-        ->first();
+    // public function souscriptionActive(){
+    //     return $this->souscription()
+    //     ->where('statut', 'actif')
+    //     ->where('date_fin', '>', now())
+    //     ->latest('date_fin')
+    //     ->first();
+    // }
+    public function souscriptionActive()
+    {
+        return $this->hasOne(Souscription::class, 'utilisateur_id')
+                    ->where('statut', 'actif')
+                    ->where('date_fin', '>', now())
+                    ->latestOfMany('date_fin');
     }
     public function favoris()
     {
