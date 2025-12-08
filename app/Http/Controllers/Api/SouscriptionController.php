@@ -28,9 +28,10 @@ class SouscriptionController extends Controller
     $utilisateur = $request->user();
 
     try {
-        FedaPay::setApiKey(env('FEDAPAY_SECRET_KEY'));
-        FedaPay::setEnvironment(env('FEDAPAY_ENV', 'sandbox'));
-
+        // Log::info(env('FEDAPAY_SECRET_KEY'), env('FEDAPAY_ENV'));
+        FedaPay::setApiKey(config('services.fedapay.secret_key'));
+        FedaPay::setEnvironment(config('services.fedapay.env'));
+        
         $reference = uniqid(); // pour suivre la transaction plus facilement
 
         $transaction = Transaction::create([
@@ -64,7 +65,8 @@ class SouscriptionController extends Controller
         ]);
 
         return response()->json([
-            'url' => $transaction->generateToken()->url,
+            'message' => 'Lien de paiement généré avec succès',
+            'payment_url' => $transaction->generateToken()->url,
             'reference' => $reference
         ]);
 
