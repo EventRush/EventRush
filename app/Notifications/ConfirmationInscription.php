@@ -43,6 +43,15 @@ class ConfirmationInscription extends Notification
                     ->salutation('Cordialement, L\'équipe Support');
     }
 
+    public function render(): string
+    {
+        $frontUrl = config('front.front_url'); // cacala omon___
+
+        return "Bonjour,<br><br>
+                Votre inscription est finalisée avec succes.<br><br>
+                Vous pouvez vous connecter ici: <a href= '{$frontUrl}' >{$frontUrl}</a><br><br>";
+    }
+
     /**
      * Get the array representation of the notification.
      *
