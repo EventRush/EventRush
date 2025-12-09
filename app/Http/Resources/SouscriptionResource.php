@@ -14,6 +14,8 @@ class SouscriptionResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $statut = 'actif';
+        if (!$this->estActive()) $statut = 'expiré';
         return [
             'id' => $this->id,
             'organisateur_id' => $this->organisateur_id,
@@ -26,7 +28,7 @@ class SouscriptionResource extends JsonResource
             'est_active' => $this->estActive(), // Utilise la méthode du modèle
             
             // Détails de la transaction
-            'statut' => $this->statut,
+            'statut' => $statut,
             'montant' => (float) $this->montant,
             'methode' => $this->methode,
             'statut_paiement' => $this->statut_paiement,
@@ -49,8 +51,8 @@ class SouscriptionResource extends JsonResource
                 'role' => $this->utilisateur->role,
             ]),
 
-            'cree_a' => $this->created_at,
-            'mis_a_jour_a' => $this->updated_at,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

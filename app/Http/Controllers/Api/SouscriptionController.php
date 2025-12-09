@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\SouscriptionResource;
 use App\Models\OrganisateurProfile;
 use App\Models\PlansSouscription;
 use App\Models\Souscription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Utilisateur;
+use App\Observers\SouscriptionObserver;
 use FedaPay\FedaPay;
 use FedaPay\Transaction;
 use FedaPay\Webhook;
@@ -287,8 +289,8 @@ try {
      {
         // $hist = $request->user()->souscriptionActive()->with('plan')->latest()->get();
         // return response()->json($hist);
-
-         return response()->json(auth()->user()->souscription()->with('plan')->latest()->get());
+        $souscription = auth()->user()->souscription()->with('plan')->latest()->get();
+         return response()->json(SouscriptionResource::collection($souscription));
         }
  
 

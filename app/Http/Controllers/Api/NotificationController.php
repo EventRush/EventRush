@@ -9,10 +9,26 @@ use Illuminate\Support\Facades\Auth;
 class NotificationController extends Controller
 {
     //
+    // public function index()
+    // {
+    //     $user = Auth::user();
+    //     $notifications = $user->unreadNotifications->latest()
+    //                                                 ->limit(50)
+    //                                                 ->get();;
+
+    //     return response()->json([
+    //         'notifications' => $notifications
+    //     ]);
+    // }
     public function index()
     {
         $user = Auth::user();
-        $notifications = $user->unreadNotifications;
+
+        $notifications = $user->notifications()
+                            ->whereNull('read_at') // uniquement non lues
+                            ->latest()
+                            ->limit(50)
+                            ->get();
 
         return response()->json([
             'notifications' => $notifications
