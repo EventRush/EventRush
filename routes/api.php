@@ -55,6 +55,8 @@ Route::post('auth/google/callback/manuel', [AuthGoogleController::class, 'Google
 Route::post('/auth/login/otp', [AuthController::class, 'connexionByOtp']);
 
 //    *****  email et modifications/validations  *****
+// verifymailByOtp
+Route::post('/auth/verifymailByOtp', [AuthController::class, 'verifymailByOtp']);
 
 Route::post('/auth/verifyotp', [VerifyEmailController::class, 'verifyOtp']);
 Route::post('/auth/resendotp', [VerifyEmailController::class, 'resendOtp']);
