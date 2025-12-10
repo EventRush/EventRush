@@ -48,4 +48,14 @@ class NotificationController extends Controller
         return response()->json(['message' => 'Notification introuvable'],404);
     }
 
+    // tout marquer comme lu
+    public function markAllAsRead()
+    {
+        $user = auth()->user();
+
+        $user->unreadNotifications->markAsRead();
+
+        return response()->json(['message' => 'Toutes les notifications ont été marquées comme lues']);
+    }
+
 }

@@ -169,11 +169,13 @@ Route::middleware(['auth:sanctum',  'verified'])->group(function () {
 
     //    *****  notifications  *****
 
-     Route::middleware(['auth:sanctum', ])->group(function () {
-    Route::get('notifications', [NotificationController::class, 'index']);
-    Route::post('notifications/{notId}/mark-as-read', [NotificationController::class, 'markAsRead']);
+    Route::middleware(['auth:sanctum', ])->group(function () {
+        Route::get('notifications', [NotificationController::class, 'index']);
+        Route::post('notifications/{notId}/mark-as-read', [NotificationController::class, 'markAsRead']);
+        Route::post('notifications/mark-as-read', [NotificationController::class, 'markAllAsRead']);
+
     
-    Route::get('/events/billets/{billetId}', [BilleterieController::class, 'generateBilletImage']);
+        Route::get('/events/billets/{billetId}', [BilleterieController::class, 'generateBilletImage']);
 
 
 }); 
