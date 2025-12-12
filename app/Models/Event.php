@@ -59,10 +59,10 @@ class Event extends Model
             return $this->hasMany(Ticket::class);
         }
     
-    public function commentaires()
-        {
-            return $this->hasMany(Commentaire::class);
-        }
+    // public function commentaires()
+    //     {
+    //         return $this->hasMany(Commentaire::class);
+    //     }
 
     public function scanneurs()
         {
@@ -99,6 +99,12 @@ class Event extends Model
     {
         return $this->hasMany(EventPost::class);
     }
+
+    public function commentaires()
+    {
+        return $this->morphMany(Commentaire::class, 'commentable');
+    }
+
 
 
 

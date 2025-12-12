@@ -19,5 +19,11 @@ class Commentaire extends Model
     public function utilisateur()
     {
         return $this->belongsTo(Utilisateur::class);
+        
     }
+    public function commentable()
+    {
+        return $this->morphTo();
+    }
+
 }

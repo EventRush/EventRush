@@ -31,6 +31,7 @@ implements MustVerifyEmail
 
       // ✅ Les statuts disponibles
     public const STATUT_ACTIF = 'actif';
+    public const STATUT_NON_VERIFIE = 'non_verifie';
     public const STATUT_INACTIF = 'inactif';
     public const STATUT_SUSPENDU = 'suspendu';
     public const STATUT_BANNI = 'banni';
@@ -39,6 +40,7 @@ implements MustVerifyEmail
     // ✅ Optionnel : liste complète
     public const STATUTS = [
         self::STATUT_ACTIF,
+        self::STATUT_NON_VERIFIE,
         self::STATUT_INACTIF,
         self::STATUT_SUSPENDU,
         self::STATUT_BANNI,

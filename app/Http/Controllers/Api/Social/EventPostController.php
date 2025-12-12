@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Social;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\EventPost;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Http\Request;
 
 class EventPostController extends Controller
@@ -64,26 +65,46 @@ class EventPostController extends Controller
      * POST /events/{event}/posts
      */
     public function store(Request $request, $eventId)
-    {
-        // ensure event exists
-        Event::findOrFail($eventId);
+{
+    // Vérifier que l'événement existe
+    Event::findOrFail($eventId);
 
-        $data = $request->validate([
-            'titre'   => 'required|string|max:255',
-            'contenu' => 'required|string',
-            'image'   => 'nullable|string',
-        ]);
+    // Récupérer l'utilisateur connecté
+    $utilisateur = auth()->user();
 
-        $post = EventPost::create([
-            'event_id'      => $eventId,
-            'utilisateur_id'=> auth()->id(),
-            'titre'         => $data['titre'],
-            'contenu'       => $data['contenu'],
-            'image'         => $data['image'] ?? null,
-        ]);
-
-        return response()->json($post->load('utilisateur'), 201);
+    // Vérifier la souscription active
+    if (!$utilisateur->souscriptionActive) {
+        return response()->json([
+            'message' => 'Votre souscription est inactive ou expirée. Veuillez renouveler pour publier.'
+        ], 403);
     }
+
+    // Validation des données
+    $data = $request->validate([
+        'titre'   => 'required|string|max:255',
+        'contenu' => 'required|string',
+        'image'   => 'nullable|mimes:jpg,jpeg,png,gif,svg,webp,mp4,mov,avi,mkv|max:61440',
+    ]);
+
+    // Upload Cloudinary (⚠️ corriger le champ : c’est "image" et non "event_post")
+    if ($request->hasFile('image')) {
+        $path = Cloudinary::upload(
+            $request->file('image')->getRealPath(),
+            ['resource_type' => 'auto'] // accepte image ou vidéo
+        )->getSecurePath();
+    }
+
+    // Création du post
+    $post = EventPost::create([
+        'event_id'       => $eventId,
+        'utilisateur_id' => $utilisateur->id,
+        'titre'          => $data['titre'],
+        'contenu'        => $data['contenu'],
+        'image'          => $path ?? null,
+    ]);
+
+    return response()->json($post->load('utilisateur'), 201);
+}
 
     /**
      * Update a post (only owner)
@@ -92,18 +113,34 @@ class EventPostController extends Controller
     {
         $post = EventPost::findOrFail($id);
 
+        // Récupérer l'utilisateur connecté
+        $utilisateur = auth()->user();
+
+        // Vérifier la souscription active
+        if (!$utilisateur->souscriptionActive) {
+            return response()->json([
+                'message' => 'Votre souscription est inactive ou expirée. Veuillez renouveler pour publier.'
+            ], 403);
+        }
+
         if ($post->utilisateur_id !== auth()->id()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
         $data = $request->validate([
-            'titre'   => 'sometimes|required|string|max:255',
-            'contenu' => 'sometimes|required|string',
-            'image'   => 'nullable|string',
+            'titre'   => 'nullable|string|max:255',
+            'contenu' => 'nullable|string',
+            'image'   => 'nullable|mimes:jpg,jpeg,png,gif,svg,webp,mp4,mov,avi,mkv|max:61440',
         ]);
 
-        $post->update($data);
+        $post->update($data['titre']);
+        $post->update($data['contenu']);
 
+        if ($request->hasFile('image')) {
+            
+            $data['image'] = Cloudinary::upload($request->file('image')->getRealPath())->getSecurePath();   
+        }
+        $post->update($data['image']);
         return response()->json($post);
     }
 

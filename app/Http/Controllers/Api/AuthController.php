@@ -75,6 +75,7 @@ class AuthController extends Controller
                     'password' => bcrypt($request->password),
                     'otp' => $otp,
                     'otp_expires_at' => Carbon::now()->addMinutes(10),
+                    'statut_compte' => 'non_verifie',
                 ]);
 
                 $message = "Inscription réussie, vérifiez votre email pour le code OTP.";
@@ -130,6 +131,7 @@ class AuthController extends Controller
 
         $user->update([
             'email_verified_at' => Carbon::now(),
+            'statut_compte' => 'actif',
             'otp' => null,
             'otp_expires_at' => null,
             // 'modifiable_at' => Carbon::now()->addDay(), // verrouille pendant 24h
