@@ -18,7 +18,7 @@ class Event extends Model
         'latitude', 'longitude', 
     ];
 
-    protected $appends = ['distance'];
+    // protected $appends = ['distance'];
 
 
     

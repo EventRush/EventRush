@@ -150,8 +150,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
 //    *****  commentaire  *****
 Route::middleware(['auth:sanctum',  'verified'])->group(function () {
     Route::get('/evenements/{eventId}/commentaires', [CommentaireController::class, 'index']);
-    Route::post('/evenements/{eventId}/commentaires', [CommentaireController::class, 'store']);
-    Route::post('/evenements/{commentId}/modifier', [CommentaireController::class, 'update']);
+    Route::post('/commentaires/{type}/comment/{id}', [CommentaireController::class, 'store']);
+    Route::post('/commentaires/{commentId}/modifier', [CommentaireController::class, 'update']);
     Route::delete('/evenements/commentaires/{commentId}', [CommentaireController::class, 'destroy']);
 });
 

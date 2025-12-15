@@ -40,8 +40,8 @@ class NouvCommentaireEvent extends Notification
     public function toDatabase($notifiable)
     {
         return [
-            'message' => "Votre événement '{$this->commentaire->event->titre}' a reçu un nouveau commentaire.",
-            'event_id' => $this->commentaire->event->id,
+            'message' => "Votre événement '{$this->commentaire->commentable->titre}' a reçu un nouveau commentaire.",
+            'event_id' => $this->commentaire->commentable->id,
             'commentaire_id' => $this->commentaire->id,
             'utilisateur' => $this->commentaire->utilisateur->nom ?? 'Utilisateur inconnu',
         ];
