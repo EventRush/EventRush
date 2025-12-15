@@ -124,6 +124,10 @@ implements MustVerifyEmail
     {
         return $this->hasMany(Event::class, 'utilisateur_id');
     }
+    public function posts()
+    {
+        return $this->hasMany(EventPost::class, 'utilisateur_id');
+    }
 
 
 }

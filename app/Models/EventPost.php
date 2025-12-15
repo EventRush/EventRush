@@ -36,4 +36,9 @@ class EventPost extends Model
     {
         return $this->morphMany(Share::class, 'shareable');
     }
+
+    public function comments()
+    {
+        return $this->morphMany(Commentaire::class, 'commentable');
+    }
 }

@@ -447,3 +447,4 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me/events', [UtilisateurController::class, 'indexMeEvent']);
     Route::get('/me/tickets', [UtilisateurController::class, 'indexMeTickets']);
 });
+Route::get('/organizers/hub', [OrganisateurStatController::class, 'organizersHub']);
