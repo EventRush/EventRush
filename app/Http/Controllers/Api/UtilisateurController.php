@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\EventResource;
 use App\Http\Resources\BilletResource;
 use App\Http\Resources\EventDetailResource;
 use App\Http\Resources\OrganizerTicketResource;
@@ -113,10 +114,10 @@ class UtilisateurController extends Controller
 
         return response()->json([
             'participant' => [
-                'favoris' => EventDetailResource::collection(
+                'favoris' => EventResource::collection(
                     $user->favoris()->latest()->get()
                 ),
-                'participations' => EventDetailResource::collection(
+                'participations' => EventResource::collection(
                     $user->billets()
                         ->with('event')
                         ->get()
@@ -125,7 +126,7 @@ class UtilisateurController extends Controller
                 ),
             ],
             'organisateur' => $user->role === 'organisateur'
-                ? EventDetailResource::collection(
+                ? EventResource::collection(
                     $user
                         ? $user->events()->latest()->get()
                         : []

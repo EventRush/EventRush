@@ -179,7 +179,7 @@ class AuthController extends Controller
             'message'=> 'Utilisateur connecté',
             'role' => $utilisateur->role, 
             'sous_is_actif' => $utilisateur->role, 
-            'est_actif' => $this->estActif(),
+            'est_actif' => $utilisateur->estActif(),
 
         ]);        
        

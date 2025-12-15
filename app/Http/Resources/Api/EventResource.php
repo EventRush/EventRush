@@ -32,11 +32,13 @@ class EventResource extends JsonResource
             'description' => $this->description,
             'date_debut' => $this->date_debut,
             'date_fin' => $this->date_fin,
+            'date'      => $this->date_debut . ' - ' . $this->date_fin,
             'lieu' => $this->lieu,
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
             'statut' => $this->statut,
             'affiche_url' => $this->affiche ?: null,
+            'image' => $this->affiche ?: null,
             'points' => $this->points,
             'nbr_achat' => $this->nbr_achat,
             'photos' => $this->photos->map(function ($photo) {
