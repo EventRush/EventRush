@@ -178,6 +178,8 @@ class AuthController extends Controller
             'token_type' => 'Bearer',
             'message'=> 'Utilisateur connecté',
             'role' => $utilisateur->role, 
+            'sous_is_actif' => $utilisateur->role, 
+            'est_actif' => $this->estActif(),
 
         ]);        
        
