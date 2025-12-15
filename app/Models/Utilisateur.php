@@ -120,6 +120,24 @@ implements MustVerifyEmail
         return $this->belongsToMany(Badge::class, 'user_badges')
             ->withTimestamps();
     }
+    public function events()
+    {
+        return $this->hasMany(Event::class, 'utilisateur_id');
+    }
 
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

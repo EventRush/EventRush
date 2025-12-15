@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\BilletResource;
+use App\Http\Resources\EventDetailResource;
+use App\Http\Resources\OrganizerTicketResource;
 use App\Http\Resources\UtilisateurResource;
 use App\Models\Utilisateur;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
@@ -97,6 +100,55 @@ class UtilisateurController extends Controller
         return response()->json([
             'message' => 'Utilisateur conecté',
             'user' => $user,
+        ]);
+    }
+
+
+     /**
+     * GET /me/events
+     */
+    public function indexMeEvent(Request $request)
+    {
+        $user = $request->user();
+
+        return response()->json([
+            'participant' => [
+                'favoris' => EventDetailResource::collection(
+                    $user->favoris()->latest()->get()
+                ),
+                'participations' => EventDetailResource::collection(
+                    $user->billets()
+                        ->with('event')
+                        ->get()
+                        ->pluck('event')
+                        ->unique('id')
+                ),
+            ],
+            'organisateur' => $user->role === 'organisateur'
+                ? EventDetailResource::collection(
+                    $user
+                        ? $user->events()->latest()->get()
+                        : []
+                )
+                : [],
+        ]);
+    }
+     public function indexMeTickets(Request $request)
+    {
+        $user = $request->user();
+
+        return response()->json([
+            'mes_billets' => BilletResource::collection(
+                $user->billets()->with('event')->latest()->get()
+            ),
+
+            'gestion_billetterie' => $user->role === 'organisateur'
+                ? OrganizerTicketResource::collection(
+                    $user
+                        ? $user->events()->with('billets')->get()
+                        : []
+                )
+                : []
         ]);
     }
 

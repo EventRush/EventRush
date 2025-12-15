@@ -32,15 +32,21 @@ class EventDetailResource extends JsonResource
         $commentaires = $this->commentaires ?? collect();
         $nombre_commentaires = $commentaires->count();
         $moyenne_notes = $commentaires->avg('note');
-
+        $favorised = false;
+        if (request()->user()) {
+            $favorised = request()->user()->favoris->contains($this->id);
+        }
         return [
             'id' => $this->id,
             'titre' => $this->titre,
             'description' => $this->description,
             'lieu' => $this->lieu,
+            'date'      => $this->date_debut . ' - ' . $this->date_fin,
             'date_debut' => $this->date_debut,
             'date_fin' => $this->date_fin,
-            'statut' => $this->statut,
+            'statut' => $this->statut, 
+
+            'is_favori' => $favorised ?? null,
 
             // Localisation
             'latitude' => $this->latitude,

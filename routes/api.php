@@ -23,6 +23,7 @@ use App\Http\Controllers\Api\Social\StorieController;
 use App\Http\Controllers\Api\SouscriptionController;
 use App\Http\Controllers\Api\SuiviController;
 use App\Http\Controllers\Api\TestController;
+use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\utilisateur\TagController;
 use App\Http\Controllers\Api\UtilisateurController;
 use App\Http\Controllers\Api\VerifyEmailController;
@@ -228,7 +229,7 @@ Route::prefix('organisateur')->middleware(['auth:sanctum',  'organisateur', 'sou
         // Événements
         Route::get('/events', [OrganisateurEventController::class, 'index']); 
         Route::get('/ticket', [OrganisateurTicketsController::class, 'index']);
-        Route::get('/events/{eventId}', [OrganisateurEventController::class, 'show']);
+        Route::get('/events/{eventId}', [OrganisateurEventController::class, 'show'])->name('event.show');
         
 
             
@@ -442,3 +443,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/me/events', [UtilisateurController::class, 'indexMeEvent']);
+    Route::get('/me/tickets', [UtilisateurController::class, 'indexMeTickets']);
+});
