@@ -206,7 +206,15 @@ $organisateur = Auth::user();
 
         $event = Event::findOrFail($billet->event_id);
         $ticket =  Ticket::findOrFail($billet->ticket_id);
-        if ( )
+        
+        // Verify that the event belongs to the scanner
+        $scanneurEvent = $scanneur->eventforScanneur()->first();
+        if (!$scanneurEvent || $scanneurEvent->id !== $event->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cet événement ne vous est pas assigné.',
+            ], 403);
+        }
 
         if (!$billet) {
             return response()->json([
