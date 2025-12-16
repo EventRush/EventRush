@@ -212,7 +212,7 @@ $organisateur = Auth::user();
         if (!$scanneurEvent || $scanneurEvent->id !== $event->id) {
             return response()->json([
                 'success' => false,
-                'message' => 'Cet événement ne vous est pas assigné.',
+                'message' => 'Cet événement ne vous est pas assigné.', //
             ], 403);
         }
 
