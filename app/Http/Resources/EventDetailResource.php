@@ -26,7 +26,7 @@ class EventDetailResource extends JsonResource
         // -- STATISTIQUES --
         $nombre_vue = \App\Models\EventVue::where('event_id', $this->id)->count();
         $nombre_favoris = $this->favorisePar()->count();
-        $nombre_partages = $this->tests()->count(); // utilise ton modèle "Test" si c'est du tracking
+        $nombre_partages = $this->shares()->count(); // utilise ton modèle "Test" si c'est du tracking
 
         // -- COMMENTAIRES --
         $commentaires = $this->commentaires ?? collect();

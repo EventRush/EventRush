@@ -104,6 +104,10 @@ class Event extends Model
     {
         return $this->morphMany(Commentaire::class, 'commentable');
     }
+    public function shares()
+    {
+        return $this->morphMany(Share::class, 'shareable');
+    }
 
 
 
