@@ -17,10 +17,10 @@ class OrganizerPostResource extends JsonResource
         
         return [
             'id' => $this->id,
-            'title' => $this->title,
+            'title' => $this->titre,
             'subtitle' => $this->subtitle,
-            'content' => $this->content,
-            'image' => $this->image_url,
+            'content' => $this->contenu,
+            'image' => $this->image,
             'date' => $this->created_at->toISOString(),
             'likes' => $this->likes_count,
             'comments' => CommentResource::collection($this->comments),

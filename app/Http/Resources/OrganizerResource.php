@@ -17,9 +17,9 @@ class OrganizerResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->nom,
-            'image' => $this->avatar_url,
-            'description' => $this->bio,
-            'rating' => round($this->rating, 1),
+            'image' => $this->avatar,
+            'description' => $this->description,
+            'rating' => round($this->rank, 1),
             'events_count' => $this->events()->count(),
             'followers' => $this->suiveurs()->count(),
             'points' => $this->points,

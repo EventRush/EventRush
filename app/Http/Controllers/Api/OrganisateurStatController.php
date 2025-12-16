@@ -16,7 +16,16 @@ class OrganisateurStatController extends Controller
             ->with(['posts.comments', 'events', 'suiveurs'])
             ->get();
 
-        $featured = $organizers->sortByDesc('points')->first();
+        // $featured = $organizers->sortByDesc('points')->first();
+        // Classement par points
+            $ranked = $organizers->sortByDesc('points')->values();
+
+            // Ajouter le rang à chaque organisateur
+            $ranked->each(function ($organizer, $index) {
+                $organizer->rank = $index + 1; // rang commence à 1
+            });
+
+            $featured = $ranked->first();
 
         return response()->json([
             'featured' => new OrganizerResource($featured),
