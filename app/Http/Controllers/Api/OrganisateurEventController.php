@@ -41,7 +41,7 @@ class OrganisateurEventController extends Controller
             'lieu' => 'required|string|max:255',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
-            'statut' => 'nullable|in:brouillon,publié,annulé',
+            // 'statut' => 'nullable|in:brouillon,publié,annulé',
             'photos.*' => 'image|mimes:jpg,jpeg,png|max:6144',
             'affiche' => 'nullable||mimes:jpg,jpeg,png|max:6144',
         ]);

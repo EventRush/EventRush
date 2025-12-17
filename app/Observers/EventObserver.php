@@ -18,7 +18,7 @@ class EventObserver
     {
         //
         $orga = $event->utilisateur;
-        $souscription = $orga->souscriptionActive();
+        $souscription = $orga->souscriptionActive;
 
         if(!$souscription) return;
 
