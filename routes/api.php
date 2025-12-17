@@ -129,7 +129,7 @@ Route::post('/billet/webhook', [BilleterieController::class, 'webhookBillet']);
 Route::middleware(['auth:sanctum'])->group(function () {
         //billet/payer
     Route::post('/billet/payer', [BilleterieController::class, 'payer']);
-    Route::get('/billet/userIndex', [BilleterieController::class, 'userIndexbillets']);
+    Route::get('/billet/userIndex', [BilleterieController::class, 'userbillets']);
 
     Route::get('/welcome', function () { return view('welcome');
     });

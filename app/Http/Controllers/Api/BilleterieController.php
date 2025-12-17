@@ -493,6 +493,46 @@ public function callback(Request $request)
         'a_venir' => $comingEventsTickets
     ]);
     }
+    public function userbillets(Request $request)
+{
+    // Récupérer l'utilisateur authentifié
+    $user = Auth::user();
+
+    // Récupérer la page pour la pagination
+    $page = $request->input('page', 1);
+    $perPage = 10; // Nombre de billets par page, ajustable
+
+    // Billets pour les événements à venir
+    $EventsTickets = Billet::with('event')
+        ->where('utilisateur_id', $user->id)
+        // ->whereHas('event', function($query) {
+        //     $query->where('date_fin', '>=', now()); // Filtrer les événements à venir
+        // })
+        ->paginate($perPage, ['*'], 'coming_page', $page);
+
+    // Billets pour les événements passés
+    // $pastEventsTickets = Billet::with('event')
+    //     ->where('utilisateur_id', $user->id)
+    //     ->whereHas('event', function($query) {
+    //         $query->where('date_fin', '<', now()); // Filtrer les événements passés
+    //     })
+    //     ->paginate($perPage, ['*'], 'past_page', $page);
+
+    //     $pastEventsTickets->getCollection()->transform(function ($billet) {
+    //     $billet->type_ticket = $billet->ticket ? $billet->ticket->type : null;
+    //     return $billet;
+    // });
+
+    //     $comingEventsTickets->getCollection()->transform(function ($billet) {
+    //     $billet->type_ticket = $billet->ticket ? $billet->ticket->type : null;
+    //     return $billet;
+    // });
+
+
+    return response()->json([
+        'passee' => $EventsTickets,
+    ]);
+    }
 
 
     public function generateBilletImage($billetId)
