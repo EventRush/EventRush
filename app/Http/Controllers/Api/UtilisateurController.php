@@ -3,6 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\EventResource;
+use App\Http\Resources\BilletResource;
+use App\Http\Resources\EventDetailResource;
+use App\Http\Resources\OrganizerTicketResource;
+use App\Http\Resources\UtilisateurResource;
 use App\Models\Utilisateur;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Dedoc\Scramble\Support\Generator\SecurityScheme;
@@ -10,6 +15,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class UtilisateurController extends Controller
 {
@@ -21,15 +27,18 @@ class UtilisateurController extends Controller
 {
     
 
-    $user = Auth::user();
+    // $user = Auth::user()->load('souscriptionActive');
+    $user = Utilisateur::find(Auth::id())->load('souscriptionActive');
 
-    return response()->json([
-        'id' => $user->id,
-        'nom' => $user->nom,
-        'email' => $user->email,
-        'avatar' => $user->avatar,
-        'role' => $user->role, 
-    ]);
+    // return response()->json([
+    //     'id' => $user->id,
+    //     'nom' => $user->nom,
+    //     'email' => $user->email,
+    //     'avatar' => $user->avatar,
+    //     'role' => $user->role, 
+    // ]);
+    // Log::info($user->with('souscriptionActive')->get());
+    return new UtilisateurResource($user);
 }
 
 // /**
@@ -92,6 +101,55 @@ class UtilisateurController extends Controller
         return response()->json([
             'message' => 'Utilisateur conecté',
             'user' => $user,
+        ]);
+    }
+
+
+     /**
+     * GET /me/events
+     */
+    public function indexMeEvent(Request $request)
+    {
+        $user = $request->user();
+
+        return response()->json([
+            'participant' => [
+                'favoris' => EventResource::collection(
+                    $user->favoris()->latest()->get()
+                ),
+                'participations' => EventResource::collection(
+                    $user->billets()
+                        ->with('event')
+                        ->get()
+                        ->pluck('event')
+                        ->unique('id')
+                ),
+            ],
+            'organisateur' => $user->role === 'organisateur'
+                ? EventResource::collection(
+                    $user
+                        ? $user->events()->latest()->get()
+                        : []
+                )
+                : [],
+        ]);
+    }
+     public function indexMeTickets(Request $request)
+    {
+        $user = $request->user();
+
+        return response()->json([
+            'mes_billets' => BilletResource::collection(
+                $user->billets()->with('event')->latest()->get()
+            ),
+
+            'gestion_billetterie' => $user->role === 'organisateur'
+                ? OrganizerTicketResource::collection(
+                    $user
+                        ? $user->events()->with('billets')->get()
+                        : []
+                )
+                : []
         ]);
     }
 

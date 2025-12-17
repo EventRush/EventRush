@@ -14,6 +14,7 @@ use FedaPay\Transaction;
 use FedaPay\Webhook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\ImageManager;
@@ -26,82 +27,177 @@ class BilleterieController extends Controller
  * @param \Illuminate\Http\Request $request
  * @return mixed|\Illuminate\Http\JsonResponse
  */
-public function payer(Request $request)
-{
-    // 1. Validation des données
-    $request->validate([
-        'ticket_id' => 'required|exists:tickets,id',
-        // 'event_id' => 'required',
-        // // 'montant' => 'required|numeric',
-        // 'nom' => 'nullable|string',
-        // 'prenom' => 'nullable|string',
-        // 'telephone' => 'nullable|numeric',
-    ]);
+// public function payer(Request $request)
+// {
+//     // 1. Validation des données
+//     $request->validate([
+//         'ticket_id' => 'required|exists:tickets,id',
+//         // 'event_id' => 'required',
+//         // // 'montant' => 'required|numeric',
+//         // 'nom' => 'nullable|string',
+//         // 'prenom' => 'nullable|string',
+//         // 'telephone' => 'nullable|numeric',
+//     ]);
 
-    $utilisateur = Auth::user();
-    $ticket = Ticket::findOrFail($request->ticket_id);
-    $evenement = Event::find( $ticket->event_id);
+//     $utilisateur = Auth::user();
+//     $ticket = Ticket::findOrFail($request->ticket_id);
+//     $evenement = Event::find( $ticket->event_id);
 
-    if(!$ticket){
-        return response()->json(['message' => 'Ticket non trouvé'], 404);
-    }
-    if($ticket->quantite_restante<1){
-        return response()->json(['message' => 'La totalité des tickets a déjà été vendue'], 403);
-    }
+//     if(!$ticket){
+//         return response()->json(['message' => 'Ticket non trouvé'], 404);
+//     }
+//     if($ticket->quantite_restante<1){
+//         return response()->json(['message' => 'La totalité des tickets a déjà été vendue'], 403);
+//     }
 
-    if($ticket->date_limite_vente && now()->greaterThan($ticket->date_limite_vente)){
-        return response()->json(['message' => 'La vente de ce ticket est terminée'], 403);
-    }
+//     if($ticket->date_limite_vente && now()->greaterThan($ticket->date_limite_vente)){
+//         return response()->json(['message' => 'La vente de ce ticket est terminée'], 403);
+//     }
 
 
-    // 3. Configuration FedaPay
-    FedaPay::setApiKey(env('FEDAPAY_SECRET_KEY'));
-    FedaPay::setEnvironment(env('FEDAPAY_ENV', 'sandbox')); // ou 'live'
+//     Log::info('Fedapay config', [
+//         'secret_key' => env('FEDAPAY_SECRET_KEY'),
+//         'env' => env('FEDAPAY_ENV'),
+//     ]);    // 3. Configuration FedaPay
+
+//     // echo "✅ secret_key'/ . env('FEDAPAY_SECRET_KEY'), Ticket $ticket->type mis à jour avec son image.\n";
+//     FedaPay::setApiKey(env('FEDAPAY_SECRET_KEY'));
+//     FedaPay::setEnvironment(env('FEDAPAY_ENV', 'sandbox')); // ou 'live'
 
     
-    // 4. Création de la transaction
-    $reference = uniqid(); // pour suivre la transaction plus facilement
+//     // 4. Création de la transaction
+//     $reference = uniqid(); // pour suivre la transaction plus facilement
 
 
-    $transaction = Transaction::create([
-        // dd([ 
+//     $transaction = Transaction::create([
+//         // dd([ 
 
-        'description' => "Achat billet pour - {$evenement->titre} - de - {$utilisateur->nom}" ,
-        'amount' => (int) $ticket->prix,
-        'currency' => ['iso' => 'XOF'],
-        "callback_url" => 'https://eventrush.onrender.com/api/billet/webhook' . '?reference=' . $reference,
-        'customer' => [
-            'firstname' => $request->prenom ?: 'Inconnu',
-            'lastname' => $request->nom ?: $utilisateur->nom,
-            'email' => $utilisateur->email,
-            'phone' => [
-                'number' => $request->telephone ?: 64000001,
-                'country' => 'BJ',
-            ]
-        ],
-        "custom_metadata" => [
-            "type" => "Billet",
-            "user_id" => $utilisateur->id,
-            "ticket_id" => $ticket->id,
-            "reference" => $reference
-        ]
-        // ])
+//         'description' => "Achat billet pour - {$evenement->titre} - de - {$utilisateur->nom}" ,
+//         'amount' => (int) $ticket->prix,
+//         'currency' => ['iso' => 'XOF'],
+//         "callback_url" => 'https://eventrush.onrender.com/api/billet/webhook', // . '?reference=' . $reference,
+//         'customer' => [
+//             'firstname' => $request->prenom ?: 'Inconnu',
+//             'lastname' => $request->nom ?: $utilisateur->nom,
+//             'email' => $utilisateur->email,
+//             'phone' => [
+//                 'number' => $request->telephone ?: 64000001,
+//                 'country' => 'BJ',
+//             ]
+//         ],
+//         "custom_metadata" => [
+//             "type" => "Billet",
+//             "user_id" => $utilisateur->id,
+//             "ticket_id" => $ticket->id,
+//             "reference" => $reference
+//         ]
+//         // ])
 
-    ]);
+//     ]);
 
-    // 5. Génération du lien de paiement
-    $token = $transaction->generateToken();
-
-
+//     // 5. Génération du lien de paiement
+//     $token = $transaction->generateToken();
 
 
-    // 6. Réponse API avec l’URL de paiement
-    return response()->json([
-        'message' => 'Lien de paiement généré avec succès',
-        'payment_url' => $token->url,
-        'reference' => $reference
-    ]);
-}
+
+
+//     // 6. Réponse API avec l’URL de paiement
+//     return response()->json([
+//         'message' => 'Lien de paiement généré avec succès',
+//         'payment_url' => $token->url,
+//         'reference' => $reference
+//     ]);
+// }
+
+    public function payer(Request $request)
+    {
+        try {
+            // 1. Validation des données
+            $request->validate([
+                'ticket_id' => 'required|exists:tickets,id',
+                // 'event_id' => 'required',
+                // 'montant' => 'required|numeric',
+                // 'nom' => 'nullable|string',
+                // 'prenom' => 'nullable|string',
+                // 'telephone' => 'nullable|numeric',
+            ]);
+
+            $utilisateur = Auth::user();
+            $ticket = Ticket::findOrFail($request->ticket_id);
+            $evenement = Event::find($ticket->event_id);
+
+            if (!$ticket) {
+                return response()->json(['message' => 'Ticket non trouvé'], 404);
+            }
+            if ($ticket->quantite_restante < 1) {
+                return response()->json(['message' => 'La totalité des tickets a déjà été vendue'], 403);
+            }
+            if ($ticket->date_limite_vente && now()->greaterThan($ticket->date_limite_vente)) {
+                return response()->json(['message' => 'La vente de ce ticket est terminée'], 403);
+            } 
+
+            // 3. Configuration FedaPay
+            Log::info('Fedapay config', [
+                'secret_key' => config('services.fedapay.secret_key'),
+                'env' => env(config('services.fedapay.env')),
+            ]);
+
+            // FedaPay::setApiKey(env('FEDAPAY_SECRET_KEY'));
+            // FedaPay::setEnvironment(env('FEDAPAY_ENV', 'sandbox')); // ou 'live'
+
+            FedaPay::setApiKey(config('services.fedapay.secret_key'));
+            FedaPay::setEnvironment(config('services.fedapay.env'));
+            // 4. Création de la transaction
+            $reference = uniqid();
+
+            $transaction = Transaction::create([
+                'description' => "Achat billet pour - {$evenement->titre} - de - {$utilisateur->nom}",
+                'amount' => (int) $ticket->prix,
+                'currency' => ['iso' => 'XOF'],
+                "callback_url" => 'https://eventrush.onrender.com/api/billet/webhook',
+                'customer' => [
+                    'firstname' => $request->prenom ?: 'Inconnu',
+                    'lastname' => $request->nom ?: $utilisateur->nom,
+                    'email' => $utilisateur->email,
+                    'phone' => [
+                        'number' => $request->telephone ?: 64000001,
+                        'country' => 'BJ',
+                    ]
+                ],
+                "custom_metadata" => [
+                    "type" => "Billet",
+                    "user_id" => $utilisateur->id,
+                    "ticket_id" => $ticket->id,
+                    "reference" => $reference
+                ]
+            ]);
+
+            // 5. Génération du lien de paiement
+            $token = $transaction->generateToken();
+
+            // 6. Réponse API avec l’URL de paiement
+            return response()->json([
+                'message' => 'Lien de paiement généré avec succès',
+                'payment_url' => $token->url,
+                'reference' => $reference
+            ]);
+
+        } catch (\Throwable $e) {
+            // Log de l’erreur pour debug
+            Log::error('Erreur lors du paiement : ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+
+            // Réponse API en cas d’erreur
+            return response()->json([
+                'message' => 'Une erreur est survenue lors du paiement',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
     /**
      * Summary of webhookBillet
      * @param \Illuminate\Http\Request $request
@@ -395,6 +491,46 @@ public function callback(Request $request)
     return response()->json([
         'passee' => $pastEventsTickets,
         'a_venir' => $comingEventsTickets
+    ]);
+    }
+    public function userbillets(Request $request)
+{
+    // Récupérer l'utilisateur authentifié
+    $user = Auth::user();
+
+    // Récupérer la page pour la pagination
+    $page = $request->input('page', 1);
+    $perPage = 10; // Nombre de billets par page, ajustable
+
+    // Billets pour les événements à venir
+    $EventsTickets = Billet::with('event')
+        ->where('utilisateur_id', $user->id)
+        // ->whereHas('event', function($query) {
+        //     $query->where('date_fin', '>=', now()); // Filtrer les événements à venir
+        // })
+        ->paginate($perPage, ['*'], 'coming_page', $page);
+
+    // Billets pour les événements passés
+    // $pastEventsTickets = Billet::with('event')
+    //     ->where('utilisateur_id', $user->id)
+    //     ->whereHas('event', function($query) {
+    //         $query->where('date_fin', '<', now()); // Filtrer les événements passés
+    //     })
+    //     ->paginate($perPage, ['*'], 'past_page', $page);
+
+    //     $pastEventsTickets->getCollection()->transform(function ($billet) {
+    //     $billet->type_ticket = $billet->ticket ? $billet->ticket->type : null;
+    //     return $billet;
+    // });
+
+    //     $comingEventsTickets->getCollection()->transform(function ($billet) {
+    //     $billet->type_ticket = $billet->ticket ? $billet->ticket->type : null;
+    //     return $billet;
+    // });
+
+
+    return response()->json([
+        'passee' => $EventsTickets,
     ]);
     }
 

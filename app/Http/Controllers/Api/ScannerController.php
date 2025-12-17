@@ -206,6 +206,15 @@ $organisateur = Auth::user();
 
         $event = Event::findOrFail($billet->event_id);
         $ticket =  Ticket::findOrFail($billet->ticket_id);
+        
+        // Verify that the event belongs to the scanner
+        $scanneurEvent = $scanneur->eventforScanneur()->first();
+        if (!$scanneurEvent || $scanneurEvent->id !== $event->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cet événement ne vous est pas assigné.', //
+            ], 403);
+        }
 
         if (!$billet) {
             return response()->json([
@@ -247,30 +256,30 @@ $organisateur = Auth::user();
     }
 
     public function mesbilletsScannés()
-{
-    $scanneur = Auth::user();
+    {
+        $scanneur = Auth::user();
 
-    if ($scanneur->role !== 'scanneur') {
-        return response()->json(['error' => 'Accès refusé.'], 403);
-    }
+        if ($scanneur->role !== 'scanneur') {
+            return response()->json(['error' => 'Accès refusé.'], 403);
+        }
 
-    $event = $scanneur->eventforScanneur()->first();
-    if (!$event) {
-        return response()->json(['error' => 'Aucun événement lié à ce scanneur.'], 404);
-    }
+        $event = $scanneur->eventforScanneur()->first();
+        if (!$event) {
+            return response()->json(['error' => 'Aucun événement lié à ce scanneur.'], 404);
+        }
 
-    $billets = Billet::where('event_id', $event->id)
-        ->where('scanned_by', $scanneur->id)
-        ->orderByDesc('scanned_at')
-        ->get();
+        $billets = Billet::where('event_id', $event->id)
+            ->where('scanned_by', $scanneur->id)
+            ->orderByDesc('scanned_at')
+            ->get();
 
-    return response()->json([
-        'evenement' => $event->titre,
-        'total' => $billets->count(),
-        'billets' => $billets,
+        return response()->json([
+            'evenement' => $event->titre,
+            'total' => $billets->count(),
+            'billets' => $billets,
 
-    ]);
-    }
+        ]);
+        }
 
 
     public function showScanneur($scanneurId)

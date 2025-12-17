@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\SouscriptionResource;
 use App\Models\OrganisateurProfile;
 use App\Models\PlansSouscription;
 use App\Models\Souscription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Utilisateur;
+use App\Observers\SouscriptionObserver;
 use FedaPay\FedaPay;
 use FedaPay\Transaction;
 use FedaPay\Webhook;
@@ -28,9 +30,10 @@ class SouscriptionController extends Controller
     $utilisateur = $request->user();
 
     try {
-        FedaPay::setApiKey(env('FEDAPAY_SECRET_KEY'));
-        FedaPay::setEnvironment(env('FEDAPAY_ENV', 'sandbox'));
-
+        // Log::info(env('FEDAPAY_SECRET_KEY'), env('FEDAPAY_ENV'));
+        FedaPay::setApiKey(config('services.fedapay.secret_key'));
+        FedaPay::setEnvironment(config('services.fedapay.env'));
+        
         $reference = uniqid(); // pour suivre la transaction plus facilement
 
         $transaction = Transaction::create([
@@ -64,7 +67,8 @@ class SouscriptionController extends Controller
         ]);
 
         return response()->json([
-            'url' => $transaction->generateToken()->url,
+            'message' => 'Lien de paiement généré avec succès',
+            'payment_url' => $transaction->generateToken()->url,
             'reference' => $reference
         ]);
 
@@ -285,8 +289,8 @@ try {
      {
         // $hist = $request->user()->souscriptionActive()->with('plan')->latest()->get();
         // return response()->json($hist);
-
-         return response()->json(auth()->user()->souscription()->with('plan')->latest()->get());
+        $souscription = auth()->user()->souscription()->with('plan')->latest()->get();
+         return response()->json(SouscriptionResource::collection($souscription));
         }
  
 

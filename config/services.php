@@ -37,4 +37,9 @@ return [
     'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],  
 
+    'fedapay' => [
+        'secret_key' => env('FEDAPAY_SECRET_KEY'),
+        'env' => env('FEDAPAY_ENV', 'sandbox'),
+    ],
+
 ];

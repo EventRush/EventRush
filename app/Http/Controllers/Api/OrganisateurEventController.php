@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\EventResource;
+use App\Http\Resources\EventDetailResource;
 use App\Models\Event;
 use App\Models\Utilisateur;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
@@ -17,7 +18,7 @@ class OrganisateurEventController extends Controller
     {
         $organisateur = auth()->user();
         $events = Event::where('utilisateur_id', $organisateur->id)->latest()->get();
-        return EventResource::collection($events);
+        return EventDetailResource::collection($events);
     }
 
     public function indexEventOrgaID($organisateurId)
@@ -40,7 +41,7 @@ class OrganisateurEventController extends Controller
             'lieu' => 'required|string|max:255',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
-            'statut' => 'nullable|in:brouillon,publié,annulé',
+            // 'statut' => 'nullable|in:brouillon,publié,annulé',
             'photos.*' => 'image|mimes:jpg,jpeg,png|max:6144',
             'affiche' => 'nullable||mimes:jpg,jpeg,png|max:6144',
         ]);

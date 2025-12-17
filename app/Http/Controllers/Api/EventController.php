@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\EventResource;
+use App\Http\Resources\EventDetailResource;
 use App\Models\Event;
 use App\Models\Utilisateur;
+use App\Services\EventShowService;
 use App\Services\PointService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,8 +18,8 @@ class EventController extends Controller
     //
     public function index()
     {
-        // $events = Event::with('organisateur')->latest()->get();
-        $events = Event::latest()->get();
+        $events = Event::with(['tickets', 'photos', 'organisateur'])->latest()->get();
+        // $events = Event::latest()->get();
         return EventResource::collection($events);
     }
 
@@ -71,17 +73,20 @@ class EventController extends Controller
      * @return EventResource
      */
 
-    public function show($eventId)
+    public function show(Request $request, $eventId, EventShowService $eventShowService)
     {
         $event = Event::findOrFail($eventId);
         $utilisateur = Auth::user();
 
+        // Enregistrer la vue
+        $eventShowService->addView($event->id, $request);
+        
         if ($utilisateur) {
-        PointService::ajouterVueEvenement($utilisateur, $event);
-    }
+            PointService::ajouterVueEvenement($utilisateur, $event);
+        }
 
         // return new EventResource($event->load('organisateur'));
-        return new EventResource($event);
+        return new EventDetailResource($event);
 
     }
 

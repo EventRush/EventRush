@@ -16,13 +16,15 @@ class EventResource extends JsonResource
 
     public function toArray(Request $request): array
     {
-        $organisateur = OrganisateurProfile::where('utilisateur_id', $this->utilisateur_id)->first();
+        $organisateur = $this->organisateur;//OrganisateurProfile::where('utilisateur_id', $this->utilisateur_id)->first();
 
         // Calculs liés aux tickets
-        $tickets = $this->tickets;
-        $nombre_types_ticket = $tickets->count();
-        $nombre_places_total = $tickets->sum('quantité_disponible');
-        $nombre_places_restantes = $tickets->sum('quantite_restante');
+        $tickets = $this->tickets ?? collect();
+        $nombre_types_ticket = $tickets->count() ?? 0;
+        $nombre_places_total = $tickets->sum('quantité_disponible') ?? 0;
+        $nombre_places_restantes = $tickets->sum('quantite_restante') ?? 0;
+        // ✅ Prix du ticket le moins cher
+        $prix_min_ticket = $tickets->min('prix') ?? null; 
 
         return [
             'id' => $this->id,
@@ -30,11 +32,13 @@ class EventResource extends JsonResource
             'description' => $this->description,
             'date_debut' => $this->date_debut,
             'date_fin' => $this->date_fin,
+            'date'      => $this->date_debut . ' - ' . $this->date_fin,
             'lieu' => $this->lieu,
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
             'statut' => $this->statut,
             'affiche_url' => $this->affiche ?: null,
+            'image' => $this->affiche ?: null,
             'points' => $this->points,
             'nbr_achat' => $this->nbr_achat,
             'photos' => $this->photos->map(function ($photo) {
@@ -47,6 +51,7 @@ class EventResource extends JsonResource
             ] : null,
 
             // ✅ Nouveaux champs liés aux tickets
+            'price' => $prix_min_ticket,
             'nombre_types_ticket' => $nombre_types_ticket,
             'nombre_places_total' => $nombre_places_total,
             'nombre_places_restantes' => $nombre_places_restantes,

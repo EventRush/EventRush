@@ -25,7 +25,7 @@ class CheckSouscriptionActive
             return $next($request);
         }
         $souscription = $utilisateur->souscriptionActive();
-        if (!$souscription || !$souscription->estActive()) {
+        if (!$souscription ) {
             return response()->json([
                 'message' => 'Votre souscription est expirée ou inactive.'
             ], 403);

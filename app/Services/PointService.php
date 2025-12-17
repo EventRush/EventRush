@@ -6,19 +6,22 @@ use App\Models\Event;
 use App\Models\EventVue;
 use App\Models\PointLog;
 use App\Models\Utilisateur;
+use Illuminate\Http\Request; 
 
 class PointService
 {
     public static function ajouterVueEvenement(Utilisateur $utilisateur, Event $event)
     {
-        if (EventVue::where('utilisateur_id', $utilisateur->id)->where('event_id', $event->id)->exists()) {
-            return;
-        }
+        // if (EventVue::where('utilisateur_id', $utilisateur->id)->where('event_id', $event->id)->exists()) {
+        //     return;
+        // }
 
-        EventVue::create([
-            'utilisateur_id' => $utilisateur->id,
-            'event_id' => $event->id,
-        ]);
+        // EventVue::create([
+        //     'utilisateur_id' => $utilisateur->id,
+        //     'event_id' => $event->id,
+        // ]);
+        // Enregistrer la vue
+        // $eventShowService->addView($event->id, $request);
 
         $event->increment('points', 1);
 

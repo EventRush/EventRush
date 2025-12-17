@@ -9,10 +9,26 @@ use Illuminate\Support\Facades\Auth;
 class NotificationController extends Controller
 {
     //
+    // public function index()
+    // {
+    //     $user = Auth::user();
+    //     $notifications = $user->unreadNotifications->latest()
+    //                                                 ->limit(50)
+    //                                                 ->get();;
+
+    //     return response()->json([
+    //         'notifications' => $notifications
+    //     ]);
+    // }
     public function index()
     {
         $user = Auth::user();
-        $notifications = $user->unreadNotifications;
+
+        $notifications = $user->notifications()
+                            ->whereNull('read_at') // uniquement non lues
+                            ->latest()
+                            ->limit(50)
+                            ->get();
 
         return response()->json([
             'notifications' => $notifications
@@ -30,6 +46,16 @@ class NotificationController extends Controller
         }
 
         return response()->json(['message' => 'Notification introuvable'],404);
+    }
+
+    // tout marquer comme lu
+    public function markAllAsRead()
+    {
+        $user = auth()->user();
+
+        $user->unreadNotifications->markAsRead();
+
+        return response()->json(['message' => 'Toutes les notifications ont été marquées comme lues']);
     }
 
 }

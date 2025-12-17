@@ -15,9 +15,15 @@ use App\Http\Controllers\Api\PasswordResetController;
 use App\Http\Controllers\Api\PlansSouscriptionsController;
 use App\Http\Controllers\Api\QrCodeController;
 use App\Http\Controllers\Api\ScannerController;
+use App\Http\Controllers\Api\Social\BadgeController;
+use App\Http\Controllers\Api\Social\EventPostController;
+use App\Http\Controllers\Api\Social\ReactionController;
+use App\Http\Controllers\Api\Social\ShareController;
+use App\Http\Controllers\Api\Social\StorieController;
 use App\Http\Controllers\Api\SouscriptionController;
 use App\Http\Controllers\Api\SuiviController;
 use App\Http\Controllers\Api\TestController;
+use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\utilisateur\TagController;
 use App\Http\Controllers\Api\UtilisateurController;
 use App\Http\Controllers\Api\VerifyEmailController;
@@ -50,6 +56,8 @@ Route::post('auth/google/callback/manuel', [AuthGoogleController::class, 'Google
 Route::post('/auth/login/otp', [AuthController::class, 'connexionByOtp']);
 
 //    *****  email et modifications/validations  *****
+// verifymailByOtp
+Route::post('/auth/verifymailByOtp', [AuthController::class, 'verifymailByOtp']);
 
 Route::post('/auth/verifyotp', [VerifyEmailController::class, 'verifyOtp']);
 Route::post('/auth/resendotp', [VerifyEmailController::class, 'resendOtp']);
@@ -63,7 +71,6 @@ Route::middleware(['auth:sanctum',  'verified'])->group(function () {
     Route::get('/me', [UtilisateurController::class,'me']);
     Route::post('/me/update', [UtilisateurController::class,'update']); 
     Route::get('/auth/me', [UtilisateurController::class, 'connectedUser'])->name('user.connected');
-    Route::get('/home/nearEvents', [EventController::class, 'getEventsNear']); // getEventsNear
     Route::get('/home/nearEvents/date', [EventController::class, 'getNearbyEventsWithDate']);
     Route::get('/home/sugestions/tag', [TagController::class, 'getRecommendedEvents']);
 
@@ -79,6 +86,7 @@ Route::get('/home/search/date', [EventController::class, 'searchDate']);
 Route::get('/home/featured', [EventController::class, 'featured']);
 Route::get('/home/upcoming', [EventController::class, 'upcoming']);
 Route::get('/home/popular', [EventController::class, 'popular']);
+Route::get('/home/nearEvents', [EventController::class, 'getEventsNear']); // getEventsNear
 Route::get('/home/categories', [EventController::class, 'search'])->name('search');
 Route::get('/home/stats', [EventController::class, 'stat']);// pas encore fait
 Route::get('/home/orgaEvent/{orgaId}', [EventController::class, 'byOrganisateur']);
@@ -90,17 +98,17 @@ Route::get('/home/orga/{orgaId}', [EventController::class, 'listOrga']);
 Route::post('/events/{eventId}/scan', [TestController::class, 'testScann']);
 
 Route::prefix('test') ->group(function () {
-Route::post('/coudinary/upload', [TestController::class, 'storeImage']);
-Route::get('/coudinary/{id}/image-qr', [TestController::class, 'showImageWithQR']);
-// Route::get('/coudinary/{id}/image-qr', [TestController::class, 'showImageWithQR']);   //   showImageWithQR
-Route::post('/events/ticket/{ticketId}', [TestController::class, 'update_Ticket']); //
-Route::get('/events/billet/{billetId}', [TestController::class, 'getTicketData']); //  
-Route::post('/public/upload', [TestController::class, 'storeImageinPublic']); //  storeImageinPublic
-Route::get('/public/billet/{billetId}', [TestController::class, 'getTicketPublic']); //  
+    Route::post('/coudinary/upload', [TestController::class, 'storeImage']);
+    Route::get('/coudinary/{id}/image-qr', [TestController::class, 'showImageWithQR']);
+    // Route::get('/coudinary/{id}/image-qr', [TestController::class, 'showImageWithQR']);   //   showImageWithQR
+    Route::post('/events/ticket/{ticketId}', [TestController::class, 'update_Ticket']); //
+    Route::get('/events/billet/{billetId}', [TestController::class, 'getTicketData']); //  
+    Route::post('/public/upload', [TestController::class, 'storeImageinPublic']); //  storeImageinPublic
+    Route::get('/public/billet/{billetId}', [TestController::class, 'getTicketPublic']); //  
 
 
-Route::post('/store', [TestController::class, 'store']);
-Route::get('/{id}/show', [TestController::class, 'show']);
+    Route::post('/store', [TestController::class, 'store']);
+    Route::get('/{id}/show', [TestController::class, 'show']);
 
 });
 
@@ -118,10 +126,10 @@ Route::post('/events/{eventId}', [EventController::class, 'update']);
 //     *****  billeterie  *****
 // Route::get('/paiement/callback', [BilleterieController::class, 'callback'])->name('paiement.callback');
 Route::post('/billet/webhook', [BilleterieController::class, 'webhookBillet']);
-Route::middleware(['auth:sanctum', 'token.expiry', 'verified'])->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
         //billet/payer
     Route::post('/billet/payer', [BilleterieController::class, 'payer']);
-    Route::get('/billet/userIndex', [BilleterieController::class, 'userIndexbillets']);
+    Route::get('/billet/userIndex', [BilleterieController::class, 'userbillets']);
 
     Route::get('/welcome', function () { return view('welcome');
     });
@@ -142,8 +150,8 @@ Route::middleware(['auth:sanctum', 'token.expiry', 'verified'])->group(function 
 //    *****  commentaire  *****
 Route::middleware(['auth:sanctum',  'verified'])->group(function () {
     Route::get('/evenements/{eventId}/commentaires', [CommentaireController::class, 'index']);
-    Route::post('/evenements/{eventId}/commentaires', [CommentaireController::class, 'store']);
-    Route::post('/evenements/{commentId}/modifier', [CommentaireController::class, 'update']);
+    Route::post('/commentaires/{type}/comment/{id}', [CommentaireController::class, 'store']);
+    Route::post('/commentaires/{commentId}/modifier', [CommentaireController::class, 'update']);
     Route::delete('/evenements/commentaires/{commentId}', [CommentaireController::class, 'destroy']);
 });
 
@@ -162,11 +170,13 @@ Route::middleware(['auth:sanctum',  'verified'])->group(function () {
 
     //    *****  notifications  *****
 
-     Route::middleware(['auth:sanctum', ])->group(function () {
-    Route::get('notifications', [NotificationController::class, 'index']);
-    Route::post('notifications/{notId}/mark-as-read', [NotificationController::class, 'markAsRead']);
+    Route::middleware(['auth:sanctum', ])->group(function () {
+        Route::get('notifications', [NotificationController::class, 'index']);
+        Route::post('notifications/{notId}/mark-as-read', [NotificationController::class, 'markAsRead']);
+        Route::post('notifications/mark-as-read', [NotificationController::class, 'markAllAsRead']);
+
     
-    Route::get('/events/billets/{billetId}', [BilleterieController::class, 'generateBilletImage']);
+        Route::get('/events/billets/{billetId}', [BilleterieController::class, 'generateBilletImage']);
 
 
 }); 
@@ -201,7 +211,7 @@ Route::middleware(['auth:sanctum',  'verified'])->group(function () {
     //    *****  abonnement  *****
     Route::post('/souscriptions/webhook', [SouscriptionController::class, 'souscriptionWebhook']);
 
-    Route::middleware(['auth:sanctum',  'verified'])->prefix('souscriptions')->group(function () {
+    Route::middleware(['auth:sanctum'])->prefix('souscriptions')->group(function () {
         Route::get('/profil/mon_abonnement', [SouscriptionController::class, 'monAbonnement']);
         Route::get('/plans', [SouscriptionController::class, 'plans']);
         Route::post('/', [SouscriptionController::class, 'paiementsouscrire']);
@@ -219,7 +229,7 @@ Route::prefix('organisateur')->middleware(['auth:sanctum',  'organisateur', 'sou
         // Événements
         Route::get('/events', [OrganisateurEventController::class, 'index']); 
         Route::get('/ticket', [OrganisateurTicketsController::class, 'index']);
-        Route::get('/events/{eventId}', [OrganisateurEventController::class, 'show']);
+        Route::get('/events/{eventId}', [OrganisateurEventController::class, 'show'])->name('event.show');
         
 
             
@@ -327,7 +337,44 @@ Route::prefix('admin')->middleware(['auth:sanctum',  'verified', 'admin'])->grou
 
 Route::post('/test_upload', [TestController::class, 'testcloudinary']);
 
-    
+
+
+
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/reactions/toggle', [ReactionController::class, 'toggle']);
+    Route::get('/reactions', [ReactionController::class, 'index']);
+
+    Route::post('/shares', [ShareController::class, 'store']);
+    Route::get('/shares/count', [ShareController::class, 'count']);
+
+    Route::post('/stories', [StorieController::class, 'store']);
+    Route::delete('/stories/{id}', [StorieController::class, 'destroy']);
+    Route::get('/stories/me', [StorieController::class, 'myStories']);
+    Route::get('/stories/active', [StorieController::class, 'active']); // public
+
+    Route::post('/users/{user}/badges', [BadgeController::class, 'give']);
+    Route::delete('/users/{user}/badges/{badge}', [BadgeController::class, 'revoke']);
+    Route::get('/users/{user}/badges', [BadgeController::class, 'index']);
+});
+
+// Public routes
+Route::get('/events/{event}/posts', [BadgeController::class, 'index']);
+Route::get('/posts/{post}', [EventPostController::class, 'show']);
+Route::get('/stories/active', [StorieController::class, 'active']);
+Route::get('/badges', [BadgeController::class, 'index']);
+
+// Admin routes for badges (protect with admin middleware/policy)
+Route::middleware(['auth:sanctum', 'can:manage-badges'])->group(function () {
+    Route::apiResource('badges', BadgeController::class)->except(['index']);
+});
+
+// Event posts CRUD (auth required for store/update/delete)
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/events/{event}/posts', [EventPostController::class, 'store']);
+    Route::put('/posts/{post}', [EventPostController::class, 'update']);
+    Route::delete('/posts/{post}', [EventPostController::class, 'destroy']);
+});
                             
     
 
@@ -396,3 +443,8 @@ Route::post('/test_upload', [TestController::class, 'testcloudinary']);
 
 
 
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/me/events', [UtilisateurController::class, 'indexMeEvent']);
+    Route::get('/me/tickets', [UtilisateurController::class, 'indexMeTickets']);
+});
+Route::get('/organizers/hub', [OrganisateurStatController::class, 'organizersHub']);

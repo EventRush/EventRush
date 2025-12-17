@@ -31,6 +31,7 @@ implements MustVerifyEmail
 
       // ✅ Les statuts disponibles
     public const STATUT_ACTIF = 'actif';
+    public const STATUT_NON_VERIFIE = 'non_verifie';
     public const STATUT_INACTIF = 'inactif';
     public const STATUT_SUSPENDU = 'suspendu';
     public const STATUT_BANNI = 'banni';
@@ -39,6 +40,7 @@ implements MustVerifyEmail
     // ✅ Optionnel : liste complète
     public const STATUTS = [
         self::STATUT_ACTIF,
+        self::STATUT_NON_VERIFIE,
         self::STATUT_INACTIF,
         self::STATUT_SUSPENDU,
         self::STATUT_BANNI,
@@ -71,12 +73,19 @@ implements MustVerifyEmail
     public function souscription(){
         return $this->hasMany(Souscription::class, 'utilisateur_id');
     }
-    public function souscriptionActive(){
-        return $this->souscription()
-        ->where('statut', 'actif')
-        ->where('date_fin', '>', now())
-        ->latest('date_fin')
-        ->first();
+    // public function souscriptionActive(){
+    //     return $this->souscription()
+    //     ->where('statut', 'actif')
+    //     ->where('date_fin', '>', now())
+    //     ->latest('date_fin')
+    //     ->first();
+    // }
+    public function souscriptionActive()
+    {
+        return $this->hasOne(Souscription::class, 'utilisateur_id')
+                    ->where('statut', 'actif')
+                    ->where('date_fin', '>', now())
+                    ->latestOfMany('date_fin');
     }
     public function favoris()
     {
@@ -106,7 +115,33 @@ implements MustVerifyEmail
     {
         return $this->belongsToMany(Tag::class, 'utilisateur_tag', 'utilisateur_id', 'tag_id');
     }
-
+    public function badges()
+    {
+        return $this->belongsToMany(Badge::class, 'user_badges')
+            ->withTimestamps();
+    }
+    public function events()
+    {
+        return $this->hasMany(Event::class, 'utilisateur_id');
+    }
+    public function posts()
+    {
+        return $this->hasMany(EventPost::class, 'utilisateur_id');
+    }
 
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

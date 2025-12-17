@@ -18,7 +18,7 @@ class Event extends Model
         'latitude', 'longitude', 
     ];
 
-    protected $appends = ['distance'];
+    // protected $appends = ['distance'];
 
 
     
@@ -58,6 +58,11 @@ class Event extends Model
         {
             return $this->hasMany(Ticket::class);
         }
+    
+    // public function commentaires()
+    //     {
+    //         return $this->hasMany(Commentaire::class);
+    //     }
 
     public function scanneurs()
         {
@@ -80,16 +85,30 @@ class Event extends Model
     )) as distance", [$lat, $lng, $lat]);
 }
 
-public function scopeNearLocation($query, $lat, $lng, $radius)
-{
-    return $query->whereRaw("(6371 * acos(
-        cos(radians(?)) *
-        cos(radians(latitude)) *
-        cos(radians(longitude) - radians(?)) +
-        sin(radians(?)) *
-        sin(radians(latitude))
-    )) <= ?", [$lat, $lng, $lat, $radius]);
-}
+    public function scopeNearLocation($query, $lat, $lng, $radius)
+    {
+        return $query->whereRaw("(6371 * acos(
+            cos(radians(?)) *
+            cos(radians(latitude)) *
+            cos(radians(longitude) - radians(?)) +
+            sin(radians(?)) *
+            sin(radians(latitude))
+        )) <= ?", [$lat, $lng, $lat, $radius]);
+    }
+    public function posts()
+    {
+        return $this->hasMany(EventPost::class);
+    }
+
+    public function commentaires()
+    {
+        return $this->morphMany(Commentaire::class, 'commentable');
+    }
+    public function shares()
+    {
+        return $this->morphMany(Share::class, 'shareable');
+    }
+
 
 
 

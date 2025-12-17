@@ -33,7 +33,10 @@ class OtpMail extends Mailable
         // ->with(['otp' => $this->otp]);
 
     }
-
+    public function render(): string
+    {
+        return "Bonjour,<br><br>Votre code OTP est : <strong>{$this->otp}</strong><br><br>Ce code expirera dans 10 minutes.";
+    }
     /**
      * Get the message envelope.
      */
